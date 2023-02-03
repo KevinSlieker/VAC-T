@@ -1,0 +1,11 @@
+﻿:root {
+    /* FONTS */
+    --titles: "bebas-neue";
+    --headings: "roboto-condensed";
+    --regular: "Arial";
+    /* COLORS */
+    --gray: #333333;
+    --orange: #F15A24; 
+    --white: #FFF;
+    --black: #000;
+}

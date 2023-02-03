@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using VAC_T.Areas.Identity.Data;
+using VAC_T.Data;
 
 namespace VAC_T.Areas.Identity.Pages.Account
 {

@@ -9,16 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\Files\bebasneue-webfont.woff" />
-    <None Include="wwwroot\Files\bebasneue-webfont.woff2" />
-    <None Include="wwwroot\Files\roboto-condensed-webfont.woff" />
-    <None Include="wwwroot\Files\roboto-condensed-webfont.woff2" />
-    <None Include="wwwroot\Files\vacit-logo-wit.png" />
-    <None Include="wwwroot\Files\vacit-logo.png" />
-    <None Include="wwwroot\Files\__MACOSX\._bebasneue-webfont.woff" />
-    <None Include="wwwroot\Files\__MACOSX\._bebasneue-webfont.woff2" />
-    <None Include="wwwroot\Files\__MACOSX\._roboto-condensed-webfont.woff" />
-    <None Include="wwwroot\Files\__MACOSX\._roboto-condensed-webfont.woff2" />
+    <None Include="wwwroot\assets\bebasneue-webfont.woff" />
+    <None Include="wwwroot\assets\bebasneue-webfont.woff2" />
+    <None Include="wwwroot\assets\roboto-condensed-webfont.woff" />
+    <None Include="wwwroot\assets\roboto-condensed-webfont.woff2" />
+    <None Include="wwwroot\assets\vacit-logo-wit.png" />
+    <None Include="wwwroot\assets\vacit-logo.png" />
+    <None Include="wwwroot\assets\__MACOSX\._bebasneue-webfont.woff" />
+    <None Include="wwwroot\assets\__MACOSX\._bebasneue-webfont.woff2" />
+    <None Include="wwwroot\assets\__MACOSX\._roboto-condensed-webfont.woff" />
+    <None Include="wwwroot\assets\__MACOSX\._roboto-condensed-webfont.woff2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +28,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Identity\Data\" />
   </ItemGroup>
 
 </Project>

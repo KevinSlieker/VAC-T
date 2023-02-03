@@ -3,11 +3,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VAC_T.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<VAC_TUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
+
     }
 }

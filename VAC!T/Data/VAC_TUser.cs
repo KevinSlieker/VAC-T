@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
-namespace VAC_T.Areas.Identity.Data;
+namespace VAC_T.Data;
 
 // Add profile data for application users by adding properties to the VAC_TUser class
 public class VAC_TUser : IdentityUser
