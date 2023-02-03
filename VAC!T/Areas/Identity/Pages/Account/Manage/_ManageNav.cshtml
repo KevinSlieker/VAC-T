@@ -1,4 +1,4 @@
-﻿@using VAC_T.Data;
+﻿@using VAC_T.Models;
 @inject SignInManager<VAC_TUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();

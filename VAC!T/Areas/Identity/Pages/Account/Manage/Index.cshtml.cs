@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using VAC_T.Data;
+using VAC_T.Models;
 
 namespace VAC_T.Areas.Identity.Pages.Account.Manage
 {
@@ -78,7 +78,11 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-
+            var name = user.Name;
+            var adress = user.Adress;
+            var profilePicture = user.ProfilePicture;
+            var motivation = user.Motivation;
+            var cV = user.CV;
             Username = userName;
 
             Input = new InputModel
@@ -132,27 +136,32 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
             if (Input.Name != user.Name)
             {
                 user.Name = Input.Name;
+                await _userManager.UpdateAsync(user);
             }
 
             if (Input.Adress != user.Adress)
             {
                 user.Adress = Input.Adress;
+                await _userManager.UpdateAsync(user);
             }
 
 
             if (Input.ProfilePicture!= null)
             {
                 user.ProfilePicture = Input.ProfilePicture;
+                await _userManager.UpdateAsync(user);
             }
 
             if (Input.Motivation!= null)
             {
                 user.Motivation= Input.Motivation;
+                await _userManager.UpdateAsync(user);
             }
 
             if (Input.CV!= null)
             {
                 user.CV = Input.CV;
+                await _userManager.UpdateAsync(user);
             }
 
             await _signInManager.RefreshSignInAsync(user);
