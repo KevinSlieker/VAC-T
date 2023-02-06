@@ -11,7 +11,7 @@ namespace VACT.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "Adress",
+                name: "Address",
                 table: "AspNetUsers",
                 type: "nvarchar(max)",
                 nullable: true);

@@ -14,7 +14,6 @@ namespace VAC_T.Data
         public DbSet<VAC_T.Models.JobOffer> JobOffer { get; set; } = default!;
         public DbSet<VAC_T.Models.Solicitation> Solicitation { get; set; } = default!;
 
-        //public DbSet<VAC_T.Models.VAC_TUser> VAC_TUser { get; set;} = default!;
 
     }
 }

@@ -63,7 +63,7 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
 
-            public string Adress { get; set; }
+            public string Address { get; set; }
 
             [Display(Name = "Profile picture")]
             public string ProfilePicture { get; set; }
@@ -79,7 +79,7 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             var name = user.Name;
-            var adress = user.Adress;
+            var adress = user.Address;
             var profilePicture = user.ProfilePicture;
             var motivation = user.Motivation;
             var cV = user.CV;
@@ -89,7 +89,7 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
             {
                 Name = user.Name,
                 PhoneNumber = phoneNumber,
-                Adress = user.Adress,
+                Address = user.Address,
                 ProfilePicture = user.ProfilePicture,
                 Motivation = user.Motivation,
                 CV = user.CV
@@ -139,9 +139,9 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
                 await _userManager.UpdateAsync(user);
             }
 
-            if (Input.Adress != user.Adress)
+            if (Input.Address != user.Address)
             {
-                user.Adress = Input.Adress;
+                user.Address = Input.Address;
                 await _userManager.UpdateAsync(user);
             }
 
