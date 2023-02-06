@@ -128,21 +128,24 @@ namespace VAC_T.Models
                             Name = "Applicatie Beheerder voor DSM Sittard",
                             Description = "Description 1",
                             Company = context.Company.Where(n => n.Name == "DSM").FirstOrDefault(),
-                            Level = "Intro"
+                            Level = "Intro",
+                            LogoURL = "assets/img/job_offer/windows.png"
                         },
                         new JobOffer
                         {
                             Name = "Applicatie Beheerder voor DSM Sittard",
                             Description = "Description 2",
                             Company = context.Company.Where(n => n.Name == "DSM").FirstOrDefault(),
-                            Level = "Junior"
+                            Level = "Junior",
+                            LogoURL = "assets/img/job_offer/windows.png"
                         },
                         new JobOffer
                         {
                             Name = "C# developer",
                             Description = "Description 3",
                             Company = context.Company.Where(n => n.Name == "Educom").FirstOrDefault(),
-                            Level = "Midior"
+                            Level = "Midior",
+                            LogoURL = "assets/img/job_offer/csharp.png"
                         }
                         );
                     context.SaveChanges();
