@@ -12,12 +12,12 @@ namespace VACT.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
-                name: "Adress",
+                name: "Address",
                 table: "Company",
                 newName: "Address");
 
             migrationBuilder.RenameColumn(
-                name: "Adress",
+                name: "Address",
                 table: "AspNetUsers",
                 newName: "Address");
 

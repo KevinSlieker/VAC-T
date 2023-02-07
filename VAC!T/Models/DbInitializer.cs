@@ -48,7 +48,7 @@ namespace VAC_T.Models
                             Name = "Test Employer DSM",
                             BirthDate= DateTime.Now,
                             Address = "12 Address Plaza",
-                            ProfilePicture = "assets/img/user/TestEmployerDSM.svg"
+                            ProfilePicture = "assets/img/user/profile.png"
                             //Role = context.Roles.Local.SingleOrDefault(x => x.Name == "ROLE_EMPLOYER")
                         };
                         var result = await manager.CreateAsync(userEmployer, "EmployerDSM1!");
@@ -64,7 +64,7 @@ namespace VAC_T.Models
                             Name = "Test Employer Educom",
                             BirthDate = DateTime.Now,
                             Address = "3 Address Plaza",
-                            ProfilePicture = "assets/img/user/TestEmployerEducom.svg"
+                            ProfilePicture = "assets/img/user/profile.png"
                             //Role = context.Roles.Local.SingleOrDefault(x => x.Name == "ROLE_EMPLOYER")
                         };
                         var result2 = await manager.CreateAsync(userEmployer2, "EmployerEducom1!");
@@ -79,7 +79,7 @@ namespace VAC_T.Models
                             Name = "Test Candidate",
                             BirthDate = DateTime.Now,
                             Address = "37 Test Plaza",
-                            ProfilePicture = "assets/img/user/TestCandidate.svg",
+                            ProfilePicture = "assets/img/user/profile.png",
                             Motivation = "Test modivation. This is a test motivation.",
                             CV = "http://testCV.com/"
                             //Role = context.Roles.Local.SingleOrDefault(x => x.Name == "ROLE_CANDIDATE")
@@ -113,8 +113,8 @@ namespace VAC_T.Models
                             Name = "Educom",
                             Description = "Educom is een professionele ICT-opleider die mensen bij- of omschoolt  tot softwareontwikkelaar. Wij begeleiden werkzoekende ICT-ers," +
                             " of mensen die van de ICT hun beroep willen maken, door middel van een gedegen en vooral praktijkgericht traineeship naar een baan. ",
-                            LogoURL = "assets/img/company/dsm.svg",
-                            WebsiteURL = "https://www.dsm.com/nederland/nl_NL/home.html",
+                            LogoURL = "assets/img/company/educom.png",
+                            WebsiteURL = "https://edu-deta.com/",
                             Address = "D.U. Stikkerstraat 10",
                             User = context.Users.Where(n => n.Name == "Test Employer Educom").FirstOrDefault()
                         });
