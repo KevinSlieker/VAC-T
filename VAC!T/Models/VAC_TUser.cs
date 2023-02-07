@@ -18,11 +18,12 @@ public class VAC_TUser : IdentityUser
 
     public string? Address { get; set; }
 
-
+    [DataType(DataType.ImageUrl)]
     public string? ProfilePicture { get; set; }
 
     public string? Motivation { get; set; }
 
+    [DataType(DataType.Url)]
     public string? CV { get; set; }
 
     public ICollection<Solicitation> Solicitations { get; set; }

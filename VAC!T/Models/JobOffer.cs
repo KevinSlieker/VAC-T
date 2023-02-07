@@ -10,6 +10,7 @@ namespace VAC_T.Models
         public string Name { get; set; }
         public string Description { get; set; }
 
+        [DataType(DataType.ImageUrl)]
         public string LogoURL { get; set; }
         public Company Company { get; set; }
 
