@@ -48,6 +48,8 @@ namespace VAC_T.Models
                             Name = "Test Employer DSM",
                             BirthDate= DateTime.Now,
                             Address = "12 Address Plaza",
+                            Postcode = "6666AA",
+                            Residence= "ErgensHuizen",
                             ProfilePicture = "assets/img/user/profile.png"
                             //Role = context.Roles.Local.SingleOrDefault(x => x.Name == "ROLE_EMPLOYER")
                         };
@@ -64,6 +66,8 @@ namespace VAC_T.Models
                             Name = "Test Employer Educom",
                             BirthDate = DateTime.Now,
                             Address = "3 Address Plaza",
+                            Postcode = "6666AA",
+                            Residence = "ErgensHuizen",
                             ProfilePicture = "assets/img/user/profile.png"
                             //Role = context.Roles.Local.SingleOrDefault(x => x.Name == "ROLE_EMPLOYER")
                         };
@@ -79,6 +83,8 @@ namespace VAC_T.Models
                             Name = "Test Candidate",
                             BirthDate = DateTime.Now,
                             Address = "37 Test Plaza",
+                            Postcode = "3597ZA",
+                            Residence = "ErgensHuizen",
                             ProfilePicture = "assets/img/user/profile.png",
                             Motivation = "Test modivation. This is a test motivation.",
                             CV = "http://testCV.com/"
@@ -106,6 +112,8 @@ namespace VAC_T.Models
                             LogoURL = "assets/img/company/dsm.svg",
                             WebsiteURL = "https://www.dsm.com/nederland/nl_NL/home.html",
                             Address = "Poststraat 1",
+                            Postcode = "6135KR",
+                            Residence = "Sittard",
                             User = context.Users.Where(n => n.Name == "Test Employer DSM").FirstOrDefault()
                         },
                         new Company
@@ -116,6 +124,8 @@ namespace VAC_T.Models
                             LogoURL = "assets/img/company/educom.png",
                             WebsiteURL = "https://edu-deta.com/",
                             Address = "D.U. Stikkerstraat 10",
+                            Postcode = "6842CW",
+                            Residence = "Arnhem",
                             User = context.Users.Where(n => n.Name == "Test Employer Educom").FirstOrDefault()
                         });
                     context.SaveChanges();
@@ -129,6 +139,7 @@ namespace VAC_T.Models
                             Description = "Description 1",
                             Company = context.Company.Where(n => n.Name == "DSM").FirstOrDefault(),
                             Level = "Intro",
+                            Residence = "Sittard",
                             LogoURL = "assets/img/job_offer/windows.png"
                         },
                         new JobOffer
@@ -137,6 +148,7 @@ namespace VAC_T.Models
                             Description = "Description 2",
                             Company = context.Company.Where(n => n.Name == "DSM").FirstOrDefault(),
                             Level = "Junior",
+                            Residence = "Sittard",
                             LogoURL = "assets/img/job_offer/windows.png"
                         },
                         new JobOffer
@@ -145,6 +157,7 @@ namespace VAC_T.Models
                             Description = "Description 3",
                             Company = context.Company.Where(n => n.Name == "Educom").FirstOrDefault(),
                             Level = "Midior",
+                            Residence = "Arnhem",
                             LogoURL = "assets/img/job_offer/csharp.png"
                         }
                         );

@@ -56,7 +56,7 @@ namespace VAC_T.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Created")] JobOffer jobOffer)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,LogoURL,Level,Created")] JobOffer jobOffer)
         {
             if (ModelState.IsValid)
             {
@@ -88,7 +88,7 @@ namespace VAC_T.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Created")] JobOffer jobOffer)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,LogoURL,Level,Created")] JobOffer jobOffer)
         {
             if (id != jobOffer.Id)
             {

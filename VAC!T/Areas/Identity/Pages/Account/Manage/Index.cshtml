@@ -1,13 +1,27 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Profile";
+    ViewData["Title"] = "Mijn profiel";
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
 
-<h3>@ViewData["Title"]</h3>
 <partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
+    <div class="profile-picture-position">
+        <img class="rounded-circle" src=@Url.Content("~/" + Model.Input.ProfilePicture) alt="Profiel afbeelding" />
+        <form enctype="multipart/form-data" method="post" asp-controller="Home" asp-action="UploadFile">
+            <dl>
+                <dt>
+                    <label>Upload</label>
+                </dt>
+                <dd>
+                    <input type="file" name="FormFile" id="FormFile">
+
+                </dd>
+            </dl>
+            <input class="btn" type="submit" value="Profielfoto bijwerken" />
+        </form>
+    </div>
     <div class="col-md-6">
         <form id="profile-form" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
@@ -16,33 +30,53 @@
                 <label asp-for="Username" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
+                <input asp-for="Input.ProfilePicture" class="form-control" placeholder="Please enter your name." />
+                <label asp-for="Input.ProfilePicture" class="form-label">Profiel afbeelding</label>
+                <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
                 <input asp-for="Input.Name" class="form-control" placeholder="Please enter your name."/>
-                <label asp-for="Input.Name" class="form-label"></label>
+                <label asp-for="Input.Name" class="form-label">Naam</label>
                 <span asp-validation-for="Input.Name" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" placeholder="Please enter your email."/>
+                <label asp-for="Input.Email" class="form-label">Email</label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.BirthDate" class="form-control" placeholder="Please enter your birthdate." />
+                <label asp-for="Input.BirthDate" class="form-label">Geboortedatum</label>
+                <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
                 <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
-                <label asp-for="Input.PhoneNumber" class="form-label"></label>
+                <label asp-for="Input.PhoneNumber" class="form-label">Telefoonnummer</label>
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Input.Address" class="form-control" placeholder="Please enter your adress."/>
-                <label asp-for="Input.Address" class="form-label"></label>
+                <label asp-for="Input.Address" class="form-label">Adres</label>
                 <span asp-validation-for="Input.Address" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.ProfilePicture" class="form-control" placeholder="Please enter your profile picture."/>
-                <label asp-for="Input.ProfilePicture" class="form-label"></label>
-                <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
+                <input asp-for="Input.Postcode" class="form-control" placeholder="Please enter your postcode."/>
+                <label asp-for="Input.Postcode" class="form-label">Postcode</label>
+                <span asp-validation-for=" Input.Postcode" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Residence" class="form-control" placeholder="Please enter your residence." />
+                <label asp-for="Input.Residence" class="form-label">Woonplaats</label>
+                <span asp-validation-for=" Input.Residence" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Input.Motivation" class="form-control" placeholder="Please enter your motivation."/>
-                <label asp-for="Input.Motivation" class="form-label"></label>
+                <label asp-for="Input.Motivation" class="form-label">Motivatie</label>
                 <span asp-validation-for="Input.Motivation" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Input.CV" class="form-control" placeholder="Please enter your CV."/>
-                <label asp-for="Input.CV" class="form-label"></label>
+                <label asp-for="Input.CV" class="form-label">CV</label>
                 <span asp-validation-for="Input.CV" class="text-danger"></span>
             </div>
             <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>

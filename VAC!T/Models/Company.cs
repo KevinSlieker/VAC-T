@@ -16,6 +16,11 @@ namespace VAC_T.Models
         [DataType(DataType.Url)]
         public string WebsiteURL { get; set; }
         public string Address { get; set; }
+
+        [DataType(DataType.PostalCode)]
+        public string? Postcode { get; set; }
+
+        public string? Residence { get; set; }
         public VAC_TUser User { get; set; }
         public ICollection<JobOffer> JobOffers { get; set; }
     }

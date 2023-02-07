@@ -18,6 +18,11 @@ public class VAC_TUser : IdentityUser
 
     public string? Address { get; set; }
 
+    [DataType(DataType.PostalCode)]
+    public string? Postcode { get; set; }
+
+    public string? Residence { get; set; }
+
     [DataType(DataType.ImageUrl)]
     public string? ProfilePicture { get; set; }
 

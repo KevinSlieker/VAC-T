@@ -16,6 +16,8 @@ namespace VAC_T.Models
 
         public string Level { get; set; }
 
+        public string? Residence { get; set; }
+
         [DataType(DataType.Date)]
         public DateTime Created { get; set; } = DateTime.Now;
         public ICollection<Solicitation> Solicitations { get; set; }

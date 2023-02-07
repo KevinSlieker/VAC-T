@@ -63,7 +63,17 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
 
+            [DataType(DataType.EmailAddress)]
+            public string Email { get; set; }
+
+            [DataType(DataType.Date)]
+            public DateTime BirthDate { get; set; }
+
             public string Address { get; set; }
+
+            public string Postcode { get; set; }
+
+            public string Residence { get; set; }
 
             [Display(Name = "Profile picture")]
             public string ProfilePicture { get; set; }
@@ -78,21 +88,30 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var email = await _userManager.GetEmailAsync(user);
             var name = user.Name;
-            var adress = user.Address;
+            var address = user.Address;
             var profilePicture = user.ProfilePicture;
             var motivation = user.Motivation;
             var cV = user.CV;
+            var postcode = user.Postcode;
+            var residence = user.Residence;
+            var birthDate = user.BirthDate;
             Username = userName;
 
             Input = new InputModel
             {
-                Name = user.Name,
+                Name = name,
+                Email= email,
                 PhoneNumber = phoneNumber,
-                Address = user.Address,
-                ProfilePicture = user.ProfilePicture,
-                Motivation = user.Motivation,
-                CV = user.CV
+                Address = address,
+                ProfilePicture = profilePicture,
+                Motivation = motivation,
+                CV = cV,
+                Postcode = postcode,
+                Residence = residence,
+                BirthDate = (DateTime)birthDate
+
             };
         }
 
@@ -133,15 +152,47 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
                 }
             }
 
+            var email = await _userManager.GetEmailAsync(user);
+            if (Input.Email != email)
+            {
+                var setEmailResult = await _userManager.SetEmailAsync(user, Input.Email);
+                // way around to confirm the email.
+                user.EmailConfirmed = true;
+                await _userManager.UpdateAsync(user);
+                if (!setEmailResult.Succeeded)
+                {
+                    StatusMessage = "Unexpected error when trying to set email.";
+                    return RedirectToPage();
+                }
+            }
+
             if (Input.Name != user.Name)
             {
                 user.Name = Input.Name;
                 await _userManager.UpdateAsync(user);
             }
 
+            if (Input.BirthDate != user.BirthDate)
+            {
+                user.BirthDate = Input.BirthDate;
+                await _userManager.UpdateAsync(user);
+            }
+
             if (Input.Address != user.Address)
             {
                 user.Address = Input.Address;
+                await _userManager.UpdateAsync(user);
+            }
+
+            if (Input.Postcode != user.Postcode)
+            {
+                user.Postcode = Input.Postcode;
+                await _userManager.UpdateAsync(user);
+            }
+
+            if (Input.Residence != user.Residence)
+            {
+                user.Residence = Input.Residence;
                 await _userManager.UpdateAsync(user);
             }
 

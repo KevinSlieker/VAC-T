@@ -14,10 +14,10 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Selected" /> @Html.DisplayNameFor(model => model.Selected)
-                </label>
+            <div class="form-group">
+                <label asp-for="Selected" class="control-label"></label>
+                <input asp-for="Selected" class="form-control" />
+                <span asp-validation-for="Selected" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Date" class="control-label"></label>
