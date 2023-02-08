@@ -74,7 +74,56 @@ namespace VAC_T.Controllers
 
         }
 
-        public string TrimQuotes(string text)
+        public async Task<IActionResult> EditCV(string id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            string? idUser = _userManager.GetUserId(User);
+            if (user == null)
+            {
+                return base.NotFound($"Unable to load user with ID '{idUser}'.");
+            }
+            if (idUser != id)
+            {
+                return base.Unauthorized("Kan CV niet updaten");
+            }
+            return View(new CVModel() { Id = id, CV = user.CV });
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadCV(string id, IFormFile FormFile)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            string? idUser = _userManager.GetUserId(User);
+            if (user == null)
+            {
+                return base.NotFound($"Unable to load user with ID '{idUser}'.");
+            }
+            if (idUser != id)
+            {
+                return base.Unauthorized("Kan CV niet updaten");
+            }
+
+            if (FormFile == null)
+            {
+                return View("EditCV", new CVModel() { Id = id, CV = user.CV });
+            }
+            var filename = ContentDispositionHeaderValue.Parse(FormFile.ContentDisposition).FileName.Value;
+            filename = id + Path.GetExtension(filename);
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "assets", "cv", filename);
+            using (System.IO.Stream stream = new FileStream(path, FileMode.Create))
+            {
+                await FormFile.CopyToAsync(stream);
+            }
+
+            user.CV = Path.Combine("assets", "cv", filename);
+            await _userManager.UpdateAsync(user);
+
+            return Redirect("/Identity/Account/Manage");
+        }
+
+
+            public string TrimQuotes(string text)
         {
             return text.Replace("\"", "").Trim();
         }

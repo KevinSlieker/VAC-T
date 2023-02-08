@@ -1,4 +1,6 @@
 ﻿@page
+@using VAC_T.Models;
+@inject SignInManager<VAC_TUser> SignInManager
 @model IndexModel
 @{
     ViewData["Title"] = "Mijn profiel";
@@ -54,16 +56,27 @@
                 <label asp-for="Input.Residence" class="form-label">Woonplaats</label>
                 <span asp-validation-for=" Input.Residence" class="text-danger"></span>
             </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Motivation" class="form-control" placeholder="Please enter your motivation."/>
-                <label asp-for="Input.Motivation" class="form-label">Motivatie</label>
-                <span asp-validation-for="Input.Motivation" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.CV" class="form-control" placeholder="Please enter your CV."/>
-                <label asp-for="Input.CV" class="form-label">CV</label>
-                <span asp-validation-for="Input.CV" class="text-danger"></span>
-            </div>
+@if (SignInManager.IsSignedIn(User))
+            {
+                if (User.IsInRole("ROLE_CANDIDATE"))
+                {
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Motivation" class="form-control" placeholder="Please enter your motivation."/>
+                        <label asp-for="Input.Motivation" class="form-label">Motivatie</label>
+                        <span asp-validation-for="Input.Motivation" class="text-danger"></span>
+                    </div>
+@*                    <div class="form-floating mb-3">
+                        <input asp-for="Input.CV" class="form-control" placeholder="Please enter your CV."/>
+                        <label asp-for="Input.CV" class="form-label">CV</label>
+                        <span asp-validation-for="Input.CV" class="text-danger"></span>
+                    </div>*@
+                    <div class="form-floating mb-3">
+                        <a class="navbar-brand" asp-area="" asp-controller="FileUpload" asp-action="EditCV" asp-route-id="@Model.Id">
+                            <img class="rounded-circle" src=@Url.Content("~/" + Model.Input.CV) height="150" width="150" alt="CV bestand" />
+                        </a>
+                    </div>
+                }
+            }
             <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
         </form>
     </div>
