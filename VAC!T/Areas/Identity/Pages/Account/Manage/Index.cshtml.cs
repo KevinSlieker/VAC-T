@@ -31,6 +31,7 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public string Username { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -56,6 +57,7 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+            
 
             public string Name { get; set; }
 
@@ -86,6 +88,7 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(VAC_TUser user)
         {
+            var id = await _userManager.GetUserIdAsync(user);
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             var email = await _userManager.GetEmailAsync(user);
@@ -98,6 +101,7 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
             var residence = user.Residence;
             var birthDate = user.BirthDate;
             Username = userName;
+            Id = id;
 
             Input = new InputModel
             {

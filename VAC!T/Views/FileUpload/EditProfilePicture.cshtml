@@ -1,0 +1,19 @@
+﻿
+@model VAC_T.Models.ProfilePictureModel
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+        <img class="rounded-circle" src=@Url.Content("~/" + Model.ProfilePicture) height="150" width="150" alt="Profiel afbeelding" />
+        <form enctype="multipart/form-data" method="post" asp-controller="FileUpload" asp-action="UploadProfilePicture" asp-route-id="@Model.Id">
+            <dl>
+                <dt>
+                    <label>Upload</label>
+                </dt>
+                <dd>
+                    <input type="file" name="FormFile" id="FormFile">
+                </dd>
+            </dl>
+            <input class="btn" type="submit" value="Profielfoto bijwerken" />
+        </form>
