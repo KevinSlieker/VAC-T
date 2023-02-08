@@ -6787,7 +6787,7 @@ textarea.form-control-lg {
 }
 
 .border-top {
-  border-top: 1px solid #dee2e6 !important;
+  border-top: 4px solid #F15A24 !important;
 }
 
 .border-top-0 {
@@ -6803,7 +6803,7 @@ textarea.form-control-lg {
 }
 
 .border-bottom {
-  border-bottom: 1px solid #dee2e6 !important;
+    border-bottom: 4px solid #F15A24 !important;
 }
 
 .border-bottom-0 {

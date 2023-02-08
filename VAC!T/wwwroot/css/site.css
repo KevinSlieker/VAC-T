@@ -20,3 +20,14 @@ html {
 body {
   margin-bottom: 60px;
 }
+header {
+    background-color: #333333;
+}
+
+footer {
+    background-color: #333333;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+}
+
