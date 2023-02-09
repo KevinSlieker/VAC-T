@@ -23,7 +23,7 @@ namespace VAC_T.Controllers
         public async Task<IActionResult> Index()
         {
               return _context.JobOffer != null ? 
-                          View(await _context.JobOffer.ToListAsync()) :
+                          View(await _context.JobOffer.Include(j => j.Company).ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.JobOffer'  is null.");
         }
 

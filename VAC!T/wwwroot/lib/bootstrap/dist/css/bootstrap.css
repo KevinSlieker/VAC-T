@@ -70,6 +70,30 @@
   }
 }
 
+.home-left{
+    text-align: center;
+}
+
+.info-joboffer-left {
+    transform: rotate(-10deg);
+    text-align: right;
+    width: max-content;
+    margin-left: auto;
+    margin-bottom: -1.0rem;
+}
+
+.info-joboffer-left-bottom {
+    transform: rotate(-10deg);
+    text-align: right;
+    width: max-content;
+    margin-left: auto;
+}
+
+
+.background-color-gray {
+    background-color: #333333;
+}
+
 body {
   margin: 0;
   font-family: var(--bs-body-font-family);

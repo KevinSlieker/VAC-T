@@ -153,7 +153,7 @@ namespace VAC_T.Models
                         },
                         new JobOffer
                         {
-                            Name = "C# developer",
+                            Name = "C# developer voor Educom Arnhem",
                             Description = "Description 3",
                             Company = context.Company.Where(n => n.Name == "Educom").FirstOrDefault(),
                             Level = "Midior",

@@ -22,6 +22,7 @@ namespace VAC_T.Models
 
         public string? Residence { get; set; }
         public VAC_TUser User { get; set; }
+
         public ICollection<JobOffer> JobOffers { get; set; }
     }
 }
