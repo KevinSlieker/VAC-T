@@ -87,7 +87,7 @@ namespace VAC_T.Models
                             Residence = "ErgensHuizen",
                             ProfilePicture = "assets/img/user/profile.png",
                             Motivation = "Test modivation. This is a test motivation.",
-                            CV = "http://testCV.com/"
+                            CV = "assets/cv/CV.docx"
                             //Role = context.Roles.Local.SingleOrDefault(x => x.Name == "ROLE_CANDIDATE")
                         };
                         var result3 = await manager.CreateAsync(userCandidate, "Candidate123!");
