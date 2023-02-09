@@ -74,6 +74,7 @@
     text-align: center;
 }
 
+
 .info-joboffer-left {
     transform: rotate(-10deg);
     text-align: right;
@@ -89,6 +90,11 @@
     margin-left: auto;
 }
 
+.joboffer-right{
+    padding-left: 5%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
 
 .background-color-gray {
     background-color: #333333;

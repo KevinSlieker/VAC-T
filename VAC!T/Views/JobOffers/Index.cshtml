@@ -21,7 +21,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="home-left col-4">
+        <div class="home-left col-3">
             <img class="rounded-circle img" src=@Url.Content("~/" + Model.First().LogoURL) height="200" width="200" alt="Logo" />
             <div class="info-joboffer-left background-color-gray text-white">
                 <h4>@Model.First().Level @Model.First().Name.Substring(0, Model.First().Name.IndexOf("voor"))</h4>
@@ -31,8 +31,18 @@
             </div>
         </div>
 
-        <div class="home-right">
-
+        <div class="home-right col-9">
+            @foreach(var item in Model)
+            {
+                <div class="joboffer-right"> 
+                    <img class="rounded-circle img" src=@Url.Content("~/" + item.LogoURL) height="100" width="100" alt="Logo" />
+                    <div class="info-joboffer-right">
+                        <h7>@item.Created</h7>
+                        <h4>@item.Name</h4>
+                        <p>@item.Description ...</p>
+                    </div>
+                </div>
+            }
         </div>
 
 
