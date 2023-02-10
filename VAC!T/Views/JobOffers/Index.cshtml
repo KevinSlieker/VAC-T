@@ -22,7 +22,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="home-left col-3">
-            <img class="rounded-circle img" src=@Url.Content("~/" + Model.First().LogoURL) height="200" width="200" alt="Logo" />
+            <a asp-action="Details" asp-route-id="@Model.First().Id"><img class="rounded-circle img" src=@Url.Content("~/" + Model.First().LogoURL) height="200" width="200" alt="Logo" /></a>
             <div class="info-joboffer-left background-color-gray text-white">
                 <h4>@Model.First().Level @Model.First().Name.Substring(0, Model.First().Name.IndexOf("voor"))</h4>
             </div>
@@ -30,19 +30,25 @@
                 <h5>@Model.First().Company.Name , @Model.First().Residence</h5>
             </div>
         </div>
-
-        <div class="home-right col-9">
-            @foreach(var item in Model)
-            {
-                <div class="joboffer-right"> 
-                    <img class="rounded-circle img" src=@Url.Content("~/" + item.LogoURL) height="100" width="100" alt="Logo" />
-                    <div class="info-joboffer-right">
-                        <h7>@item.Created</h7>
-                        <h4>@item.Name</h4>
-                        <p>@item.Description ...</p>
-                    </div>
+        <div class="col-9"
+            <div class="container-fluid">
+                <div class="home-right row">
+                    @foreach(var item in Model)
+                    {
+                        <div class="joboffer-right col-2"> 
+                            <img class="rounded-circle img" src=@Url.Content("~/" + item.LogoURL) height="100" width="100" alt="Logo" />
+                        </div>
+                        <div class="info-joboffer-right col-7">
+                            <h7>@item.Created</h7>
+                            <h4>@item.Name</h4>
+                            <p>@item.Description ...</p>
+                        </div>
+                        <div class="col-2">
+                                    <a asp-action="Details" asp-route-id="@item.Id"><img class="rounded-circl" src=@Url.Content("~/assets/arrow.png") height="100" width="100" alt="Details" /></a>
+                        </div>
+                    }
                 </div>
-            }
+            </div>
         </div>
 
 

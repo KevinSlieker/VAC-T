@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,18 +14,32 @@ namespace VAC_T.Controllers
     public class JobOffersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<VAC_TUser> _userManager;
+        private readonly SignInManager<VAC_TUser> _signInManager;
 
-        public JobOffersController(ApplicationDbContext context)
+        public JobOffersController(ApplicationDbContext context, UserManager<VAC_TUser> userManager, SignInManager<VAC_TUser> signInManager)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         // GET: JobOffers
         public async Task<IActionResult> Index()
         {
-              return _context.JobOffer != null ? 
-                          View(await _context.JobOffer.Include(j => j.Company).ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.JobOffer'  is null.");
+            if (User.IsInRole("ROLE_EMPLOYER") && _signInManager.IsSignedIn(User))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                return _context.JobOffer != null ?
+                            View(await _context.JobOffer.Include(j => j.Company).Where(C => C.Company.User == user).ToListAsync()) :
+                            Problem("Entity set 'ApplicationDbContext.JobOffer'  is null.");
+            }
+            else
+            {
+                return _context.JobOffer != null ?
+                            View(await _context.JobOffer.Include(j => j.Company).ToListAsync()) :
+                            Problem("Entity set 'ApplicationDbContext.JobOffer'  is null.");
+            }
         }
 
         // GET: JobOffers/Details/5
