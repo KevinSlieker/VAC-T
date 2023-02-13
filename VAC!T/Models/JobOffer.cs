@@ -19,6 +19,7 @@ namespace VAC_T.Models
         public string? Residence { get; set; }
 
         [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd-MMMM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Created { get; set; } = DateTime.Now;
         public ICollection<Solicitation> Solicitations { get; set; }
     }

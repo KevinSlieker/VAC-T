@@ -70,6 +70,10 @@
   }
 }
 
+.text-orange {
+    color: #F15A24;
+}
+
 .home-left{
     text-align: center;
 }
@@ -103,6 +107,14 @@
 
 .background-color-gray {
     background-color: #333333;
+}
+
+.align-text-right {
+    text-align: right;
+}
+
+.w-max {
+    width: max-content;
 }
 
 body {

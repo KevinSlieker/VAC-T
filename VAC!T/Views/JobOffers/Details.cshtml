@@ -5,13 +5,33 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
-
-
 <div class="container-fluid">
     <div class="row">
         <div class="col-2">
            <img lass="rounded-circle img" src=@Url.Content("~/" + Model.LogoURL) height="150" width="150" alt="Logo" />
+        </div>
+        <div class="col-10">
+            <div class="contair-fluid">
+                <div class="details-date" >
+                    <h7>@Html.DisplayFor(model => model.Created)</h7>
+                </div>
+                <div class="details-name">
+                    <h4>@Model.Name</h4>
+                </div>
+                <div class="row">
+                    <div class="details-info">
+                        <div class="details-level w-max d-inline-flex">
+                            <div class="text-orange d-inline-flex">
+                                <h5>Niveau: </h5>
+                            </div>
+                            <h5>@Model.Level</h5>
+                        </div>
+                        <div class="details-location w-max float-end d-inline-flex">
+                            <h5>@Model.Residence</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

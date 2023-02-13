@@ -37,7 +37,7 @@
                             <img class="rounded-circle img" src=@Url.Content("~/" + item.LogoURL) height="100" width="100" alt="Logo" />
                         </div>
                         <div class="info-joboffer-right col-7">
-                            <h7>@item.Created</h7>
+                            <h7>@Html.DisplayFor(modelitem => item.Created)</h7>
                             <h4>@item.Name</h4>
                             <p>@item.Description ...</p>
                         </div>
