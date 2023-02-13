@@ -46,22 +46,58 @@
         </div>
     </div>
     @if (SignInManager.IsSignedIn(User))
-            {
-                if (User.IsInRole("ROLE_CANDIDATE"))
-                {
-                    <div class="row Solicitate align-items-center">
-                        <div class="solicitate-arrow col-2">
-                            <img class="rounded-circle float-end" src=@Url.Content("~/assets/arrow.png") height="50" width="50" alt="Arrow" />
-                        </div>
-                        <div class="solicitate-now text-orange col-8">
-                            <a class="navbar-brand" asp-area="" asp-controller="Solicitations" asp-action="Solicitate" asp-route-jobOfferId="@Model.Id">
-                                <h4>SOLLICITEER DIRECT</h4>
-                            </a>
-                            <h4>@Model.Id.ToString()</h4>
-                        </div>
-                    </div>
-                }
-            }
+    {
+        if (User.IsInRole("ROLE_CANDIDATE"))
+        {
+            <div class="row Solicitate align-items-center">
+                <div class="solicitate-arrow col-2">
+                    <img class="rounded-circle float-end" src=@Url.Content("~/assets/arrow.png") height="50" width="50" alt="Arrow" />
+                </div>
+                <div class="solicitate-now d-flex col-8">
+                    <a class="navbar-brand text-orange" asp-area="" asp-controller="Solicitations" asp-action="Solicitate" asp-route-jobOfferId="@Model.Id">
+                        <h4>SOLLICITEER DIRECT</h4>
+                    </a>
+                </div>
+            </div>
+        }
+    }
+    <div class="row">
+        <div class="col-2">
+        </div>
+        <div class="col-10">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Created)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Level)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Company.JobOffers.Where(x => x.Id != Model.Id))
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Created)
+                            </td>
+                            <td>
+                                <a class="text-decoration-none text-orange" asp-action="Details" asp-route-id="@item.Id" >@Html.DisplayFor(modelItem => item.Name)</a>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Level)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <div>
