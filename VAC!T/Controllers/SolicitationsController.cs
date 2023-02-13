@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace VAC_T.Controllers
     public class SolicitationsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private UserManager<VAC_TUser> _userManager;
 
-        public SolicitationsController(ApplicationDbContext context)
+        public SolicitationsController(ApplicationDbContext context, UserManager<VAC_TUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Solicitations
@@ -25,6 +28,29 @@ namespace VAC_T.Controllers
               return _context.Solicitation != null ? 
                           View(await _context.Solicitation.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
+        }
+
+        public async Task<IActionResult> Solicitate(int jobOfferId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var jobOffer = _context.JobOffer.Find(jobOfferId);
+            if (_context.Solicitation.Where(x => x.JobOffer == jobOffer && x.User == user).Any())
+            {
+                var solicitation = _context.Solicitation.Where(x => x.JobOffer == jobOffer && x.User == user).First();
+                if (solicitation != null)
+                {
+                    _context.Solicitation.Remove(solicitation);
+                }
+                await _context.SaveChangesAsync();
+                return Redirect("/JobOffers/Details/" + jobOffer.Id);
+            }
+            else
+            {
+                var solicitation = new Solicitation { User = user, JobOffer = jobOffer, Date = DateTime.Now };
+                _context.Add(solicitation);
+                await _context.SaveChangesAsync();
+                return Redirect("/JobOffers/Details/" + jobOffer.Id);
+            }
         }
 
         // GET: Solicitations/Details/5

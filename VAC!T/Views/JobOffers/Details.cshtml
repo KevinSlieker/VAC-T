@@ -54,7 +54,10 @@
                             <img class="rounded-circle float-end" src=@Url.Content("~/assets/arrow.png") height="50" width="50" alt="Arrow" />
                         </div>
                         <div class="solicitate-now text-orange col-8">
-                            <h4>SOLLICITEER DIRECT</h4>
+                            <a class="navbar-brand" asp-area="" asp-controller="Solicitations" asp-action="Solicitate" asp-route-jobOfferId="@Model.Id">
+                                <h4>SOLLICITEER DIRECT</h4>
+                            </a>
+                            <h4>@Model.Id.ToString()</h4>
                         </div>
                     </div>
                 }

@@ -13,7 +13,7 @@ namespace VAC_T.Models
         public bool? Selected { get; set; }
 
         [DataType(DataType.Date)]
-        public DateTime Date { get; set; }
+        public DateTime Date { get; set; } = DateTime.Now;
 
     }
 }
