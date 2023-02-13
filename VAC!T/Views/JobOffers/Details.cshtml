@@ -24,7 +24,7 @@
                 <div class="row">
                     <div class="details-info">
                         <div class="details-level w-max d-inline-flex">
-                            <div class="text-orange d-inline-flex">
+                            <div class="text-orange white-space-pre-wrap d-inline-flex">
                                 <h5>Niveau: </h5>
                             </div>
                             <h5>@Model.Level</h5>
@@ -65,6 +65,12 @@
         <div class="col-2">
         </div>
         <div class="col-10">
+            <div class="jobOffer-details-company white-space-pre-wrap d-inline-flex">
+                <h5>Meer Vacatures van</h5>
+                <div class="jobOffer-details-company-name text-orange d-inline-flex">
+                    <h5> @Model.Company.Name</h5>
+                </div>
+            </div>
             <table class="table">
                 <thead>
                     <tr>
