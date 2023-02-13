@@ -1,5 +1,8 @@
 ﻿@model JobOffer
 @using Microsoft.AspNetCore.Identity;
+@inject UserManager<VAC_TUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+@inject SignInManager<VAC_TUser> SignInManager
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,7 +10,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-2">
+        <div class="col-2 text-center">
            <img lass="rounded-circle img" src=@Url.Content("~/" + Model.LogoURL) height="150" width="150" alt="Logo" />
         </div>
         <div class="col-10">
@@ -34,7 +37,28 @@
             </div>
         </div>
     </div>
-
+    <div class="row">
+        <div class="col-2 text-center">
+            <img class="rounded-circle img" src="@Url.Content("~/" + Model.Company.LogoURL)" height="100" width="100" alt="Company Logo" />
+        </div>
+        <div class="col-10">
+            <p>@Model.Description</p>
+        </div>
+    </div>
+    @if (SignInManager.IsSignedIn(User))
+            {
+                if (User.IsInRole("ROLE_CANDIDATE"))
+                {
+                    <div class="row Solicitate align-items-center">
+                        <div class="solicitate-arrow col-2">
+                            <img class="rounded-circle float-end" src=@Url.Content("~/assets/arrow.png") height="50" width="50" alt="Arrow" />
+                        </div>
+                        <div class="solicitate-now text-orange col-8">
+                            <h4>SOLLICITEER DIRECT</h4>
+                        </div>
+                    </div>
+                }
+            }
 </div>
 
 <div>

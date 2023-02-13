@@ -39,10 +39,15 @@
                         <div class="info-joboffer-right col-7">
                             <h7>@Html.DisplayFor(modelitem => item.Created)</h7>
                             <h4>@item.Name</h4>
-                            <p>@item.Description ...</p>
+                            @if (@item.Description.ToString().Length > 39) {
+                                <p>@item.Description.ToString().Substring(0, 39)...</p>
+                            } else
+                            {
+                                <p>@item.Description.ToString()</p>
+                            }
                         </div>
                         <div class="col-2">
-                                    <a asp-action="Details" asp-route-id="@item.Id"><img class="rounded-circl" src=@Url.Content("~/assets/arrow.png") height="100" width="100" alt="Details" /></a>
+                                    <a asp-action="Details" asp-route-id="@item.Id"><img class="rounded-circle" src=@Url.Content("~/assets/arrow.png") height="100" width="100" alt="Details" /></a>
                         </div>
                     }
                 </div>
