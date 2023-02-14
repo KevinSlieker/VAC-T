@@ -1,11 +1,93 @@
 ﻿@model IEnumerable<VAC_T.Models.Solicitation>
-
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<VAC_TUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+@inject SignInManager<VAC_TUser> SignInManager
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="Solicitation-profile-pic col-2 d-in">
+                <img class="rounded-circle" src="@Url.Content("~/" + (await UserManager.GetUserAsync(User)).ProfilePicture)" height=" 150" width="150">
+            </div>
+            <div class="Solicitations-title col-10 text-orange d-flex">
+                <h1>MIJN SOLLICITATIES</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+            </div>
+            <div class="Solicitation-table col-10 d-inline-flex">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.JobOffer.Created)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.JobOffer.Name)
+                            </th>
+                            @if (User.IsInRole("ROLE_CANDIDATE")) {
+                                <th>
+                                    @Html.DisplayNameFor(model => model.JobOffer.Company.Name)
+                                </th>
+                            }
+                            @if (User.IsInRole("ROLE_EMPLOYER"))
+                            {
+                                <th>
+                                    @Html.DisplayNameFor(model => model.User.Name)
+                                </th>
+                            }
+                            <th>
+                                @Html.DisplayNameFor(model => model.Selected)
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            var range = item.JobOffer.Name.IndexOf("voor");
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Date)
+                                </td>
+                                <td>
+                                    <a class="text-decoration-none text-orange" asp-controller="JobOffers" asp-action="Details" asp-route-id="@item.JobOffer.Id">
+                                        @item.JobOffer.Name.Substring(0, range)
+                                    </a>
+                                </td>
+                                @if (User.IsInRole("ROLE_CANDIDATE"))
+                                {
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.JobOffer.Company.Name)
+                                    </td>
+                                }
+                                @if (User.IsInRole("ROLE_EMPLOYER"))
+                                {
+                                        <td>
+                                            <a class="text-decoration-none text-orange" asp-controller="Identity" asp-action="Details" asp-route-id="@item.User.Id">
+                                                @Html.DisplayFor(modelItem => item.User.Name)
+                                            </a>
+                                        </td>
+                                }
+                                <td>
+                                    @Html.CheckBoxFor(modelItem => item.Selected)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
 
 <p>
     <a asp-action="Create">Create New</a>

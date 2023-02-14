@@ -15,19 +15,30 @@ namespace VAC_T.Controllers
     {
         private readonly ApplicationDbContext _context;
         private UserManager<VAC_TUser> _userManager;
+        private RoleManager<IdentityRole> _roleManager;
 
-        public SolicitationsController(ApplicationDbContext context, UserManager<VAC_TUser> userManager)
+        public SolicitationsController(ApplicationDbContext context, UserManager<VAC_TUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         // GET: Solicitations
         public async Task<IActionResult> Index()
         {
-              return _context.Solicitation != null ? 
-                          View(await _context.Solicitation.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
+            var user = await _userManager.GetUserAsync(User);
+            if (User.IsInRole("ROLE_CANDIDATE"))
+            {
+                return _context.Solicitation != null ?
+                   View(await _context.Solicitation.Where(x => x.User == user).Include(x => x.JobOffer.Company).ToListAsync()) :
+                   Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
+            } else
+            {
+                return _context.Solicitation != null ?
+                  View(await _context.Solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).ToListAsync()) :
+                  Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
+            }
         }
 
         public async Task<IActionResult> Solicitate(int jobOfferId)
