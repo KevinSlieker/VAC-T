@@ -85,8 +85,22 @@ namespace VAC_T.Controllers
 
         public async Task<IActionResult> UserDetails(string id)
         {
-            return Redirect("/Solicitations/Index");
+            if (id == null || _context.Solicitation == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
         }
+        //    return Redirect("/Solicitations/Index");
+        //}
 
         // GET: Solicitations/Details/5
         public async Task<IActionResult> Details(int? id)

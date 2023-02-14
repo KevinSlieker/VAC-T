@@ -1,0 +1,65 @@
+﻿@model VAC_T.Models.UserDetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Details @Model.Name</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.BirthDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.BirthDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Address)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Address)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Postcode)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Postcode)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Residence)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Residence)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ProfilePicture)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ProfilePicture)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Motivation)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Motivation)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CV)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CV)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-controller="Solicitations" asp-action="Index">Terug</a>
+</div>
