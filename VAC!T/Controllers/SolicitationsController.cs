@@ -36,7 +36,7 @@ namespace VAC_T.Controllers
             } else
             {
                 return _context.Solicitation != null ?
-                  View(await _context.Solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).ToListAsync()) :
+                  View(await _context.Solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).Include(x => x.User).ToListAsync()) :
                   Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
             }
         }
@@ -62,6 +62,30 @@ namespace VAC_T.Controllers
                 await _context.SaveChangesAsync();
                 return Redirect("/JobOffers/Details/" + jobOffer.Id);
             }
+        }
+
+        public async Task<IActionResult> Select(int id)
+        {
+            var solicitation = await _context.Solicitation.FindAsync(id); 
+            if (solicitation == null)
+            {
+                Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
+            }
+            if (solicitation.Selected == true)
+            {
+                solicitation.Selected = false;
+                await _context.SaveChangesAsync();
+            } else
+            {
+                solicitation.Selected = true;
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> UserDetails(string id)
+        {
+            return Redirect("/Solicitations/Index");
         }
 
         // GET: Solicitations/Details/5

@@ -72,14 +72,25 @@
                                 @if (User.IsInRole("ROLE_EMPLOYER"))
                                 {
                                         <td>
-                                            <a class="text-decoration-none text-orange" asp-controller="Identity" asp-action="Details" asp-route-id="@item.User.Id">
+                                            <a class="text-decoration-none text-orange" asp-action="UserDetails" asp-route-id="@item.User.Id">
                                                 @Html.DisplayFor(modelItem => item.User.Name)
                                             </a>
                                         </td>
                                 }
-                                <td>
-                                    @Html.CheckBoxFor(modelItem => item.Selected)
-                                </td>
+                                @if (User.IsInRole("ROLE_CANDIDATE"))
+                                {
+                                    <td>
+                                        @Html.CheckBoxFor(modelItem => item.Selected)
+                                    </td>
+                                }
+                                @if (User.IsInRole("ROLE_EMPLOYER"))
+                                {
+                                    <td>
+                                        <a class="text-decoration-none text-orange" asp-action="Select" asp-route-id="@item.Id">
+                                            @Html.CheckBoxFor(modelItem => item.Selected)
+                                        </a>
+                                    </td>
+                                }
                             </tr>
                         }
                     </tbody>
