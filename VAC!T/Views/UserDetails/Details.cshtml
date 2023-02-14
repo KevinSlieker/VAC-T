@@ -5,61 +5,72 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details @Model.Name</h1>
 
+
+<div class="container-fluid">
+    <div class="row align-items-center">
+        <div class="profile-picture col-2">
+            <img class="rounded-circle" src="@Url.Content(("~/" + Model.ProfilePicture))" height="150" width="150" alt="Profiel afbeelding" />
+        </div>
+        <div class="userdetails-title col-10 d-flex text-orange ">
+            <h1>Details @Model.Name</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-10">
+            <dl class="col-8 row">
+                <dt class = "col-sm-3">
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+                <dd class = "col-sm-9">
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                <dt class = "col-sm-3">
+                    @Html.DisplayNameFor(model => model.BirthDate)
+                </dt>
+                <dd class = "col-sm-9">
+                    @Html.DisplayFor(model => model.BirthDate)
+                </dd>
+                <dt class = "col-sm-3">
+                    @Html.DisplayNameFor(model => model.Address)
+                </dt>
+                <dd class = "col-sm-9">
+                    @Html.DisplayFor(model => model.Address)
+                </dd>
+                <dt class = "col-sm-3">
+                    @Html.DisplayNameFor(model => model.Postcode)
+                </dt>
+                <dd class = "col-sm-9">
+                    @Html.DisplayFor(model => model.Postcode)
+                </dd>
+                <dt class = "col-sm-3">
+                    @Html.DisplayNameFor(model => model.Residence)
+                </dt>
+                <dd class = "col-sm-9">
+                    @Html.DisplayFor(model => model.Residence)
+                </dd>
+            </dl>
+            <div class="userdetails-motivation-title text-orange col-12">
+                <h4>@Html.DisplayNameFor(model => model.Motivation)</h4>
+            </div>
+            <div class="userdetails-motivation col-12">
+                <p>@Html.DisplayFor(model => model.Motivation)</p>
+            </div>
+            <div class="userdetails-CV-title text-orange col-12">
+                <h4>@Html.DisplayNameFor(model => model.CV)</h4>
+            </div>
+            <div class="userdetails-CV col-12">
+                <img class="rounded-circle" src=@Url.Content("~/" + Model.CV) height="150" width="150" alt="CV bestand" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-10">
+            <a class="userdetails-back-button text-decoration-none text-orange bottom-50" asp-controller="Solicitations" asp-action="Index">
+                <h4 class="padding-top-5">Terug</h4>
+            </a>
+        </div>
+    </div>
 <div>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BirthDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BirthDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Postcode)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Postcode)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Residence)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Residence)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProfilePicture)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProfilePicture)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Motivation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Motivation)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CV)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CV)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-controller="Solicitations" asp-action="Index">Terug</a>
-</div>

@@ -120,6 +120,9 @@
 .white-space-pre-wrap {
     white-space: pre-wrap;
 }
+.padding-top-5 {
+    padding-top: 5%;
+}
 
 body {
     margin: 0;
