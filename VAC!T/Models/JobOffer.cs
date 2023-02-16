@@ -10,6 +10,8 @@ namespace VAC_T.Models
 
         [Display(Name = "Vacature")]
         public string Name { get; set; }
+
+        [Display(Name = "beschrijving")]
         public string Description { get; set; }
 
         [DataType(DataType.ImageUrl)]

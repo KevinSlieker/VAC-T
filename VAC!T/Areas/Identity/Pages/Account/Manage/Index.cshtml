@@ -8,80 +8,87 @@
 }
 
 <partial name="_StatusMessage" for="StatusMessage" />
-<div class="row">
-    <div class="profile-picture-position">
-        <a class="navbar-brand" asp-area="" asp-controller="FileUpload" asp-action="EditProfilePicture" asp-route-id="@Model.Id">
-            <img class="rounded-circle" src=@Url.Content("~/" + Model.Input.ProfilePicture) height="150" width="150" alt="Profiel afbeelding" />
-        </a>
+<div class="container-fluid">
+    <div class="row align-items-center">
+        <div class="profile-picture-position col-2">
+            <a class="navbar-brand" asp-area="" asp-controller="FileUpload" asp-action="EditProfilePicture" asp-route-id="@Model.Id">
+                <img class="rounded-circle" src=@Url.Content("~/" + Model.Input.ProfilePicture) height="150" width="150" alt="Profiel afbeelding" />
+            </a>
+        </div>
+        <div class="col-10 text-orange d-flex">
+            <h1>MIJN PROFIEL</h1>
+        </div>
     </div>
-    <div class="col-md-6">
-        <form id="profile-form" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
-                <label asp-for="Username" class="form-label"></label>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Name" class="form-control" placeholder="Please enter your name."/>
-                <label asp-for="Input.Name" class="form-label">Naam</label>
-                <span asp-validation-for="Input.Name" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" placeholder="Please enter your email."/>
-                <label asp-for="Input.Email" class="form-label">Email</label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.BirthDate" class="form-control" placeholder="Please enter your birthdate." />
-                <label asp-for="Input.BirthDate" class="form-label">Geboortedatum</label>
-                <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
-                <label asp-for="Input.PhoneNumber" class="form-label">Telefoonnummer</label>
-                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Address" class="form-control" placeholder="Please enter your adress."/>
-                <label asp-for="Input.Address" class="form-label">Adres</label>
-                <span asp-validation-for="Input.Address" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Postcode" class="form-control" placeholder="Please enter your postcode."/>
-                <label asp-for="Input.Postcode" class="form-label">Postcode</label>
-                <span asp-validation-for=" Input.Postcode" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Residence" class="form-control" placeholder="Please enter your residence." />
-                <label asp-for="Input.Residence" class="form-label">Woonplaats</label>
-                <span asp-validation-for=" Input.Residence" class="text-danger"></span>
-            </div>
-@if (SignInManager.IsSignedIn(User))
-            {
-                if (User.IsInRole("ROLE_CANDIDATE"))
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-10">
+            <form class="row g-2"id="profile-form" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                <div class="form-floating col-12 mb-3 text-orange">
+                    <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
+                    <label asp-for="Username" class="form-label"></label>
+                </div>
+                <div class="form-floating col-12 mb-3 text-orange">
+                    <input asp-for="Input.Name" class="form-control" placeholder="Please enter your name."/>
+                    <label asp-for="Input.Name" class="form-label">Naam</label>
+                    <span asp-validation-for="Input.Name" class="text-danger"></span>
+                </div>
+                <div class="form-floating col-12 mb-3 text-orange">
+                    <input asp-for="Input.Email" class="form-control" placeholder="Please enter your email."/>
+                    <label asp-for="Input.Email" class="form-label">Email</label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-floating col-3 mb-3 text-orange">
+                    <input asp-for="Input.BirthDate" class="form-control" placeholder="Please enter your birthdate." />
+                    <label asp-for="Input.BirthDate" class="form-label">Geboortedatum</label>
+                    <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
+                </div>
+                <div class="form-floating col-9 mb-3 text-orange">
+                    <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
+                    <label asp-for="Input.PhoneNumber" class="form-label">Telefoonnummer</label>
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="form-floating col-12 mb-3 text-orange">
+                    <input asp-for="Input.Address" class="form-control" placeholder="Please enter your adress."/>
+                    <label asp-for="Input.Address" class="form-label">Adres</label>
+                    <span asp-validation-for="Input.Address" class="text-danger"></span>
+                </div>
+                <div class="form-floating col-3 mb-3 text-orange">
+                    <input asp-for="Input.Postcode" class="form-control" placeholder="Please enter your postcode."/>
+                    <label asp-for="Input.Postcode" class="form-label">Postcode</label>
+                    <span asp-validation-for=" Input.Postcode" class="text-danger"></span>
+                </div>
+                <div class="form-floating col-9 mb-3 text-orange">
+                    <input asp-for="Input.Residence" class="form-control" placeholder="Please enter your residence." />
+                    <label asp-for="Input.Residence" class="form-label">Woonplaats</label>
+                    <span asp-validation-for=" Input.Residence" class="text-danger"></span>
+                </div>
+    @if (SignInManager.IsSignedIn(User))
                 {
-                    <div class="form-floating mb-3">
-                        <input asp-for="Input.Motivation" class="form-control" placeholder="Please enter your motivation."/>
-                        <label asp-for="Input.Motivation" class="form-label">Motivatie</label>
-                        <span asp-validation-for="Input.Motivation" class="text-danger"></span>
-                    </div>
-@*                    <div class="form-floating mb-3">
-                        <input asp-for="Input.CV" class="form-control" placeholder="Please enter your CV."/>
-                        <label asp-for="Input.CV" class="form-label">CV</label>
-                        <span asp-validation-for="Input.CV" class="text-danger"></span>
-                    </div>*@
-                    <div class="form-floating mb-3">
-                        <a class="navbar-brand" asp-area="" asp-controller="FileUpload" asp-action="EditCV" asp-route-id="@Model.Id">
-                            <img class="rounded-circle" src=@Url.Content("~/" + Model.Input.CV) height="150" width="150" alt="CV bestand" />
-                        </a>
-                    </div>
+                    if (User.IsInRole("ROLE_CANDIDATE"))
+                    {
+                        <div class="form-floating col-12 mb-3 text-orange">
+                            <textarea asp-for="Input.Motivation" class="form-control" placeholder="Please enter your motivation." rows="3"></textarea>
+                            <label asp-for="Input.Motivation" class="form-label">Motivatie</label>
+                            <span asp-validation-for="Input.Motivation" class="text-danger"></span>
+                        </div>
+    @*                    <div class="form-floating mb-3">
+                            <input asp-for="Input.CV" class="form-control" placeholder="Please enter your CV."/>
+                            <label asp-for="Input.CV" class="form-label">CV</label>
+                            <span asp-validation-for="Input.CV" class="text-danger"></span>
+                        </div>*@
+                        <div class="form-floating col-12 mb-3 text-orange">
+                            <a class="navbar-brand" asp-area="" asp-controller="FileUpload" asp-action="EditCV" asp-route-id="@Model.Id">
+                                <img class="rounded-circle" src=@Url.Content("~/" + Model.Input.CV) height="150" width="150" alt="CV bestand" />
+                            </a>
+                        </div>
+                    }
                 }
-            }
-            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
-        </form>
+                <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Opslaan</button>
+            </form>
+        </div>
     </div>
 </div>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
