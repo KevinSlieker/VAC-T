@@ -49,8 +49,8 @@ namespace VAC_T.Controllers
             {
                 return NotFound();
             }
-
-            var jobOffer = await _context.JobOffer.Include(j => j.Company.JobOffers)
+            var user = await _userManager.GetUserAsync(User);
+            var jobOffer = await _context.JobOffer.Include(j => j.Company.JobOffers).Include(j => j.Solicitations.Where( x => x.User == user))
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (jobOffer == null)
             {

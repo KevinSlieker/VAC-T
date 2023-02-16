@@ -55,7 +55,14 @@
                 </div>
                 <div class="solicitate-now d-flex col-8">
                     <a class="navbar-brand text-orange" asp-area="" asp-controller="Solicitations" asp-action="Solicitate" asp-route-jobOfferId="@Model.Id">
-                        <h4>SOLLICITEER DIRECT</h4>
+                        @if (Model.Solicitations.Count == 0)
+                        {
+                            <h4>SOLLICITEER DIRECT</h4>
+                        } else
+                        {
+                            <h4>ANNULEER SOLLICITATIE</h4>
+                        }
+
                     </a>
                 </div>
             </div>

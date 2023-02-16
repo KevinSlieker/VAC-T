@@ -8,7 +8,7 @@
 }
 
 <partial name="_StatusMessage" for="StatusMessage" />
-<div class="container-fluid">
+
     <div class="row align-items-center">
         <div class="profile-picture-position col-2">
             <a class="navbar-brand" asp-area="" asp-controller="FileUpload" asp-action="EditProfilePicture" asp-route-id="@Model.Id">
@@ -21,7 +21,7 @@
     </div>
     <div class="row">
         <div class="col-2"></div>
-        <div class="col-10">
+        <div class="col-md-7">
             <form class="row g-2"id="profile-form" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div class="form-floating col-12 mb-3 text-orange">
@@ -88,7 +88,7 @@
             </form>
         </div>
     </div>
-</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

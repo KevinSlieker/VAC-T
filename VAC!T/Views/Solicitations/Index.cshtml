@@ -13,8 +13,8 @@
 {
     <div class="container-fluid">
         <div class="row align-items-center">
-            <div class="Solicitation-profile-pic col-2 d-in">
-                <img class="rounded-circle" src="@Url.Content("~/" + (await UserManager.GetUserAsync(User)).ProfilePicture)" height=" 150" width="150">
+            <div class="Solicitation-profile-pic col-2">
+                <img class="rounded-circle" src="@Url.Content("~/" + (await UserManager.GetUserAsync(User)).ProfilePicture)" height=" 150" width="150" alt="Profiel afbeelding">
             </div>
             <div class="Solicitations-title col-10 text-orange d-flex">
                 <h1>MIJN SOLLICITATIES</h1>
