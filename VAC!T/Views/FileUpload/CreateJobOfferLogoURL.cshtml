@@ -1,10 +1,10 @@
 ﻿
-@model VAC_T.Models.CVModel
+@model VAC_T.Models.JobOfferLogoURLModel
 @{
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-        <form enctype="multipart/form-data" method="post" asp-controller="FileUpload" asp-action="UploadJobOfferLogoURL">
+        <form enctype="multipart/form-data" method="post" asp-controller="FileUpload" asp-action="UploadJobOfferLogoURL" asp-route-LanguageName="@Model.LanguageName">
             <dl>
                 <dt>
                     <label>Upload</label>
@@ -13,5 +13,12 @@
                     <input type="file" name="FormFile" id="FormFile">
                 </dd>
             </dl>
-            <input class="btn" type="submit" value="Vacature Logo uploaden" />
+            <div class="form-floating mb-3 text-orange">
+                <input asp-for="LanguageName" class="form-control"/>
+                <label asp-for="LanguageName" class="control-label"></label>
+                <span asp-validation-for="LanguageName" class="text-danger"></span>
+            </div>
+            <div class="">
+                <input class="btn btn-primary" type="submit" value="Vacature Logo uploaden" />
+            </div>
         </form>

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace VAC_T.Models
 {
@@ -16,7 +17,11 @@ namespace VAC_T.Models
 
         [DataType(DataType.ImageUrl)]
         public string LogoURL { get; set; }
+
+        [JsonIgnore]
         public Company Company { get; set; }
+
+        public int CompanyId { get; set; }
 
         [Display(Name = "Niveau")]
         public string Level { get; set; }
@@ -27,6 +32,6 @@ namespace VAC_T.Models
         [DisplayFormat(DataFormatString = "{0:dd-MMMM-yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Datum")]
         public DateTime Created { get; set; } = DateTime.Now;
-        public ICollection<Solicitation> Solicitations { get; set; }
+        public ICollection<Solicitation>? Solicitations { get; set; }
     }
 }

@@ -61,9 +61,14 @@ namespace VAC_T.Controllers
         }
 
         // GET: JobOffers/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var jobOffer = new JobOffer();
+            var user = await _userManager.GetUserAsync(User);
+            var company = _context.Company.Where(x => x.User == user).First();
+            jobOffer.CompanyId = company.Id;
+            jobOffer.Residence = company.Residence;
+            return View(jobOffer);
         }
 
         // POST: JobOffers/Create
@@ -71,10 +76,12 @@ namespace VAC_T.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,LogoURL,Level,Created")] JobOffer jobOffer)
+        public async Task<IActionResult> Create([Bind("Name,Description,LogoURL,Level,CompanyId,Residence")] JobOffer jobOffer)
         {
+            ModelState.Remove("Company");
             if (ModelState.IsValid)
             {
+                jobOffer.Company = await _context.Company.FindAsync(jobOffer.CompanyId);
                 _context.Add(jobOffer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -90,7 +97,7 @@ namespace VAC_T.Controllers
                 return NotFound();
             }
 
-            var jobOffer = await _context.JobOffer.FindAsync(id);
+            var jobOffer = await _context.JobOffer.Include(j => j.Company).FirstOrDefaultAsync(x => x.Id == id);
             if (jobOffer == null)
             {
                 return NotFound();
@@ -103,13 +110,13 @@ namespace VAC_T.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,LogoURL,Level,Created")] JobOffer jobOffer)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,LogoURL,Level,Created,Residence,CompanyId,Company")] JobOffer jobOffer)
         {
             if (id != jobOffer.Id)
             {
                 return NotFound();
             }
-
+            ModelState.Remove("Company");
             if (ModelState.IsValid)
             {
                 try

@@ -127,6 +127,28 @@ namespace VAC_T.Controllers
             return View(new JobOfferLogoURLModel());
         }
 
+        public async Task<IActionResult> UploadJobOfferLogoURL(string LanguageName ,IFormFile FormFile)
+        {
+            if (User.IsInRole("ROLE_EMPLOYER") != true)
+            {
+                return base.Unauthorized("Kan geen Software Logo uploaden");
+            }
+
+            if (FormFile == null)
+            {
+                return View("CreateJobOfferLogoURL", new JobOfferLogoURLModel());
+            }
+            var filename = ContentDispositionHeaderValue.Parse(FormFile.ContentDisposition).FileName.Value;
+            filename = LanguageName + Path.GetExtension(filename);
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "assets", "img", "job_offer", filename);
+            using (System.IO.Stream stream = new FileStream(path, FileMode.Create))
+            {
+                await FormFile.CopyToAsync(stream);
+            }
+
+            return Redirect("/JobOffers/Create");
+        }
+
 
 
             public string TrimQuotes(string text)

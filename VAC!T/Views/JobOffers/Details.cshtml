@@ -67,6 +67,18 @@
                 </div>
             </div>
         }
+        if (User.IsInRole("ROLE_EMPLOYER"))
+        {
+            <div class="row Solicitate align-items-center">
+                <div class="solicitate-arrow col-2">
+                </div>
+                <div class="solicitate-now d-flex col-8">
+                    <a class="navbar-brand text-orange" asp-area="" asp-action="Edit" asp-route-id="@Model.Id">
+                        <h4>EDIT VACATURE</h4>
+                    </a>
+                </div>
+            </div>
+        }
     }
     <div class="row">
         <div class="col-2">
