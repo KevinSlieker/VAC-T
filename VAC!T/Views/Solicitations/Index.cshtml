@@ -53,14 +53,21 @@
                     <tbody>
                         @foreach (var item in Model)
                         {
-                            var range = item.JobOffer.Name.IndexOf("voor");
                             <tr>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Date)
                                 </td>
                                 <td>
                                     <a class="text-decoration-none text-orange" asp-controller="JobOffers" asp-action="Details" asp-route-id="@item.JobOffer.Id">
-                                        @item.JobOffer.Name.Substring(0, range)
+                                        @if(item.JobOffer.Name.Contains("voor"))
+                                        {
+                                            var range = item.JobOffer.Name.IndexOf("voor");
+                                            @item.JobOffer.Name.Substring(0, range)
+                                        } else
+                                        {
+                                            var range = item.JobOffer.Name.Length;
+                                            @item.JobOffer.Name.Substring(0, range)
+                                        }
                                     </a>
                                 </td>
                                 @if (User.IsInRole("ROLE_CANDIDATE"))
