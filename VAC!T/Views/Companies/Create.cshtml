@@ -5,48 +5,54 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<div class="text-orange">
+    <h1>Bedrijf Toevoegen</h1>
+</div>
 
-<h4>Company</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-7">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3 text-orange">
                 <input asp-for="Name" class="form-control" />
+                <label asp-for="Name" class="control-label"></label>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-floating mb-3 text-orange">
+                <textarea asp-for="Description" class="form-control"></textarea>
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="LogoURL" class="control-label"></label>
-                <input asp-for="LogoURL" class="form-control" />
-                <span asp-validation-for="LogoURL" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WebsiteURL" class="control-label"></label>
+            <div class="form-floating mb-3 text-orange">
                 <input asp-for="WebsiteURL" class="form-control" />
+                <label asp-for="WebsiteURL" class="control-label"></label>
                 <span asp-validation-for="WebsiteURL" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
+            <div class="form-floating mb-3 text-orange">
                 <input asp-for="Address" class="form-control" />
+                <label asp-for="Address" class="control-label"></label>
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            <div class="form-floating mb-3 text-orange">
+                <input asp-for="Postcode" class="form-control" />
+                <label asp-for="Postcode" class="control-label"></label>
+                <span asp-validation-for="Postcode" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3 text-orange">
+                <input asp-for="Residence" class="form-control" />
+                <label asp-for="Residence" class="control-label"></label>
+                <span asp-validation-for="Residence" class="text-danger"></span>
+            </div>
+            <div class="form-floating padding-top-5">
+                <input type="submit" value="Volgende" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Terug</a>
 </div>
 
 @section Scripts {
