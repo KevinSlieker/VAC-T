@@ -129,7 +129,7 @@ namespace VAC_T.Controllers
 
         public async Task<IActionResult> UploadJobOfferLogoURL(string LanguageName ,IFormFile FormFile)
         {
-            if (User.IsInRole("ROLE_EMPLOYER") != true)
+            if (!(User.IsInRole("ROLE_EMPLOYER") || User.IsInRole("ROLE_ADMIN")))
             {
                 return base.Unauthorized("Kan geen Software Logo uploaden");
             }

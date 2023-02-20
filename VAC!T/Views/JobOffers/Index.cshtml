@@ -9,7 +9,8 @@
 }
 
 @if (SignInManager.IsSignedIn(User))
-{ if (User.IsInRole("ROLE_EMPLOYER"))
+{
+    if (User.IsInRole("ROLE_EMPLOYER"))
     {
         <p>
             <a class="text-decoration-none text-orange" asp-action="Create">

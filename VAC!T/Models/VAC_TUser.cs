@@ -10,7 +10,7 @@ namespace VAC_T.Models;
 // Add profile data for application users by adding properties to the VAC_TUser class
 public class VAC_TUser : IdentityUser
 {
-
+    [Display(Name = "Naam")]
     public string? Name { get; set; }
 
     [DataType(DataType.Date)]

@@ -33,7 +33,13 @@ namespace VAC_T.Controllers
                 return _context.Solicitation != null ?
                    View(await _context.Solicitation.Where(x => x.User == user).Include(x => x.JobOffer.Company).ToListAsync()) :
                    Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
-            } else
+            } if (User.IsInRole("ROLE_ADMIN")) 
+            {
+                return _context.Solicitation != null ?
+                  View(await _context.Solicitation.Include(x => x.JobOffer.Company).Include(x => x.User).ToListAsync()) :
+                  Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
+            } 
+            else
             {
                 return _context.Solicitation != null ?
                   View(await _context.Solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).Include(x => x.User).ToListAsync()) :
