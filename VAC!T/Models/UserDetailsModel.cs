@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VAC_T.Models
 {
+    [NotMapped]
     public class UserDetailsModel
     {
         public string Id { get; set; }
