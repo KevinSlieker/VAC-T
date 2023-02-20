@@ -69,7 +69,7 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
             public string Email { get; set; }
 
             [DataType(DataType.Date)]
-            public DateTime BirthDate { get; set; }
+            public DateTime? BirthDate { get; set; }
 
             public string Address { get; set; }
 
@@ -114,7 +114,7 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
                 CV = cV,
                 Postcode = postcode,
                 Residence = residence,
-                BirthDate = (DateTime)birthDate
+                BirthDate = birthDate
 
             };
         }
@@ -163,6 +163,7 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
                 // way around to confirm the email.
                 user.EmailConfirmed = true;
                 await _userManager.UpdateAsync(user);
+                await _userManager.SetUserNameAsync(user, Input.Email);
                 if (!setEmailResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set email.";
