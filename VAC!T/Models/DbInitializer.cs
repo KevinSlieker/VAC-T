@@ -31,10 +31,6 @@ namespace VAC_T.Models
                                 ConcurrencyStamp = "3"
                             });
                         context.SaveChanges();
-                    }
-
-                    if(!context.Users.Any(i => i.Name == "Admin"))
-                    {
 
                         var userAdmin = new VAC_TUser
                         {
