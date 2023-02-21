@@ -9,8 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\assets\img\company\default.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\assets\bebasneue-webfont.woff" />
     <None Include="wwwroot\assets\bebasneue-webfont.woff2" />
+    <None Include="wwwroot\assets\img\company\default.png" />
     <None Include="wwwroot\assets\roboto-condensed-webfont.woff" />
     <None Include="wwwroot\assets\roboto-condensed-webfont.woff2" />
     <None Include="wwwroot\assets\vacit-logo-wit.png" />

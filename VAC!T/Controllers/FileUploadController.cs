@@ -17,11 +17,13 @@ namespace VAC_T.Controllers
     {
         private IWebHostEnvironment _hostingEnv;
         private UserManager<VAC_TUser> _userManager;
+        private readonly ApplicationDbContext _context;
 
-        public FileUploadController(IWebHostEnvironment hostingEnv, UserManager<VAC_TUser> userManager)
+        public FileUploadController(IWebHostEnvironment hostingEnv, UserManager<VAC_TUser> userManager, ApplicationDbContext context)
         {
             _hostingEnv = hostingEnv;
             _userManager = userManager;
+            _context = context;
         }
 
         public async Task<IActionResult> EditProfilePicture (string id)
@@ -149,9 +151,60 @@ namespace VAC_T.Controllers
             return Redirect("/JobOffers/Create");
         }
 
+        public async Task<IActionResult> EditCompanyLogo(Company company)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (company == null)
+            {
+                return base.NotFound($"Unable to load company with ID '{company.Id}'.");
+            }
+            if (company.User != user && !User.IsInRole("ROLE_ADMIN") || !User.IsInRole("ROLE_ADMIN"))
+            {
+                return base.Unauthorized("Kan Bedrijf Logo niet updaten");
+            }
+            return View(new CompanyLogoModel() { Id = company.Id, LogoURL = company.LogoURL });
+
+        }
+
+        public async Task<IActionResult> UploadCompanyLogo(int id, IFormFile FormFile)
+        {
+            var company = _context.Company.Find(id);
+            var user = await _userManager.GetUserAsync(User);
+            if (company == null)
+            {
+                return base.NotFound($"Unable to load company with ID '{id}'.");
+            }
+            if (company.User != user && !User.IsInRole("ROLE_ADMIN") || !User.IsInRole("ROLE_ADMIN"))
+            {
+                return base.Unauthorized("Kan Bedrijf Logo niet uploaden");
+            }
+
+            if (FormFile == null)
+            {
+                return View("CreateJobOfferLogoURL", new JobOfferLogoURLModel());
+            }
+            var filename = ContentDispositionHeaderValue.Parse(FormFile.ContentDisposition).FileName.Value;
+            filename = company.Id + Path.GetExtension(filename);
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "assets", "img", "company", filename);
+            using (System.IO.Stream stream = new FileStream(path, FileMode.Create))
+            {
+                await FormFile.CopyToAsync(stream);
+            }
+
+            company.LogoURL = Path.Combine("assets", "img", "compnay", filename);
+            await _context.SaveChangesAsync();
+
+            if (User.IsInRole("ROLE_ADMIN"))
+            {
+                return Redirect("/Companies/Index");
+            }
+
+            return Redirect("/Companies/Details/" + company.Id);
+        }
 
 
-            public string TrimQuotes(string text)
+
+        public string TrimQuotes(string text)
         {
             return text.Replace("\"", "").Trim();
         }

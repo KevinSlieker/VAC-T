@@ -1,0 +1,18 @@
+﻿@model VAC_T.Models.CompanyLogoModel;
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<img class="rounded-circle" src=@Url.Content("~/" + Model.LogoURL) height="150" width="150" alt="Bedrijfs Logo" />
+<form enctype="multipart/form-data" method="post" asp-controller="FileUpload" asp-action="UploadCompanyLogo" asp-route-id="@Model.Id">
+    <dl>
+        <dt>
+            <label>Upload</label>
+        </dt>
+        <dd>
+            <input type="file" name="FormFile" id="FormFile">
+        </dd>
+    </dl>
+    <input class="btn btn-primary" type="submit" value="BedrijfsLogo bijwerken/oploaden" />
+</form>

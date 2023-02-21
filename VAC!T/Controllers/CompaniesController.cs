@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace VAC_T.Controllers
     public class CompaniesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private UserManager<VAC_TUser> _userManager;
 
-        public CompaniesController(ApplicationDbContext context)
+        public CompaniesController(ApplicationDbContext context, UserManager<VAC_TUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Companies
@@ -48,7 +51,9 @@ namespace VAC_T.Controllers
         // GET: Companies/Create
         public IActionResult Create()
         {
-            return View();
+            var company = new Company();
+            company.LogoURL = "assets/img/company/default.png";
+            return View(company);
         }
 
         // POST: Companies/Create
@@ -56,13 +61,30 @@ namespace VAC_T.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,WebsiteURL,Address")] Company company)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,LogoURL,WebsiteURL,Address,Postcode,Residence")] Company company)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(company);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var userCompany = new VAC_TUser
+                {
+                    UserName = "Employer" + company.Name + "@mail.nl",
+                    Email = "Employer" + company.Name + "@mail.nl",
+                    EmailConfirmed = true,
+                    PhoneNumber = "123456798",
+                    Name = "Employer" + company.Name,
+                    BirthDate = DateTime.Now,
+                    ProfilePicture = "assets/img/user/profile.png"
+                };
+                var result = await _userManager.CreateAsync(userCompany, "Employer" + company.Name + "123!");
+                await _userManager.AddToRoleAsync(userCompany, "ROLE_EMPLOYER");
+                _context.SaveChanges();
+
+                company.User = userCompany;
+                _context.SaveChanges();
+
+                return RedirectToAction("EditCompanyLogo", "FileUpload", company);
             }
             return View(company);
         }
