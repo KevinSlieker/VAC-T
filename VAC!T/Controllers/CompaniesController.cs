@@ -84,9 +84,8 @@ namespace VAC_T.Controllers
                 company.User = userCompany;
                 _context.SaveChanges();
                 company = _context.Company.Where(c => c.Name== company.Name).FirstOrDefault();
-                var id = company.Id;
-                var bcs = "test";
-                return RedirectToAction("EditCompanyLogo", "FileUpload", id);
+                int id = company.Id;
+                return RedirectToAction("EditCompanyLogo", "FileUpload", new { id });
             }
             return View(company);
         }
