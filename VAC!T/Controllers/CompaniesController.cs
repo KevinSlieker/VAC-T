@@ -167,9 +167,15 @@ namespace VAC_T.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Company'  is null.");
             }
-            var company = await _context.Company.FindAsync(id);
+            var company = await _context.Company.Include(c => c.User).FirstOrDefaultAsync(c => c.Id == id);
             if (company != null)
             {
+                var userId = company.User.Id;
+                var user = await _context.Users.FindAsync(userId);
+                if (user != null)
+                {
+                    _context.Users.Remove(user);
+                }
                 _context.Company.Remove(company);
             }
             
