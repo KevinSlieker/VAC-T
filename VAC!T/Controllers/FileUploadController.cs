@@ -151,12 +151,13 @@ namespace VAC_T.Controllers
             return Redirect("/JobOffers/Create");
         }
 
-        public async Task<IActionResult> EditCompanyLogo(Company company)
+        public async Task<IActionResult> EditCompanyLogo(int id)
         {
+            var company = await _context.Company.FindAsync(id);
             var user = await _userManager.GetUserAsync(User);
             if (company == null)
             {
-                return base.NotFound($"Unable to load company with ID '{company.Id}'.");
+                return base.NotFound($"Unable to load company with ID '{id}'.");
             }
             if (company.User != user && !User.IsInRole("ROLE_ADMIN") || !User.IsInRole("ROLE_ADMIN"))
             {
@@ -181,7 +182,7 @@ namespace VAC_T.Controllers
 
             if (FormFile == null)
             {
-                return View("CreateJobOfferLogoURL", new JobOfferLogoURLModel());
+                return View("EditCompanyLogo", new CompanyLogoModel() { Id = company.Id, LogoURL = company.LogoURL });
             }
             var filename = ContentDispositionHeaderValue.Parse(FormFile.ContentDisposition).FileName.Value;
             filename = company.Id + Path.GetExtension(filename);
@@ -191,7 +192,7 @@ namespace VAC_T.Controllers
                 await FormFile.CopyToAsync(stream);
             }
 
-            company.LogoURL = Path.Combine("assets", "img", "compnay", filename);
+            company.LogoURL = Path.Combine("assets", "img", "company", filename);
             await _context.SaveChangesAsync();
 
             if (User.IsInRole("ROLE_ADMIN"))

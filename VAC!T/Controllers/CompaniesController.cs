@@ -69,22 +69,24 @@ namespace VAC_T.Controllers
                 await _context.SaveChangesAsync();
                 var userCompany = new VAC_TUser
                 {
-                    UserName = "Employer" + company.Name + "@mail.nl",
-                    Email = "Employer" + company.Name + "@mail.nl",
+                    UserName = "Employer" + company.Name.Replace(" ","") + "@mail.nl",
+                    Email = "Employer" + company.Name.Replace(" ", "") + "@mail.nl",
                     EmailConfirmed = true,
                     PhoneNumber = "123456798",
-                    Name = "Employer" + company.Name,
+                    Name = "Employer" + company.Name.Replace(" ", ""),
                     BirthDate = DateTime.Now,
                     ProfilePicture = "assets/img/user/profile.png"
                 };
-                var result = await _userManager.CreateAsync(userCompany, "Employer" + company.Name + "123!");
+                var result = await _userManager.CreateAsync(userCompany, "Employer" + company.Name.Replace(" ", "") + "123!");
                 await _userManager.AddToRoleAsync(userCompany, "ROLE_EMPLOYER");
                 _context.SaveChanges();
 
                 company.User = userCompany;
                 _context.SaveChanges();
-
-                return RedirectToAction("EditCompanyLogo", "FileUpload", company);
+                company = _context.Company.Where(c => c.Name== company.Name).FirstOrDefault();
+                var id = company.Id;
+                var bcs = "test";
+                return RedirectToAction("EditCompanyLogo", "FileUpload", id);
             }
             return View(company);
         }
@@ -110,13 +112,13 @@ namespace VAC_T.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,LogoURL,WebsiteURL,Address")] Company company)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,LogoURL,WebsiteURL,Address,Postcode,Residence")] Company company)
         {
             if (id != company.Id)
             {
                 return NotFound();
             }
-
+            ModelState.Remove("User");
             if (ModelState.IsValid)
             {
                 try
