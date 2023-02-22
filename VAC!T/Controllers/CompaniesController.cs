@@ -48,6 +48,25 @@ namespace VAC_T.Controllers
             return View(company);
         }
 
+        public async Task<IActionResult> DetailsForEmployer()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var id = _context.Company.Include(x => x.User).Where(x => x.User == user).FirstOrDefault().Id;
+            if (id == null || _context.Company == null)
+            {
+                return NotFound();
+            }
+
+            var company = await _context.Company
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (company == null)
+            {
+                return NotFound();
+            }
+
+            return View("Details", company);
+        }
+
         // GET: Companies/Create
         public IActionResult Create()
         {
