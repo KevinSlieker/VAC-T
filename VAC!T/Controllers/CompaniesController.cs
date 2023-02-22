@@ -171,11 +171,14 @@ namespace VAC_T.Controllers
             var company = await _context.Company.Include(c => c.User).FirstOrDefaultAsync(c => c.Id == id);
             if (company != null)
             {
-                var userId = company.User.Id;
-                var user = await _context.Users.FindAsync(userId);
-                if (user != null)
+                if (company.User != null)
                 {
-                    _context.Users.Remove(user);
+                    var userId = company.User.Id;
+                    var user = await _context.Users.FindAsync(userId);
+                    if (user != null)
+                    {
+                        _context.Users.Remove(user);
+                    }
                 }
                 _context.Company.Remove(company);
             }
