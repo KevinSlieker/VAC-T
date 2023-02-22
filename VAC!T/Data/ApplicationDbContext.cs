@@ -15,6 +15,14 @@ namespace VAC_T.Data
         public DbSet<VAC_T.Models.Solicitation> Solicitation { get; set; } = default!;
         public DbSet<VAC_T.Models.UserDetailsModel> UserDetailsModel { get; set; } = default!;
 
-
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Company>()
+                .HasOne(c => c.User)
+                .WithOne(u => u.Company)
+                .HasForeignKey("Company", "UserId")
+                .OnDelete(DeleteBehavior.SetNull);
+        }
     }
 }

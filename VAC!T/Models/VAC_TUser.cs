@@ -31,6 +31,8 @@ public class VAC_TUser : IdentityUser
     [DataType(DataType.Url)]
     public string? CV { get; set; }
 
+    public Company? Company { get; set; }
+
     public ICollection<Solicitation> Solicitations { get; set; }
 
 }
