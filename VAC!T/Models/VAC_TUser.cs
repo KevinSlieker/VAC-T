@@ -14,18 +14,22 @@ public class VAC_TUser : IdentityUser
     public string? Name { get; set; }
 
     [DataType(DataType.Date)]
+    [Display(Name = "Geboortedatum")]
     public DateTime? BirthDate { get; set; }
 
+    [Display(Name = "Adres")]
     public string? Address { get; set; }
 
     [DataType(DataType.PostalCode)]
     public string? Postcode { get; set; }
 
+    [Display(Name = "Plaats")]
     public string? Residence { get; set; }
 
     [DataType(DataType.ImageUrl)]
     public string? ProfilePicture { get; set; }
 
+    [Display(Name = "Motivatie")]
     public string? Motivation { get; set; }
 
     [DataType(DataType.Url)]

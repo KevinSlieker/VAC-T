@@ -48,13 +48,61 @@ namespace VAC_T.Controllers
                 Residence = user.Residence,
                 ProfilePicture = user.ProfilePicture,
                 Motivation = user.Motivation,
-                CV = user.CV
+                CV = user.CV,
+                Role = (await _userManager.GetRolesAsync(user)).First(),
                 });
         }
 
         private bool UserDetailsModelExists(string id)
         {
           return (_context.UserDetailsModel?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            if (!User.IsInRole("ROLE_ADMIN"))
+            {
+                return Unauthorized();
+            }
+
+            return _context.Users != null ?
+                          View(await _context.Users.ToListAsync()) :
+                          Problem("Entity set 'ApplicationDbContext.Company'  is null.");
+        }
+
+        public async Task<IActionResult> Delete(string? id)
+        {
+            if (id == null || _context.Users == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id)
+        {
+            if (_context.Users == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Users'  is null.");
+            }
+            var user = await _context.Users.FirstOrDefaultAsync(c => c.Id == id);
+            if (user != null)
+            {
+                _context.Users.Remove(user);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

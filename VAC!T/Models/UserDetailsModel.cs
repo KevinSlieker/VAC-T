@@ -40,5 +40,7 @@ namespace VAC_T.Models
 
         [DataType(DataType.Url)]
         public string? CV { get; set; }
+
+        public string Role { get; set; }
     }
 }

@@ -1,0 +1,44 @@
+﻿@model IEnumerable<VAC_T.Models.VAC_TUser>
+
+@{
+    ViewData["Title"] = "Users";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="text-orange">
+<h1>Users</h1>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                Opties
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    <a class="text-decoration-none text-orange"  asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a class="text-decoration-none text-orange"  asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a class="text-decoration-none text-orange" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

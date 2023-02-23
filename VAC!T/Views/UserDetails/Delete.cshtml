@@ -1,0 +1,88 @@
+﻿@model VAC_T.Models.VAC_TUser
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<VAC_TUser> UserManager
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string Role = (await UserManager.GetRolesAsync(Model)).First();
+}
+
+<h1>Delete</h1>
+
+<h3>Weet je zeker dat je deze user wil verwijderen?</h3>
+<div>
+    <hr />
+    <dl class="col-8 row">
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class="col-sm-3">
+            Telefoonnummer
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.PhoneNumber)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.BirthDate)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.BirthDate)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Address)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Address)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Postcode)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Postcode)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Residence)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Residence)
+        </dd>
+        <dt class="col-sm-3">
+            Role
+        </dt>
+        <dd class="col-sm-9">
+            @Role
+        </dd>
+    </dl>
+    @if (Role == "ROLE_CANDIDATE")
+    {
+        <div class="userdetails-motivation-title text-orange col-12">
+            <h4>@Html.DisplayNameFor(model => model.Motivation)</h4>
+        </div>
+        <div class="userdetails-motivation col-12">
+            <p>@Html.DisplayFor(model => model.Motivation)</p>
+        </div>
+        <div class="userdetails-CV-title text-orange col-12">
+            <h4>@Html.DisplayNameFor(model => model.CV)</h4>
+        </div>
+        <div class="userdetails-CV col-12">
+            <img class="rounded-circle" src=@Url.Content("~/" + Model.CV) height="150" width="150" alt="CV bestand" />
+        </div>
+    }
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index">
+            <input type="button" value="Terug naar users" class="btn btn-primary" />
+        </a>
+    </form>
+</div>

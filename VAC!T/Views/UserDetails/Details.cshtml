@@ -63,26 +63,21 @@
                     @Html.DisplayFor(model => model.Residence)
                 </dd>
             </dl>
-            <div class="userdetails-motivation-title text-orange col-12">
-                <h4>@Html.DisplayNameFor(model => model.Motivation)</h4>
-            </div>
-            <div class="userdetails-motivation col-12">
-                <p>@Html.DisplayFor(model => model.Motivation)</p>
-            </div>
-            <div class="userdetails-CV-title text-orange col-12">
-                <h4>@Html.DisplayNameFor(model => model.CV)</h4>
-            </div>
-            <div class="userdetails-CV col-12">
-                <img class="rounded-circle" src=@Url.Content("~/" + Model.CV) height="150" width="150" alt="CV bestand" />
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-2"></div>
-        <div class="col-10">
-            <a class="userdetails-back-button text-decoration-none text-orange bottom-50" asp-controller="Solicitations" asp-action="Index">
-                <h4 class="padding-top-5">Terug</h4>
-            </a>
+            @if (Model.Role == "ROLE_CANDIDATE")
+            {
+                <div class="userdetails-motivation-title text-orange col-12">
+                    <h4>@Html.DisplayNameFor(model => model.Motivation)</h4>
+                </div>
+                <div class="userdetails-motivation col-12">
+                    <p>@Html.DisplayFor(model => model.Motivation)</p>
+                </div>
+                <div class="userdetails-CV-title text-orange col-12">
+                    <h4>@Html.DisplayNameFor(model => model.CV)</h4>
+                </div>
+                <div class="userdetails-CV col-12">
+                    <img class="rounded-circle" src=@Url.Content("~/" + Model.CV) height="150" width="150" alt="CV bestand" />
+                </div>
+            }
         </div>
     </div>
 </div>
