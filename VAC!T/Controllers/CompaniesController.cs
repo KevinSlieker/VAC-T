@@ -38,7 +38,7 @@ namespace VAC_T.Controllers
                 return NotFound();
             }
 
-            var company = await _context.Company
+            var company = await _context.Company.Include(c => c.JobOffers)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (company == null)
             {
@@ -57,7 +57,7 @@ namespace VAC_T.Controllers
                 return NotFound();
             }
 
-            var company = await _context.Company
+            var company = await _context.Company.Include(c => c.JobOffers)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (company == null)
             {

@@ -74,7 +74,9 @@
                                 @if (User.IsInRole("ROLE_CANDIDATE") || User.IsInRole("ROLE_ADMIN"))
                                 {
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.JobOffer.Company.Name)
+                                        <a class="text-decoration-none text-orange" asp-controller="Companies" asp-action="Details" asp-route-id="@item.JobOffer.Company.Id">
+                                            @Html.DisplayFor(modelItem => item.JobOffer.Company.Name)
+                                        </a>
                                     </td>
                                 }
                                 @if (User.IsInRole("ROLE_EMPLOYER") || User.IsInRole("ROLE_ADMIN"))

@@ -57,12 +57,71 @@
             </div>
         </div>
     </div>
+    @if (User.IsInRole("ROLE_EMPLOYER") || User.IsInRole("ROLE_ADMIN"))
+    {
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-10">
+                <a class="companydetails-edit-button text-decoration-none text-orange bottom-50" asp-action="Edit" asp-route-id="@Model?.Id">
+                    <h4 class="padding-top-5">Edit</h4>
+                </a>
+            </div>
+        </div>
+    }
     <div class="row">
-        <div class="col-2"></div>
+        <div class="col-2">
+        </div>
         <div class="col-10">
-            <a class="companydetails-edit-button text-decoration-none text-orange bottom-50" asp-action="Edit" asp-route-id="@Model?.Id">
-                <h4 class="padding-top-5">Edit</h4>
-            </a>
+            <div class="company-details-joboffer white-space-pre-wrap d-inline-flex">
+                <h5>Vacatures van</h5>
+                <div class="jobOffer-details-company-name text-orange d-inline-flex">
+                    <h5> @Model.Name</h5>
+                </div>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.JobOffers.FirstOrDefault().Created)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.JobOffers.FirstOrDefault().Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.JobOffers.FirstOrDefault().Level)
+                        </th>
+                        @if (User.IsInRole("ROLE_EMPLOYER") || User.IsInRole("ROLE_ADMIN"))
+                        {
+                            <th>
+                                Opties
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.JobOffers)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Created)
+                            </td>
+                            <td>
+                                <a class="text-decoration-none text-orange" asp-controller="JobOffers" asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Name)</a>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Level)
+                            </td>
+                            @if (User.IsInRole("ROLE_EMPLOYER") || User.IsInRole("ROLE_ADMIN"))
+                            {
+                                <td>
+                                    <a class="text-decoration-none text-orange" asp-controller="JobOffers" asp-action="Edit" asp-route-id="@item.Id">Edit</a> | 
+                                    <a class="text-decoration-none text-orange" asp-controller="JobOffers" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

@@ -89,9 +89,9 @@
         <div class="col-10">
             <div class="jobOffer-details-company white-space-pre-wrap d-inline-flex">
                 <h5>Meer Vacatures van</h5>
-                <div class="jobOffer-details-company-name text-orange d-inline-flex">
+                <a class="jobOffer-details-company-name text-orange d-inline-flex text-decoration-none" asp-area="" asp-controller="Companies" asp-action="Details" asp-route-id="@Model.Company.Id">
                     <h5> @Model.Company.Name</h5>
-                </div>
+                </a>
             </div>
             <table class="table">
                 <thead>
