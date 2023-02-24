@@ -20,6 +20,42 @@
                 <h1>MIJN SOLLICITATIES</h1>
             </div>
         </div>
+        
+        <div class="row align-items-center">
+            <div class="col-2"></div>
+            <div class="form-action col-10">
+                <form class="row" asp-action="Index" method="get">
+                    <p>
+                        <div class="col-4">
+                            Vacature: <input type="text" name="searchName" value="@ViewData["searchName"]" />
+                        </div>
+                        @if (User.IsInRole("ROLE_CANDIDATE") || User.IsInRole("ROLE_ADMIN"))
+                        {
+                            <div class="col-4">
+                                Bedrijf: <input type="text" name="searchCompany" value="@ViewData["searchCompany"]" />
+                            </div>
+                        }
+                        @if (User.IsInRole("ROLE_EMPLOYER") || User.IsInRole("ROLE_ADMIN"))
+                        {
+                            <div class="col-4">
+                                Naam kandidaat: <input type="text" name="searchCandidate" value="@ViewData["searchCandidate"]" />
+                            </div>
+                        }
+                        <div class="col-4">
+                            Uitgenodigd: Ja:<input type="checkbox" name="searchSelectedYes" value="true" checked="@ViewData["searchSelectedYes"]" />
+                            Nee:<input type="checkbox" name="searchSelectedNo" value="true" checked="@ViewData["searchSelectedNo"]" />
+                        </div>
+                        <div class="col-3">
+                            <input type="submit" value="Filter" class="btn btn-primary" /> | 
+                            <a asp-action="index">
+                                <input type="button" value="Clear" class="btn btn-primary" />
+                            </a>
+                        </div>
+                    </p>
+                    <hr />
+                </form>
+            </div>
+        </div>
 
         <div class="row">
             <div class="col-2">
@@ -43,7 +79,7 @@
                             @if (User.IsInRole("ROLE_EMPLOYER") || User.IsInRole("ROLE_ADMIN"))
                             {
                                 <th>
-                                    @Html.DisplayNameFor(model => model.User.Name)
+                                    @Html.DisplayNameFor(model => model.User.Name) + kandidaat
                                 </th>
                             }
                             <th>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -25,24 +26,57 @@ namespace VAC_T.Controllers
         }
 
         // GET: Solicitations
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchName, string searchCompany, string searchCandidate, bool searchSelectedYes, bool searchSelectedNo)
         {
+            ViewData["searchName"] = searchName;
+            ViewData["searchCompany"] = searchCompany;
+            ViewData["searchCandidate"] = searchCandidate;
+            ViewData["searchSelectedYes"] = searchSelectedYes;
+            ViewData["searchSelectedNo"] = searchSelectedNo;
+
+            var solicitation = from s in _context.Solicitation select s;
+
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                solicitation = solicitation.Where(s => s.JobOffer.Name.Contains(searchName));
+            }
+
+            if (!string.IsNullOrEmpty(searchCompany))
+            {
+                solicitation = solicitation.Where(s => s.JobOffer.Company.Name.Contains(searchCompany));
+            }
+
+            if (!string.IsNullOrEmpty(searchCandidate))
+            {
+                solicitation = solicitation.Where(s => s.User.Name.Contains(searchCandidate));
+            }
+
+            if (searchSelectedYes == true)
+            {
+                solicitation = solicitation.Where(s => s.Selected == true);
+            }
+
+            if (searchSelectedNo == true)
+            {
+                solicitation = solicitation.Where(s => s.Selected == false);
+            }
+
             var user = await _userManager.GetUserAsync(User);
             if (User.IsInRole("ROLE_CANDIDATE"))
             {
                 return _context.Solicitation != null ?
-                   View(await _context.Solicitation.Where(x => x.User == user).Include(x => x.JobOffer.Company).ToListAsync()) :
+                   View(await solicitation.Where(x => x.User == user).Include(x => x.JobOffer.Company).ToListAsync()) :
                    Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
             } if (User.IsInRole("ROLE_ADMIN")) 
             {
                 return _context.Solicitation != null ?
-                  View(await _context.Solicitation.Include(x => x.JobOffer.Company).Include(x => x.User).ToListAsync()) :
+                  View(await solicitation.Include(x => x.JobOffer.Company).Include(x => x.User).ToListAsync()) :
                   Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
             } 
             else
             {
                 return _context.Solicitation != null ?
-                  View(await _context.Solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).Include(x => x.User).ToListAsync()) :
+                  View(await solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).Include(x => x.User).ToListAsync()) :
                   Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
             }
         }
