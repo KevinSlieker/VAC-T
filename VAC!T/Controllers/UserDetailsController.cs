@@ -58,16 +58,31 @@ namespace VAC_T.Controllers
           return (_context.UserDetailsModel?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchEmail, string searchName)
         {
             if (!User.IsInRole("ROLE_ADMIN"))
             {
                 return Unauthorized();
             }
 
+            ViewData["searchEmail"] = searchEmail;
+            ViewData["searchName"] = searchName;
+
+            var users = from s in _context.Users select s;
+            
+            if (!string.IsNullOrEmpty(searchEmail))
+            {
+                users = users.Where(u => u.Email!.Contains(searchEmail));
+            }
+
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                users = users.Where(u => u.Name!.Contains(searchName));
+            }
+
             return _context.Users != null ?
-                          View(await _context.Users.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Company'  is null.");
+                          View(await users.ToListAsync()) :
+                          Problem("Entity set 'ApplicationDbContext.Users'  is null.");
         }
 
         public async Task<IActionResult> Delete(string? id)
