@@ -19,7 +19,10 @@
             Email: <input type="text" name="searchEmail" value="@ViewData["searchEmail"]" />
             </div>
             <div class="col-3 d-flex">
-                <input type="submit" value="Filter" class="btn btn-primary"/>
+                <input type="submit" value="Filter" class="btn btn-primary"/> | 
+                <a asp-action="index">
+                    <input type="button" value="Clear" class="btn btn-primary" />
+                </a>
             </div>
         </p>
         <hr />

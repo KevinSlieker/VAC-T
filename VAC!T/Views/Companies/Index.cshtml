@@ -12,6 +12,23 @@
     <a class="text-decoration-none text-orange" asp-action="Create">Bedrijf toevoegen</a>
 </p>
 
+<form class="container-fluid" asp-action="Index" method="get">
+    <div class="form-action row align-items-center">
+        <p>
+            <div class="col-3">
+                Bedrijf: <input type="text" name="searchName" value="@ViewData["searchName"]" />
+            </div>
+            <div class="col-3 d-flex">
+                <input type="submit" value="Filter" class="btn btn-primary" /> | 
+                <a asp-action="index">
+                    <input type="button" value="Clear" class="btn btn-primary" />
+                </a>
+            </div>
+        </p>
+        <hr />
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>

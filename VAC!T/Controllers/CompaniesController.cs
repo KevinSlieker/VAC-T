@@ -23,10 +23,17 @@ namespace VAC_T.Controllers
         }
 
         // GET: Companies
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchName)
         {
+            ViewData["searchName"] = searchName;
+            var company = from c in _context.Company select c;
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                company = company.Where(x => x.Name.Contains(searchName));
+            }
+
               return _context.Company != null ? 
-                          View(await _context.Company.ToListAsync()) :
+                          View(await company.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Company'  is null.");
         }
 
