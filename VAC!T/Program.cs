@@ -1,8 +1,11 @@
+using System.Configuration;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using VAC_T.Data;
 using VAC_T.Models;
+using VAC_T.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +19,14 @@ builder.Services.AddDefaultIdentity<VAC_TUser>(options => options.SignIn.Require
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddTransient<IEmailSender, EmailSender>(i =>
+                new EmailSender(
+                    builder.Configuration["EmailSender:Host"],
+                    builder.Configuration.GetValue<int>("EmailSender:Port"),
+                    builder.Configuration.GetValue<bool>("EmailSender:EnableSSL"),
+                    builder.Configuration["EmailSender:UserName"]
+                )
+            );
 
 var app = builder.Build();
 
