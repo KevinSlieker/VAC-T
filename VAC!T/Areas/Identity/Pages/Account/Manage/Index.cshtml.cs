@@ -4,11 +4,14 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using VAC_T.Models;
 
 namespace VAC_T.Areas.Identity.Pages.Account.Manage
@@ -17,13 +20,16 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<VAC_TUser> _userManager;
         private readonly SignInManager<VAC_TUser> _signInManager;
+        private readonly IEmailSender _emailSender;
 
         public IndexModel(
             UserManager<VAC_TUser> userManager,
-            SignInManager<VAC_TUser> signInManager)
+            SignInManager<VAC_TUser> signInManager,
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailSender = emailSender;
         }
 
         /// <summary>
@@ -159,16 +165,16 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
             var email = await _userManager.GetEmailAsync(user);
             if (Input.Email != email)
             {
-                var setEmailResult = await _userManager.SetEmailAsync(user, Input.Email);
+                var setEmailResult = await OnPostChangeEmailAsync();
                 // way around to confirm the email.
-                user.EmailConfirmed = true;
-                await _userManager.UpdateAsync(user);
-                await _userManager.SetUserNameAsync(user, Input.Email);
-                if (!setEmailResult.Succeeded)
-                {
-                    StatusMessage = "Unexpected error when trying to set email.";
-                    return RedirectToPage();
-                }
+                //user.EmailConfirmed = true;
+                //await _userManager.UpdateAsync(user);
+                //await _userManager.SetUserNameAsync(user, Input.Email);
+                //if (!setEmailResult.Succeeded)
+                //{
+                //    StatusMessage = "Unexpected error when trying to set email.";
+                //    return RedirectToPage();
+                //}
             }
 
             if (Input.Name != user.Name)
@@ -222,6 +228,49 @@ namespace VAC_T.Areas.Identity.Pages.Account.Manage
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
+            if (email != Input.Email)
+            {
+                StatusMessage = "Your profile has been updated. Confirmation link to change email sent. Please check your email.";
+            }
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostChangeEmailAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await LoadAsync(user);
+                return Page();
+            }
+
+            var email = await _userManager.GetEmailAsync(user);
+            if (Input.Email != email)
+            {
+                var userId = await _userManager.GetUserIdAsync(user);
+                var code = await _userManager.GenerateChangeEmailTokenAsync(user, Input.Email);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                var callbackUrl = Url.Page(
+                    "/Account/ConfirmEmailChange",
+                    pageHandler: null,
+                    values: new { area = "Identity", userId = userId, email = Input.Email, code = code },
+                    protocol: Request.Scheme);
+                await _emailSender.SendEmailAsync(
+                    Input.Email,
+                    "Confirm your email",
+                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>. <br>" +
+                    $"Of kopieer de volgende link: {callbackUrl}");
+
+                StatusMessage = "Confirmation link to change email sent. Please check your email.";
+                return RedirectToPage();
+            }
+
+            StatusMessage = "Your email is unchanged.";
             return RedirectToPage();
         }
     }
