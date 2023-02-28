@@ -58,8 +58,14 @@ namespace VAC_T.Controllers
         public async Task<IActionResult> DetailsForEmployer()
         {
             var user = await _userManager.GetUserAsync(User);
+
+            if (_context.Company == null)
+            {
+                return NotFound();
+            }
+
             var id = _context.Company.Include(x => x.User).Where(x => x.User == user).FirstOrDefault().Id;
-            if (id == null || _context.Company == null)
+            if (id == 0)
             {
                 return NotFound();
             }

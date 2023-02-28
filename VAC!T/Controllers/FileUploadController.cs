@@ -124,7 +124,7 @@ namespace VAC_T.Controllers
             return Redirect("/Identity/Account/Manage");
         }
 
-        public async Task<IActionResult> CreateJobOfferLogoURL()
+        public IActionResult CreateJobOfferLogoURL()
         {
             return View(new JobOfferLogoURLModel());
         }
