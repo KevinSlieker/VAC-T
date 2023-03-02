@@ -13,14 +13,14 @@
     <div class="form-action row align-items-center">
         <p>
             <div class="col-3">
-            Naam: <input type="text" name="searchName" value="@ViewData["searchName"]" />
+            Naam: <input type="text" class="form-control" name="searchName" value="@ViewData["searchName"]" />
             </div>
             <div class="col-3">
-            Email: <input type="text" name="searchEmail" value="@ViewData["searchEmail"]" />
+            Email: <input type="text" class="form-control" name="searchEmail" value="@ViewData["searchEmail"]" />
             </div>
             <div class="col-3 d-flex">
-                <input type="submit" value="Filter" class="btn btn-primary"/> | 
-                <a asp-action="index">
+                <input type="submit" value="Filter" class="btn btn-primary"/>
+                <a class="padding-left-05" asp-action="index">
                     <input type="button" value="Clear" class="btn btn-primary" />
                 </a>
             </div>
