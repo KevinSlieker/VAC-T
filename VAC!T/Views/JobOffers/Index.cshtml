@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<JobOffer>
 @using Microsoft.AspNetCore.Identity;
+@inject Wangkanai.Detection.Services.IDetectionService DetectionService
 @inject UserManager<VAC_TUser> UserManager
 @inject RoleManager<IdentityRole> RoleManager
 @inject SignInManager<VAC_TUser> SignInManager
@@ -24,6 +25,8 @@
 
 <div class="container-fluid">
     <div class="row">
+        @if (DetectionService.Device.Type != Wangkanai.Detection.Models.Device.Mobile)
+        {
         <div class="home-left col-3">
             @if (@Model.Count() != 0)
             {
@@ -37,7 +40,7 @@
             }
             
         </div>
-        <div class="col-9"
+        <div class="col-9">
             <div class="container-fluid">
                 <div class="home-right row">
                     @foreach(var item in Model)
@@ -62,5 +65,30 @@
                 </div>
             </div>
         </div>
+        } else 
+        {
+            @foreach (var item in Model)
+            {
+                <div class="joboffer-right col-3">
+                    <img class="rounded-circle img" src=@Url.Content("~/" + item.LogoURL) width="100%" alt="Logo" />
+                </div>
+                <div class="info-joboffer-right col-9">
+                    <h7>@Html.DisplayFor(modelitem => item.Created)</h7>
+                    <h4>@item.Name</h4>
+                    @if (@item.Description.ToString().Length > 39)
+                    {
+                        <p>@item.Description.ToString().Substring(0, 39)...</p>
+                    }
+                    else
+                    {
+                        <p>@item.Description.ToString()</p>
+                    }
+                </div>
+                <div class="col-3"></div>
+                <div class="col-9">
+                    <a asp-action="Details" asp-route-id="@item.Id"><img class="rounded-circle" src=@Url.Content("~/assets/arrow.png") width="20%" alt="Details" /></a>
+                </div>
+            }
+        }
     </div>
 </div>

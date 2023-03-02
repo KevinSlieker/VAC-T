@@ -27,6 +27,13 @@ builder.Services.AddTransient<IEmailSender, EmailSender>(i =>
                     builder.Configuration["EmailSender:UserName"]
                 )
             );
+builder.Services.AddDetection();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(10);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
