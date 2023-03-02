@@ -12,7 +12,7 @@
 <div class="row align-items-center">
     <div class="profile-picture-position col-2">
         <a class="navbar-brand" asp-area="" asp-controller="FileUpload" asp-action="EditProfilePicture" asp-route-id="@Model.Id">
-            <img class="rounded-circle" src=@Url.Content("~/" + Model.Input.ProfilePicture) height="150" width="150" alt="Profiel afbeelding" />
+            <img class="rounded-circle" src=@Url.Content("~/" + Model.Input.ProfilePicture) width="100%" alt="Profiel afbeelding" />
         </a>
     </div>
     <div class="col-10 text-orange d-flex">
