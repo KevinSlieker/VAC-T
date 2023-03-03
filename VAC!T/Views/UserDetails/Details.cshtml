@@ -77,6 +77,12 @@
                 <div class="userdetails-CV col-12">
                     <img class="rounded-circle" src=@Url.Content("~/" + Model.CV) height="150" width="150" alt="CV bestand" />
                 </div>
+                @if (Model.CV != null)
+                {
+                <a class="text-decoration-none" asp-controller="FileUpload" asp-action="GetCV" asp-route-cv="@Model.CV">
+                    <input type="button" value="Download/View CV" class="btn btn-primary" />
+                </a>                  
+                }
             }
         </div>
     </div>

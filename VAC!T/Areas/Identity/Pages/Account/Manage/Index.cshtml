@@ -79,9 +79,16 @@
                     </div>*@
                     <div class="form-floating col-12 mb-3 text-orange">
                         <a class="navbar-brand" asp-area="" asp-controller="FileUpload" asp-action="EditCV" asp-route-id="@Model.Id">
-                            <img class="rounded-circle" src=@Url.Content("~/" + Model.Input.CV) height="150" width="150" alt="CV bestand" />
+                            <img class="rounded-circle" src=@Url.Content("~/" + Model.Input.CV) height="150" width="150" alt="Upload CV bestand" />
                         </a>
                     </div>
+
+                    @if (Model.Input.CV != null)
+                    {
+                            <a class="text-decoration-none" asp-controller="FileUpload" asp-action="GetCV" asp-route-cv="@Model.Input.CV">
+                                <input type="button" value="Download/View CV" class="btn btn-primary" />
+                            </a>                  
+                    }
                 }
             }
             <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Opslaan</button>

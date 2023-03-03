@@ -5,7 +5,17 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-        <img class="rounded-circle" src=@Url.Content("~/" + Model.CV) height="150" width="150" alt="CV bestand" />
+@if (ViewData["Message"] != null)
+{
+    <h4 class="text-danger">@ViewData["Message"]</h4>
+}
+
+@if (Model.CV != null)
+{
+    <a class="text-decoration-none" asp-controller="FileUpload" asp-action="GetCV" asp-route-cv="@Model.CV">
+        <input type="button" value="Download/View CV" class="btn btn-primary" />
+    </a>                  
+}
         <form enctype="multipart/form-data" method="post" asp-controller="FileUpload" asp-action="UploadCV" asp-route-id="@Model.Id">
             <dl>
                 <dt>

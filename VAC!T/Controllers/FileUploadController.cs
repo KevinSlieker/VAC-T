@@ -10,6 +10,7 @@ using VAC_T.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace VAC_T.Controllers
 {
@@ -111,6 +112,13 @@ namespace VAC_T.Controllers
                 return View("EditCV", new CVModel() { Id = id, CV = user.CV });
             }
             var filename = ContentDispositionHeaderValue.Parse(FormFile.ContentDisposition).FileName.Value;
+
+            if (Path.GetExtension(filename) != ".pdf")
+            {
+                ViewData["Message"] = "Je kan alleen een pdf uploaden";
+                return View("EditCV", new CVModel() { Id = id, CV = user.CV });
+            }
+
             filename = id + Path.GetExtension(filename);
             var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "assets", "cv", filename);
             using (System.IO.Stream stream = new FileStream(path, FileMode.Create))
@@ -122,6 +130,15 @@ namespace VAC_T.Controllers
             await _userManager.UpdateAsync(user);
 
             return Redirect("/Identity/Account/Manage");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCV(string cv)
+        {
+            string filePath = "~/" + cv;
+            string fileName = Path.GetFileName(filePath);
+            Response.Headers.Add("Content-Disposition", $"inline; filename={fileName}");
+            return File(filePath, "application/pdf");
         }
 
         public IActionResult CreateJobOfferLogoURL()
