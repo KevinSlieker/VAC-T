@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using VAC_T.Data;
 using VAC_T.Models;
+using VAC_T.Data.DTO;
 
 namespace VAC_T.ApiControllers
 {
@@ -18,25 +20,27 @@ namespace VAC_T.ApiControllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<VAC_TUser> _userManager;
         private readonly SignInManager<VAC_TUser> _signInManager;
-        public static System.Text.Json.Serialization.ReferenceHandler IgnoreCycles { get; }
+        private readonly IMapper _mapper;
 
-        public JobOffersController(ApplicationDbContext context, UserManager<VAC_TUser> userManager, SignInManager<VAC_TUser> signInManager)
+        public JobOffersController(ApplicationDbContext context, UserManager<VAC_TUser> userManager, SignInManager<VAC_TUser> signInManager, IMapper mapper)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
+            _mapper = mapper;
         }
 
         // GET: JobOffers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobOffer>>> GetAllJobOffersAsync()
+        public async Task<ActionResult<IEnumerable<JobOfferDTO>>> GetAllJobOffersAsync()
         {
             if (_context.JobOffer != null)
             {
                 NotFound("Database not connected");
             }
-
-            return await _context.JobOffer.ToListAsync();
+            var jobOffers = _context.JobOffer.Include(j => j.Company);
+            var result = await _mapper.ProjectTo<JobOfferDTO>(jobOffers).ToListAsync();
+            return Ok(result);
             //if (User.IsInRole("ROLE_EMPLOYER") && _signInManager.IsSignedIn(User))
             //{
             //    var user = await _userManager.GetUserAsync(User);
