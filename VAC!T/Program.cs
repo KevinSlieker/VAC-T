@@ -34,6 +34,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
