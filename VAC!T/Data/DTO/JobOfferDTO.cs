@@ -10,13 +10,12 @@ namespace VAC_T.Data.DTO
         public string Name { get; set; }
         public string Description { get; set; }
         public string LogoURL { get; set; }
-        //public CompanyDTO Company { get; set; }
-        public string CompanyName { get; set; }
+        public CompanyDTOSmall Company { get; set; }
         public int CompanyId { get; set; }
         public string Level { get; set; }
         public string? Residence { get; set; }
         public DateTime Created { get; set; } = DateTime.Now;
-        //public List<SolicitationDTO>? Solicitations { get; set; }
+        public ICollection<SolicitationDTOSmall>? Solicitations { get; set; }
 
     }
 }

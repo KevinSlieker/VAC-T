@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using VAC_T.Data;
 using VAC_T.Models;
 using VAC_T.Data.DTO;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace VAC_T.ApiControllers
 {
@@ -38,7 +39,14 @@ namespace VAC_T.ApiControllers
             {
                 NotFound("Database not connected");
             }
-            var jobOffers = _context.JobOffer.Include(j => j.Company);
+            IQueryable<JobOffer>? jobOffers = _context.JobOffer.Include(j => j.Company);
+
+
+            if (User.IsInRole("ROLE_EMPLOYER") && _signInManager.IsSignedIn(User))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                jobOffers = jobOffers.Where(C => C.Company.User == user);
+            }
             var result = await _mapper.ProjectTo<JobOfferDTO>(jobOffers).ToListAsync();
             return Ok(result);
             //if (User.IsInRole("ROLE_EMPLOYER") && _signInManager.IsSignedIn(User))
@@ -58,7 +66,7 @@ namespace VAC_T.ApiControllers
 
         // GET: JobOffers/Details/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<JobOffer>> GetJobOfferByIdAsync(int? id)
+        public async Task<ActionResult<JobOfferDTO>> GetJobOfferByIdAsync(int id)
         {
             if (id == null || _context.JobOffer == null)
             {
@@ -67,14 +75,17 @@ namespace VAC_T.ApiControllers
             //var user = await _userManager.GetUserAsync(User);
             // .Include(j => j.Solicitations.Where(x => x.User == user))
             // .Include(j => j.Company.JobOffers)
-            var jobOffer = await _context.JobOffer
+            var user = await _userManager.GetUserAsync(User);
+            var jobOffer = await _context.JobOffer.Include(j => j.Company.JobOffers).Include(j => j.Solicitations.Where(x => x.User == user))
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (jobOffer == null)
             {
                 return NotFound();
             }
 
-            return jobOffer;
+            var result = _mapper.Map<JobOfferDTO>(jobOffer);
+
+            return Ok(result);
         }
 
         // GET: JobOffers/Create
@@ -89,20 +100,25 @@ namespace VAC_T.ApiControllers
         //}
 
         // POST: JobOffers/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
-        public async Task<ActionResult> CreateAsync([FromBody] JobOffer jobOffer)
+        public async Task<ActionResult> CreateAsync([FromBody] JobOfferDTOForCreateTemp jobOffer) // JobOfferDTOForUpdateAndCreate
         {
             if (_context.JobOffer == null)
             { 
                 return NotFound();
             }
-            ModelState.Remove("Company");
-            jobOffer.Company = await _context.Company.FindAsync(jobOffer.CompanyId);
-            _context.Add(jobOffer);
+            var jobOfferEntity = _mapper.Map<JobOffer>(jobOffer);
+            // needs to done with user _context.Company.Where(x => x.User == user).First()
+            //var user = await _userManager.GetUserAsync(User);
+            //var company = _context.Company.Where(x => x.User == user).First();
+            //jobOfferEntity.CompanyId = company.Id;
+            //jobOfferEntity.Residence = company.Residence;
+            jobOfferEntity.Company = await _context.Company.FindAsync(jobOfferEntity.CompanyId);
+            _context.Add(jobOfferEntity);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetJobOfferByIdAsync), new {id = jobOffer.Id}, null);
+            var newJobOffer = _mapper.Map<JobOfferDTO>(jobOfferEntity);
+            return CreatedAtAction(nameof(GetJobOfferByIdAsync), new {id = newJobOffer.Id}, newJobOffer);
         }
 
         // GET: JobOffers/Edit/5
@@ -125,7 +141,7 @@ namespace VAC_T.ApiControllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutAsync(int id, [FromBody] JobOffer jobOffer)
+        public async Task<ActionResult> PutAsync(int id, [FromBody] JobOfferDTOForUpdateAndCreate jobOffer)
         {
             if (_context.JobOffer == null)
             { 
@@ -136,9 +152,15 @@ namespace VAC_T.ApiControllers
                 ModelState.AddModelError("Id", "Does not match Id in URL");
                 return BadRequest(ModelState);
             }
-            ModelState.Remove("Company");
-            jobOffer.Company = await _context.Company.FindAsync(jobOffer.CompanyId);
-            _context.Update(jobOffer);
+            var jobOfferEntity = _context.JobOffer.FirstOrDefault(j => j.Id == id);
+            if (jobOfferEntity == null)
+            {
+                return NotFound($"No jobOffer with id: {id} in the database");
+            }
+
+            _mapper.Map(jobOffer,jobOfferEntity);
+
+            _context.Update(jobOfferEntity);
             await _context.SaveChangesAsync();
 
             return NoContent();
