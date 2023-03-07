@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using VAC_T.Data;
 using VAC_T.Models;
 using VAC_T.Data.DTO;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace VAC_T.ApiControllers
 {
@@ -30,13 +31,17 @@ namespace VAC_T.ApiControllers
 
         // GET: api/Companies
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CompanyDTO>>> GetAllCompaniesAsync()
+        public async Task<ActionResult<IEnumerable<CompanyDTO>>> GetAllCompaniesAsync([FromQuery] string? searchName)
         {
             if (_context.Company == null)
             {
                 return NotFound("Database not connected");
             }
-            var companies = _context.Company;
+            IQueryable<Company>? companies = _context.Company;
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                companies = companies.Where(x => x.Name.Contains(searchName));
+            }
             var result = await _mapper.ProjectTo<CompanyDTO>(companies).ToListAsync();
             return Ok(result);
         }
