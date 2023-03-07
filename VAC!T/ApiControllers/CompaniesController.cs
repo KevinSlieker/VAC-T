@@ -31,7 +31,7 @@ namespace VAC_T.ApiControllers
             if (_context.Company != null)
             {
                 NotFound("Database not connected");
-            }
+            }            
 
             return await _context.Company.ToListAsync();
         }

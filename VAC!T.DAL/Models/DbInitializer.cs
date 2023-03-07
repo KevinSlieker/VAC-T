@@ -2,6 +2,7 @@
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using VAC_T.Data;
 using VAC_T.Models;
 using static System.Net.Mime.MediaTypeNames;
@@ -20,6 +21,25 @@ namespace VAC_T.Models
                 {
                     var manager = scope.ServiceProvider.GetRequiredService<UserManager<VAC_TUser>>();
                     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                    if (!context.Roles.Any())
+                    {
+                        context.Roles.AddRange(
+                            new IdentityRole
+                            {
+                                Name = "ROLE_EMPLOYER",
+                                NormalizedName = "ROLE_EMPLOYER",
+                                ConcurrencyStamp = "1"
+                            },
+                            new IdentityRole
+                            {
+                                Name = "ROLE_CANDIDATE",
+                                NormalizedName = "ROLE_CANDIDATE",
+                                ConcurrencyStamp = "2"
+                            }
+                            );
+                        context.SaveChanges();
+                    }
 
                     if (!context.Roles.Any(i => i.Name == "ROLE_ADMIN"))
                     {
@@ -50,25 +70,6 @@ namespace VAC_T.Models
                         context.SaveChanges();
                     }
 
-
-                    if (!context.Roles.Any())
-                    {
-                        context.Roles.AddRange(
-                            new IdentityRole
-                            {
-                                Name = "ROLE_EMPLOYER",
-                                NormalizedName = "ROLE_EMPLOYER",
-                                ConcurrencyStamp = "1"
-                            },
-                            new IdentityRole
-                            {
-                                Name = "ROLE_CANDIDATE",
-                                NormalizedName = "ROLE_CANDIDATE",
-                                ConcurrencyStamp = "1"
-                            }
-                            );
-                        context.SaveChanges();
-                    }
                     if (!context.Users.Any())
                     {
                         var userEmployer = new VAC_TUser

@@ -10,10 +10,10 @@ namespace VAC_T.Data
             : base(options)
         {
         }
-        public DbSet<VAC_T.Models.Company> Company { get; set; } = default!;
-        public DbSet<VAC_T.Models.JobOffer> JobOffer { get; set; } = default!;
-        public DbSet<VAC_T.Models.Solicitation> Solicitation { get; set; } = default!;
-        public DbSet<VAC_T.Models.UserDetailsModel> UserDetailsModel { get; set; } = default!;
+        public DbSet<Company> Company { get; set; } = default!;
+        public DbSet<JobOffer> JobOffer { get; set; } = default!;
+        public DbSet<Solicitation> Solicitation { get; set; } = default!;
+        public DbSet<UserDetailsModel> UserDetailsModel { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
