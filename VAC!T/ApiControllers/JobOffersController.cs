@@ -35,11 +35,11 @@ namespace VAC_T.ApiControllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<JobOfferDTO>>> GetAllJobOffersAsync()
         {
-            if (_context.JobOffer != null)
+            if (_context.JobOffer == null)
             {
                 NotFound("Database not connected");
             }
-            IQueryable<JobOffer>? jobOffers = _context.JobOffer.Include(j => j.Company);
+            var jobOffers = from s in _context.JobOffer.Include(j => j.Company) select s;
 
 
             if (User.IsInRole("ROLE_EMPLOYER") && _signInManager.IsSignedIn(User))

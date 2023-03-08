@@ -18,6 +18,7 @@ namespace VAC_T.Data
             CreateMap<JobOfferDTOForUpdateAndCreate, JobOffer>();
             CreateMap<JobOfferDTOForCreateTemp, JobOffer>();
             CreateMap<VAC_TUser, UserDTOSmall>();
+            CreateMap<VAC_TUser, UserDetailsDTO>();
             CreateMap<Solicitation, SolicitationDTOSmall>();
             CreateMap<Solicitation, SolicitationDTOComplete>();
             CreateMap<Solicitation, SolicitationDTOSelect>();
