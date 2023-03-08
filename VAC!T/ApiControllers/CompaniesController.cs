@@ -37,7 +37,7 @@ namespace VAC_T.ApiControllers
             {
                 return NotFound("Database not connected");
             }
-            IQueryable<Company>? companies = _context.Company;
+            var companies = from s in _context.Company select s;
             if (!string.IsNullOrEmpty(searchName))
             {
                 companies = companies.Where(x => x.Name.Contains(searchName));
