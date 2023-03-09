@@ -61,6 +61,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+//app.UseAuthentication(); maybe for tokens?
 app.UseAuthorization();
 
 app.MapControllerRoute(
