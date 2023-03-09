@@ -91,15 +91,8 @@ namespace VAC_T.ApiControllers
         //    return View("Details", company);
         //}
 
-        // GET: Companies/Create
-        //public IActionResult Create()
-        //{
-        //    var company = new Company();
-        //    company.LogoURL = "assets/img/company/default.png";
-        //    return View(company);
-        //}
 
-        // POST: Companies/Create
+        // POST: api/Companies
         [HttpPost]
         public async Task<ActionResult> CreateAsync([FromBody] CompanyDTO company)
         {
@@ -132,23 +125,7 @@ namespace VAC_T.ApiControllers
             return CreatedAtAction(nameof(GetCompanyByIdAsync), new { id }, newCompany);
         }
 
-        // GET: Companies/Edit/5
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null || _context.Company == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var company = await _context.Company.FindAsync(id);
-        //    if (company == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(company);
-        //}
-
-        // POST: Companies/Edit/5
+        // Put: api/Companies/5
 
         [HttpPut("{id}")]
         public async Task<ActionResult> PutAsync(int id, [FromBody] CompanyDTOForUpdate company)
@@ -176,25 +153,8 @@ namespace VAC_T.ApiControllers
             return NoContent();
         }
 
-        // GET: Companies/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null || _context.Company == null)
-        //    {
-        //        return NotFound();
-        //    }
 
-        //    var company = await _context.Company
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (company == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(company);
-        //}
-
-        // POST: Companies/Delete/5
+        // Delete: api/Companies/5
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {

@@ -25,7 +25,7 @@ namespace VAC_T.ApiControllers
             _mapper = mapper;
         }
 
-        // GET: Solicitations
+        // GET: api/Solicitations
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SolicitationDTOComplete>>> GetAllSolicitationsAsync([FromQuery] string? searchName,
             [FromQuery] string? searchCompany, [FromQuery] string? searchCandidate, [FromQuery] bool? searchSelectedYes, [FromQuery] bool? searchSelectedNo)
@@ -105,6 +105,7 @@ namespace VAC_T.ApiControllers
         //    }
         //}
 
+        // Posts: api/Solicitations
         [HttpPost]
         public async Task<ActionResult> PostSolicitateAsync([FromQuery] int jobOfferId, [FromQuery] string userId) // temp user as userId in query
         {
@@ -130,6 +131,7 @@ namespace VAC_T.ApiControllers
             return Ok(newSolicitation);
         }
 
+        // Delete: api/Solicitations
         [HttpDelete]
         public async Task<ActionResult> DeleteSolicitateAsync([FromQuery] int jobOfferId, [FromQuery] string userId) // temp user as userId in query
         {
@@ -166,6 +168,7 @@ namespace VAC_T.ApiControllers
         }
 
 
+        // Put: api/Solicitations/4
         [HttpPut("{id}")]
         public async Task<ActionResult> PutSolicitationSelectAsync(int id)
         {

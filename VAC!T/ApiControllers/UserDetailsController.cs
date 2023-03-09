@@ -24,7 +24,7 @@ namespace VAC_T.ApiControllers
             _mapper = mapper;
         }
 
-
+        // Get: api/UserDetails/(Users id)
         [HttpGet("{id}")]
         public async Task<ActionResult> GetUserDetailsByIdAsync(string id)
         {
@@ -49,13 +49,14 @@ namespace VAC_T.ApiControllers
         //    return (_context.UserDetailsModel?.Any(e => e.Id == id)).GetValueOrDefault();
         //}
 
+        // Get: api/UserDetails
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDetailsDTO>>> GetAllUsersAsync([FromQuery] string? searchEmail, [FromQuery] string? searchName)
         {
-            if (!User.IsInRole("ROLE_ADMIN"))
-            {
-                return Unauthorized();
-            }
+            //if (!User.IsInRole("ROLE_ADMIN"))
+            //{
+            //    return Unauthorized();
+            //}
 
             if (_context.Users != null)
             {
@@ -79,6 +80,7 @@ namespace VAC_T.ApiControllers
             return Ok(result);
         }
 
+        // Delete: api/UserDetails/(Users id)
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAsync(string id)
         {
