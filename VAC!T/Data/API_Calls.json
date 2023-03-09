@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e12efd12-558f-4b77-a458-bc8385df6918",
+		"_postman_id": "7ff54120-fcec-4204-9db8-2eb9b520f9df",
 		"name": "VAC!T",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -403,6 +403,91 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "UserDetails",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/UserDetails?searchEmail&searchName",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"UserDetails"
+							],
+							"query": [
+								{
+									"key": "searchEmail",
+									"value": null
+								},
+								{
+									"key": "searchName",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/UserDetails/049c90ba-2a2d-4a46-b20e-bcd2f6c7360e",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"UserDetails",
+								"049c90ba-2a2d-4a46-b20e-bcd2f6c7360e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/UserDetails/",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"UserDetails",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
 		}
 	]
 }
