@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7ff54120-fcec-4204-9db8-2eb9b520f9df",
+		"_postman_id": "e96be9ca-14c3-4a31-8eef-bd976e608ebe",
 		"name": "VAC!T",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -348,7 +348,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7220/api/Solicitations?jobOfferId=22&userId=00d49358-3617-4ced-b491-b2ba197f7b16",
+							"raw": "https://localhost:7220/api/Solicitations/25",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -356,17 +356,8 @@
 							"port": "7220",
 							"path": [
 								"api",
-								"Solicitations"
-							],
-							"query": [
-								{
-									"key": "jobOfferId",
-									"value": "22"
-								},
-								{
-									"key": "userId",
-									"value": "00d49358-3617-4ced-b491-b2ba197f7b16"
-								}
+								"Solicitations",
+								"25"
 							]
 						}
 					},
@@ -378,7 +369,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7220/api/Solicitations?jobOfferId=22&userId=00d49358-3617-4ced-b491-b2ba197f7b16",
+							"raw": "https://localhost:7220/api/Solicitations/13",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -386,17 +377,8 @@
 							"port": "7220",
 							"path": [
 								"api",
-								"Solicitations"
-							],
-							"query": [
-								{
-									"key": "jobOfferId",
-									"value": "22"
-								},
-								{
-									"key": "userId",
-									"value": "00d49358-3617-4ced-b491-b2ba197f7b16"
-								}
+								"Solicitations",
+								"13"
 							]
 						}
 					},
@@ -443,7 +425,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7220/api/UserDetails/049c90ba-2a2d-4a46-b20e-bcd2f6c7360e",
+							"raw": "https://localhost:7220/api/UserDetails/00d49358-3617-4ced-b491-b2ba197f7b16",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -452,7 +434,7 @@
 							"path": [
 								"api",
 								"UserDetails",
-								"049c90ba-2a2d-4a46-b20e-bcd2f6c7360e"
+								"00d49358-3617-4ced-b491-b2ba197f7b16"
 							]
 						}
 					},
@@ -482,16 +464,105 @@
 			]
 		},
 		{
-			"name": "Login",
+			"name": "Login admin",
 			"request": {
-				"method": "GET",
-				"header": []
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Email\": \"Admin@mail.nl\",\r\n    \"Password\": \"Admin123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7220/api/Authenticate/login",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7220",
+					"path": [
+						"api",
+						"Authenticate",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login DSM employer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Email\": \"EmployerDSM@mail.nl\",\r\n    \"Password\": \"EmployerDSM1!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7220/api/Authenticate/login",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7220",
+					"path": [
+						"api",
+						"Authenticate",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login candidate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Email\": \"Candidate@mail.nl\",\r\n    \"Password\": \"Candidate123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7220/api/Authenticate/login",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7220",
+					"path": [
+						"api",
+						"Authenticate",
+						"login"
+					]
+				}
 			},
 			"response": []
 		}
 	],
 	"auth": {
-		"type": "bearer"
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRW1wbG95ZXJEU01AbWFpbC5ubCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiZDEyZWI1ZGMtZDA3MC00Y2JlLTg0YjEtYTA0N2YxNmQ4NmE1IiwianRpIjoiZmRlMjNmZWItM2ZkYi00OGU1LWFhNzgtMTNmZmI1MWRmNzc5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUk9MRV9FTVBMT1lFUiIsImV4cCI6MTY3ODQ3MzUwNCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIwIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIxIn0.drOM9JUcAWpiUIAhbhKjCTcxIJjbiin3KlvyRyXSMUE",
+				"type": "string"
+			}
+		]
 	},
 	"event": [
 		{

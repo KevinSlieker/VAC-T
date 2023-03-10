@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,7 @@ namespace VAC_T.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SolicitationsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -75,8 +78,6 @@ namespace VAC_T.ApiControllers
             {
                 solicitation = solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).Include(x => x.User);
             }
-            // temp before user works
-            solicitation = solicitation.Include(x => x.JobOffer.Company).Include(x => x.User);
             var result = await _mapper.ProjectTo<SolicitationDTOComplete>(solicitation).ToListAsync();
             return Ok(result);
 
@@ -105,16 +106,16 @@ namespace VAC_T.ApiControllers
         //    }
         //}
 
-        // Posts: api/Solicitations
-        [HttpPost]
-        public async Task<ActionResult> PostSolicitateAsync([FromQuery] int jobOfferId, [FromQuery] string userId) // temp user as userId in query
+        // Posts: api/Solicitations/4
+        [HttpPost("{jobOfferId}")]
+        public async Task<ActionResult> PostSolicitateAsync(int jobOfferId)
         {
             if (_context.Solicitation == null)
             {
                 return NotFound("Database not connected");
             }
 
-            var user = await _context.Users.FindAsync(userId);
+            var user = await _userManager.GetUserAsync(User);
             var jobOffer = await _context.JobOffer.FindAsync(jobOfferId);
             if (user == null)
             {
@@ -132,15 +133,15 @@ namespace VAC_T.ApiControllers
         }
 
         // Delete: api/Solicitations
-        [HttpDelete]
-        public async Task<ActionResult> DeleteSolicitateAsync([FromQuery] int jobOfferId, [FromQuery] string userId) // temp user as userId in query
+        [HttpDelete("{jobOfferId}")]
+        public async Task<ActionResult> DeleteSolicitateAsync(int jobOfferId)
         {
             if (_context.Solicitation == null)
             {
                 return NotFound("Database not connected");
             }
 
-            var user = await _context.Users.FindAsync(userId);
+            var user = await _userManager.GetUserAsync(User);
             var jobOffer = await _context.JobOffer.FindAsync(jobOfferId);
             if (user == null)
             {
@@ -172,6 +173,10 @@ namespace VAC_T.ApiControllers
         [HttpPut("{id}")]
         public async Task<ActionResult> PutSolicitationSelectAsync(int id)
         {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized();
+            }
             var solicitationEntity = await _context.Solicitation.FindAsync(id);
             if (solicitationEntity == null)
             {

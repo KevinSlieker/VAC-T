@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +13,7 @@ namespace VAC_T.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserDetailsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -28,6 +31,11 @@ namespace VAC_T.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult> GetUserDetailsByIdAsync(string id)
         {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized();
+            }
+
             if (id == null || _context.Solicitation == null)
             {
                 return NotFound();
@@ -53,10 +61,10 @@ namespace VAC_T.ApiControllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDetailsDTO>>> GetAllUsersAsync([FromQuery] string? searchEmail, [FromQuery] string? searchName)
         {
-            //if (!User.IsInRole("ROLE_ADMIN"))
-            //{
-            //    return Unauthorized();
-            //}
+            if (!User.IsInRole("ROLE_ADMIN"))
+            {
+                return Unauthorized();
+            }
 
             if (_context.Users != null)
             {
@@ -84,6 +92,11 @@ namespace VAC_T.ApiControllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAsync(string id)
         {
+            if (!User.IsInRole("ROLE_ADMIN"))
+            {
+                return Unauthorized();
+            }
+
             if (id == null || _context.Users == null)
             {
                 return NotFound();

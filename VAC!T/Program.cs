@@ -1,8 +1,11 @@
 using System.Configuration;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using VAC_T.Data;
 using VAC_T.Models;
 using VAC_T.Services;
@@ -17,7 +20,30 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<VAC_TUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+// addding authentication
+builder.Services.AddAuthentication()
+    .AddCookie(options =>
+    {
+        options.LoginPath = $"/Identity/Account/Login";
+        options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+    })
+    // adding Jwt bearer
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["JWT:ValidAudience"],
+            ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+        };
+    });
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IEmailSender, EmailSender>(i =>
                 new EmailSender(
@@ -61,7 +87,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-//app.UseAuthentication(); maybe for tokens?
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
