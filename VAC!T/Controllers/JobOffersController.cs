@@ -81,7 +81,12 @@ namespace VAC_T.Controllers
             ModelState.Remove("Company");
             if (ModelState.IsValid)
             {
-                jobOffer.Company = await _context.Company.FindAsync(jobOffer.CompanyId);
+                Company? company = await _context.Company.FindAsync(jobOffer.CompanyId);
+                if (company == null)
+                {
+                    return Problem("CompanyId is not known");
+                }
+                jobOffer.Company = company;
                 _context.JobOffer.Add(jobOffer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

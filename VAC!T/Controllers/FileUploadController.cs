@@ -133,7 +133,7 @@ namespace VAC_T.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCV(string cv)
+        public IActionResult GetCV(string cv)
         {
             string filePath = "~/" + cv;
             string fileName = Path.GetFileName(filePath);

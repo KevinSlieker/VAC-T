@@ -170,7 +170,7 @@ namespace VAC_T.Models
                             {
                                 Name = "Applicatie Beheerder voor DSM Sittard",
                                 Description = "Description 1",
-                                Company = context.Company.Where(n => n.Name == "DSM").FirstOrDefault(),
+                                Company = context.Company.Where(n => n.Name == "DSM").First(),
                                 Level = "Intro",
                                 Residence = "Sittard",
                                 LogoURL = "assets/img/job_offer/windows.png"
@@ -179,7 +179,7 @@ namespace VAC_T.Models
                             {
                                 Name = "Applicatie Beheerder voor DSM Sittard",
                                 Description = "Description 2",
-                                Company = context.Company.Where(n => n.Name == "DSM").FirstOrDefault(),
+                                Company = context.Company.Where(n => n.Name == "DSM").First(),
                                 Level = "Junior",
                                 Residence = "Sittard",
                                 LogoURL = "assets/img/job_offer/windows.png"
@@ -188,7 +188,7 @@ namespace VAC_T.Models
                             {
                                 Name = "C# developer voor Educom Arnhem",
                                 Description = "Description 3",
-                                Company = context.Company.Where(n => n.Name == "Educom").FirstOrDefault(),
+                                Company = context.Company.Where(n => n.Name == "Educom").First(),
                                 Level = "Midior",
                                 Residence = "Arnhem",
                                 LogoURL = "assets/img/job_offer/csharp.png"

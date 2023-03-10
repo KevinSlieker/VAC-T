@@ -35,9 +35,9 @@ namespace VAC_T.ApiControllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<JobOfferDTO>>> GetAllJobOffersAsync()
         {
-            if (_context.JobOffer != null)
+            if (_context.JobOffer == null)
             {
-                NotFound("Database not connected");
+                return NotFound("Database not connected");
             }
             IQueryable<JobOffer>? jobOffers = _context.JobOffer.Include(j => j.Company);
 
@@ -68,7 +68,7 @@ namespace VAC_T.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<JobOfferDTO>> GetJobOfferByIdAsync(int id)
         {
-            if (id == null || _context.JobOffer == null)
+            if (_context.JobOffer == null)
             {
                 return NotFound();
             }
@@ -114,7 +114,12 @@ namespace VAC_T.ApiControllers
             //var company = _context.Company.Where(x => x.User == user).First();
             //jobOfferEntity.CompanyId = company.Id;
             //jobOfferEntity.Residence = company.Residence;
-            jobOfferEntity.Company = await _context.Company.FindAsync(jobOfferEntity.CompanyId);
+            Company? company = await _context.Company.FindAsync(jobOfferEntity.CompanyId);
+            if (company == null)
+            {
+                return NotFound("CompanyId is not known");
+            }
+            jobOfferEntity.Company = company;
             _context.JobOffer.Add(jobOfferEntity);
             await _context.SaveChangesAsync();
             var newJobOffer = _mapper.Map<JobOfferDTO>(jobOfferEntity);

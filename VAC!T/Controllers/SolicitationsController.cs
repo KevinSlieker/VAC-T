@@ -83,8 +83,12 @@ namespace VAC_T.Controllers
 
         public async Task<IActionResult> Solicitate(int jobOfferId)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetVac_TUser();
             var jobOffer = _context.JobOffer.Find(jobOfferId);
+            if (jobOffer == null)
+            {
+                return Problem("Job offer no longer exists");
+            }
             if (_context.Solicitation.Where(x => x.JobOffer == jobOffer && x.User == user).Any())
             {
                 var solicitation = _context.Solicitation.Where(x => x.JobOffer == jobOffer && x.User == user).First();
@@ -104,12 +108,18 @@ namespace VAC_T.Controllers
             }
         }
 
+        private async Task<VAC_TUser> GetVac_TUser()
+        {
+            VAC_TUser? user = await _userManager.GetUserAsync(User);
+            return user!;
+        }
+
         public async Task<IActionResult> Select(int id)
         {
             var solicitation = await _context.Solicitation.FindAsync(id); 
             if (solicitation == null)
             {
-                Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
             }
             if (solicitation.Selected == true)
             {

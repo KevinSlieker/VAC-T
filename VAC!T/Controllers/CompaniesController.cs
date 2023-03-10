@@ -40,7 +40,7 @@ namespace VAC_T.Controllers
         // GET: Companies/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            if (id == null || _context.Company == null)
+            if (_context.Company == null)
             {
                 return NotFound();
             }
@@ -64,7 +64,7 @@ namespace VAC_T.Controllers
                 return NotFound();
             }
 
-            var id = _context.Company.Include(x => x.User).Where(x => x.User == user).FirstOrDefault().Id;
+            var id = _context.Company.Include(x => x.User).Where(x => x.User == user).FirstOrDefault()?.Id;
             if (id == 0)
             {
                 return NotFound();
@@ -115,7 +115,7 @@ namespace VAC_T.Controllers
 
                 company.User = userCompany;
                 await _context.SaveChangesAsync();
-                company = _context.Company.Where(c => c.Name== company.Name).FirstOrDefault();
+                //company = _context.Company.Where(c => c.Name== company.Name).FirstOrDefault();
                 int id = company.Id;
                 return RedirectToAction("EditCompanyLogo", "FileUpload", new { id });
             }

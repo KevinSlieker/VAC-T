@@ -11,7 +11,7 @@ namespace VAC_T.Models;
 public class VAC_TUser : IdentityUser
 {
     [Display(Name = "Naam")]
-    public string? Name { get; set; }
+    public string? Name { get; set; } = "";
 
     [DataType(DataType.Date)]
     [Display(Name = "Geboortedatum")]

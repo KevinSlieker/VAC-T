@@ -26,16 +26,20 @@ namespace VAC_T.Controllers
         // GET: UserDetailsModels/Details/5
         public async Task<IActionResult> Details(string id)
         {
-            if (id == null || _context.Solicitation == null)
+            if (_context.Solicitation == null)
             {
-                return NotFound();
+                return Problem("Database not present");
+            }
+            if (id == null)
+            {
+                return NotFound("Id");
             }
 
             var user = await _context.Users
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User");
             }
 
             return View(new UserDetailsModel() { Id = user.Id,

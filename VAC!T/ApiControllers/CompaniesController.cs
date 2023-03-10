@@ -50,7 +50,7 @@ namespace VAC_T.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CompanyDTO>> GetCompanyByIdAsync(int id)
         {
-            if (id == null || _context.Company == null)
+            if (_context.Company == null)
             {
                 return NotFound();
             }
@@ -108,7 +108,7 @@ namespace VAC_T.ApiControllers
                 return NotFound("Database not connected");
             }
             var companyEntity = _mapper.Map<Company>(company); 
-            _context.Co.Add(companyEntity);
+            _context.Company.Add(companyEntity);
             await _context.SaveChangesAsync();
             var userCompany = new VAC_TUser
             {
@@ -126,7 +126,7 @@ namespace VAC_T.ApiControllers
 
             companyEntity.User = userCompany;
             await _context.SaveChangesAsync();
-            companyEntity = _context.Company.Where(c => c.Name == companyEntity.Name).FirstOrDefault();
+            companyEntity = _context.Company.Where(c => c.Name == companyEntity.Name).First();
             int id = companyEntity.Id;
             var newCompany = _mapper.Map<CompanyDTO>(companyEntity);
             return CreatedAtAction(nameof(GetCompanyByIdAsync), new { id }, newCompany);
