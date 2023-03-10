@@ -18,9 +18,9 @@ namespace VAC_T.Controllers
     {
         private IWebHostEnvironment _hostingEnv;
         private UserManager<VAC_TUser> _userManager;
-        private readonly ApplicationDbContext _context;
+        private readonly IVact_TDbContext _context;
 
-        public FileUploadController(IWebHostEnvironment hostingEnv, UserManager<VAC_TUser> userManager, ApplicationDbContext context)
+        public FileUploadController(IWebHostEnvironment hostingEnv, UserManager<VAC_TUser> userManager, IVact_TDbContext context)
         {
             _hostingEnv = hostingEnv;
             _userManager = userManager;

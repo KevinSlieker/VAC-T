@@ -14,11 +14,11 @@ namespace VAC_T.ApiControllers
 {
     public class SolicitationsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IVact_TDbContext _context;
         private UserManager<VAC_TUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
 
-        public SolicitationsController(ApplicationDbContext context, UserManager<VAC_TUser> userManager, RoleManager<IdentityRole> roleManager)
+        public SolicitationsController(IVact_TDbContext context, UserManager<VAC_TUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userManager = userManager;

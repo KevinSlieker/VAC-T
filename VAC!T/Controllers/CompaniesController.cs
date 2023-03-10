@@ -13,10 +13,10 @@ namespace VAC_T.Controllers
 {
     public class CompaniesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IVact_TDbContext _context;
         private UserManager<VAC_TUser> _userManager;
 
-        public CompaniesController(ApplicationDbContext context, UserManager<VAC_TUser> userManager)
+        public CompaniesController(IVact_TDbContext context, UserManager<VAC_TUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -97,7 +97,7 @@ namespace VAC_T.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(company);
+                _context.Company.Add(company);
                 await _context.SaveChangesAsync();
                 var userCompany = new VAC_TUser
                 {
@@ -111,10 +111,10 @@ namespace VAC_T.Controllers
                 };
                 var result = await _userManager.CreateAsync(userCompany, "Employer" + company.Name.Replace(" ", "") + "123!");
                 await _userManager.AddToRoleAsync(userCompany, "ROLE_EMPLOYER");
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 company.User = userCompany;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 company = _context.Company.Where(c => c.Name== company.Name).FirstOrDefault();
                 int id = company.Id;
                 return RedirectToAction("EditCompanyLogo", "FileUpload", new { id });
@@ -154,7 +154,7 @@ namespace VAC_T.Controllers
             {
                 try
                 {
-                    _context.Update(company);
+                    _context.Company.Update(company);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

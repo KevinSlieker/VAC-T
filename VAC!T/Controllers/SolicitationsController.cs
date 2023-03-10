@@ -14,11 +14,11 @@ namespace VAC_T.Controllers
 {
     public class SolicitationsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IVact_TDbContext _context;
         private UserManager<VAC_TUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
 
-        public SolicitationsController(ApplicationDbContext context, UserManager<VAC_TUser> userManager, RoleManager<IdentityRole> roleManager)
+        public SolicitationsController(IVact_TDbContext context, UserManager<VAC_TUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userManager = userManager;
@@ -98,7 +98,7 @@ namespace VAC_T.Controllers
             else
             {
                 var solicitation = new Solicitation { User = user, JobOffer = jobOffer, Date = DateTime.Now };
-                _context.Add(solicitation);
+                _context.Solicitation.Add(solicitation);
                 await _context.SaveChangesAsync();
                 return Redirect("/JobOffers/Details/" + jobOffer.Id);
             }
@@ -175,7 +175,7 @@ namespace VAC_T.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(solicitation);
+                _context.Solicitation.Add(solicitation);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -214,7 +214,7 @@ namespace VAC_T.Controllers
             {
                 try
                 {
-                    _context.Update(solicitation);
+                    _context.Solicitation.Update(solicitation);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

@@ -4,7 +4,7 @@ using VAC_T.Models;
 
 namespace VAC_T.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<VAC_TUser>
+    public class ApplicationDbContext : IdentityDbContext<VAC_TUser>, IVact_TDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

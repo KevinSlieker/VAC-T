@@ -18,11 +18,11 @@ namespace VAC_T.ApiControllers
     [ApiController]
     public class CompaniesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IVact_TDbContext _context;
         private UserManager<VAC_TUser> _userManager;
         private readonly IMapper _mapper;
 
-        public CompaniesController(ApplicationDbContext context, UserManager<VAC_TUser> userManager, IMapper mapper)
+        public CompaniesController(IVact_TDbContext context, UserManager<VAC_TUser> userManager, IMapper mapper)
         {
             _context = context;
             _userManager = userManager;
@@ -108,7 +108,7 @@ namespace VAC_T.ApiControllers
                 return NotFound("Database not connected");
             }
             var companyEntity = _mapper.Map<Company>(company); 
-            _context.Add(companyEntity);
+            _context.Co.Add(companyEntity);
             await _context.SaveChangesAsync();
             var userCompany = new VAC_TUser
             {
@@ -122,10 +122,10 @@ namespace VAC_T.ApiControllers
             };
             var result = await _userManager.CreateAsync(userCompany, "Employer" + companyEntity.Name.Replace(" ", "") + "123!");
             await _userManager.AddToRoleAsync(userCompany, "ROLE_EMPLOYER");
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             companyEntity.User = userCompany;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             companyEntity = _context.Company.Where(c => c.Name == companyEntity.Name).FirstOrDefault();
             int id = companyEntity.Id;
             var newCompany = _mapper.Map<CompanyDTO>(companyEntity);
@@ -171,7 +171,7 @@ namespace VAC_T.ApiControllers
 
            _mapper.Map(company, companyEntity);
 
-            _context.Update(companyEntity);
+            _context.Company.Update(companyEntity);
             await _context.SaveChangesAsync();   
             return NoContent();
         }

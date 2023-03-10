@@ -13,11 +13,11 @@ namespace VAC_T.Controllers
 {
     public class JobOffersController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IVact_TDbContext _context;
         private readonly UserManager<VAC_TUser> _userManager;
         private readonly SignInManager<VAC_TUser> _signInManager;
 
-        public JobOffersController(ApplicationDbContext context, UserManager<VAC_TUser> userManager, SignInManager<VAC_TUser> signInManager)
+        public JobOffersController(IVact_TDbContext context, UserManager<VAC_TUser> userManager, SignInManager<VAC_TUser> signInManager)
         {
             _context = context;
             _userManager = userManager;
@@ -82,7 +82,7 @@ namespace VAC_T.Controllers
             if (ModelState.IsValid)
             {
                 jobOffer.Company = await _context.Company.FindAsync(jobOffer.CompanyId);
-                _context.Add(jobOffer);
+                _context.JobOffer.Add(jobOffer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -121,7 +121,7 @@ namespace VAC_T.Controllers
             {
                 try
                 {
-                    _context.Update(jobOffer);
+                    _context.JobOffer.Update(jobOffer);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

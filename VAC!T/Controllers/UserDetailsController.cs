@@ -13,10 +13,10 @@ namespace VAC_T.Controllers
 {
     public class UserDetailsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IVact_TDbContext _context;
         private UserManager<VAC_TUser> _userManager;
 
-        public UserDetailsController(ApplicationDbContext context, UserManager<VAC_TUser> userManager)
+        public UserDetailsController(IVact_TDbContext context, UserManager<VAC_TUser> userManager)
         {
             _context = context;
             _userManager = userManager;

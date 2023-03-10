@@ -18,12 +18,12 @@ namespace VAC_T.ApiControllers
     [ApiController]
     public class JobOffersController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IVact_TDbContext _context;
         private readonly UserManager<VAC_TUser> _userManager;
         private readonly SignInManager<VAC_TUser> _signInManager;
         private readonly IMapper _mapper;
 
-        public JobOffersController(ApplicationDbContext context, UserManager<VAC_TUser> userManager, SignInManager<VAC_TUser> signInManager, IMapper mapper)
+        public JobOffersController(IVact_TDbContext context, UserManager<VAC_TUser> userManager, SignInManager<VAC_TUser> signInManager, IMapper mapper)
         {
             _context = context;
             _userManager = userManager;
@@ -115,7 +115,7 @@ namespace VAC_T.ApiControllers
             //jobOfferEntity.CompanyId = company.Id;
             //jobOfferEntity.Residence = company.Residence;
             jobOfferEntity.Company = await _context.Company.FindAsync(jobOfferEntity.CompanyId);
-            _context.Add(jobOfferEntity);
+            _context.JobOffer.Add(jobOfferEntity);
             await _context.SaveChangesAsync();
             var newJobOffer = _mapper.Map<JobOfferDTO>(jobOfferEntity);
             return CreatedAtAction(nameof(GetJobOfferByIdAsync), new {id = newJobOffer.Id}, newJobOffer);
@@ -160,7 +160,7 @@ namespace VAC_T.ApiControllers
 
             _mapper.Map(jobOffer,jobOfferEntity);
 
-            _context.Update(jobOfferEntity);
+            _context.JobOffer.Update(jobOfferEntity);
             await _context.SaveChangesAsync();
 
             return NoContent();
