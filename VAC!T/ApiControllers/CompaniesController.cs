@@ -94,7 +94,7 @@ namespace VAC_T.ApiControllers
 
         // POST: api/Companies
         [HttpPost]
-        public async Task<ActionResult> CreateAsync([FromBody] CompanyDTO company)
+        public async Task<ActionResult> PostAsync([FromBody] CompanyDTO company)
         {
             if (_context.Company == null)
             {
@@ -156,7 +156,7 @@ namespace VAC_T.ApiControllers
 
         // Delete: api/Companies/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteAsync(int id)
+        public async Task<ActionResult> DeleteCompanyAsync(int id)
         {
             if (_context.Company == null)
             {

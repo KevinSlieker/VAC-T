@@ -91,7 +91,7 @@ namespace VAC_T.ApiControllers
         // POST: api/JobOffers
 
         [HttpPost]
-        public async Task<ActionResult> CreateAsync([FromBody] JobOfferDTOForCreateTemp jobOffer) // JobOfferDTOForUpdateAndCreate
+        public async Task<ActionResult> PostAsync([FromBody] JobOfferDTOForCreateTemp jobOffer) // JobOfferDTOForUpdateAndCreate
         {
             if (_context.JobOffer == null)
             { 
@@ -140,7 +140,7 @@ namespace VAC_T.ApiControllers
 
         // Delete: api/JobOffers/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteAsync(int id)
+        public async Task<ActionResult> DeleteJobOfferAsync(int id)
         {
             if (_context.JobOffer == null)
             {

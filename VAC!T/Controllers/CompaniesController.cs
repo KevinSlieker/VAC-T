@@ -174,7 +174,7 @@ namespace VAC_T.Controllers
         }
 
         // GET: Companies/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
             if (id == null || _context.Company == null)
             {

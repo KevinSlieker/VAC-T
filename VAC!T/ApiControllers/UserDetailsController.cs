@@ -90,7 +90,7 @@ namespace VAC_T.ApiControllers
 
         // Delete: api/UserDetails/(Users id)
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteAsync(string id)
+        public async Task<ActionResult> DeleteUserAsync(string id)
         {
             if (!User.IsInRole("ROLE_ADMIN"))
             {
