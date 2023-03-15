@@ -27,10 +27,10 @@ namespace VAC_T.Controllers
         {
 
             var user = await _userManager.GetUserAsync(User);
-            var applications = _context.Appointment.Include(a => a.Candidate).Include(a => a.Employer);
+            var applications = _context.Appointment.Include(a => a.Candidate).Include(a => a.Employer).Include(a => a.JobOffer);
             if (User.IsInRole("ROLE_EMPLOYER"))
             {
-                applications = _context.Appointment.Where(a => a.Employer == user).Include(a => a.Candidate).Include(a => a.Employer);
+                applications = _context.Appointment.Where(a => a.Employer == user).Include(a => a.Candidate).Include(a => a.Employer).Include(a => a.JobOffer);
             }
             return View(await applications.ToListAsync());
         }

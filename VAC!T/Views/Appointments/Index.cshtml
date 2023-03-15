@@ -34,6 +34,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Candidate)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JobOffer)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -56,10 +59,13 @@
                 @Html.DisplayFor(modelItem => item.Available)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Employer.Id)
+                @Html.DisplayFor(modelItem => item.Employer.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Candidate.Id)
+                @Html.DisplayFor(modelItem => item.Candidate.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.JobOffer.Name)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
