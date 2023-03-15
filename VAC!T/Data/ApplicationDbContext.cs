@@ -23,6 +23,18 @@ namespace VAC_T.Data
                 .WithOne(u => u.Company)
                 .HasForeignKey("Company", "UserId")
                 .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.Employer)
+                .WithMany(u => u.Appointments)
+                .HasForeignKey(a => a.EmployerId);
+
+            modelBuilder.Entity<Appointment>()
+               .HasOne(a => a.Candidate)
+               .WithMany(u => u.AppointmentsCandidate)
+               .HasForeignKey(a => a.CandidateId);
         }
+
+        public DbSet<VAC_T.Models.Appointment> Appointment { get; set; } = default!;
     }
 }
