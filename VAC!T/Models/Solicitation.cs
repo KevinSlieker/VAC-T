@@ -18,5 +18,8 @@ namespace VAC_T.Models
         [DataType(DataType.Date)]
         public DateTime Date { get; set; } = DateTime.Now;
 
+        [Display(Name = "Sollicitatie Gesprek")]
+        public Appointment? Appointment { get; set; }
+
     }
 }

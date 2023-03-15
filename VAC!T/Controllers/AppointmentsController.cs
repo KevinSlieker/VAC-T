@@ -180,6 +180,46 @@ namespace VAC_T.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> Select(int? id) // solicitation id
+        {
+            if (id == null || _context.Appointment == null)
+            {
+                return NotFound();
+            }
+            var solicitation = await _context.Solicitation.Include(s => s.JobOffer.Company.User).FirstAsync(s => s.Id == id);
+
+            var appointments = await _context.Appointment.Where(a => a.EmployerId == solicitation.JobOffer.Company.User.Id)
+                .Where(a => a.JobOfferId == null || a.JobOfferId == solicitation.JobOffer.Id)
+                .Where(a => a.Available == true).OrderByDescending(a => a.Date).OrderByDescending(a => a.Time).ToListAsync();
+            if (appointments == null)
+            {
+                return NotFound();
+            }
+            ViewData["SolicitationId"] = solicitation.Id;
+            return View(appointments);
+        }
+
+        [HttpPost, ActionName("Select")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SelectConfirmed(int appointmentId, int solicitationId) // appointment id
+        {
+            if (_context.Appointment == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Appointment'  is null.");
+            }
+            var solicitation = await _context.Appointment.FindAsync(appointmentId);
+
+            var appointments = await _context.Appointment.Where(a => a.EmployerId == solicitation.JobOffer.Company.User.Id)
+                .Where(a => a.JobOfferId == null || a.JobOfferId == solicitation.JobOffer.Id)
+                .Where(a => a.Available == true).ToListAsync();
+            if (appointments == null)
+            {
+                return NotFound();
+            }
+
+            return View(appointments);
+        }
+
         private bool AppointmentExists(int id)
         {
           return (_context.Appointment?.Any(e => e.Id == id)).GetValueOrDefault();
