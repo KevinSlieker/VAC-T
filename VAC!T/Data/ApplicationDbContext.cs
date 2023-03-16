@@ -30,6 +30,12 @@ namespace VAC_T.Data
                 .HasForeignKey("Solicitation", "AppointmentId")
                 .OnDelete(DeleteBehavior.SetNull);
 
+            modelBuilder.Entity<Solicitation>()
+                .HasOne(s => s.User)
+                .WithMany(u => u.Solicitations)
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             //modelBuilder.Entity<Appointment>()
             //    .HasOne(a => a.Employer)
             //    .WithMany(u => u.Appointments)

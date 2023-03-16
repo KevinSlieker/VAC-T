@@ -10,6 +10,7 @@ namespace VAC_T.Models
 
         [Display(Name = "Sollicitant")]
         public VAC_TUser User { get; set; }
+        public string UserId { get; set; }
         public JobOffer JobOffer { get; set; }
 
         [Display(Name = "Uitgenodigd")]
