@@ -1,4 +1,5 @@
-﻿@model IEnumerable<VAC_T.Models.Appointment>
+﻿@*@model VAC_T.Models.SolicitationAppointmentModel*@
+@model IEnumerable<VAC_T.Models.Appointment>
 @{
     ViewData["Title"] = "Select";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -6,27 +7,29 @@
 
 <h1>Select</h1>
 
-<form class="row align-items-center" asp-action="Select" method="post">
+<form class="align-items-center" asp-action="Select" method="post">
     <p>
         <div class="col-4">
-            Uitgenodigd:
             <div class="form-input">
-                Ja:<input type="checkbox" name="searchSelectedYes" value="true" checked="@ViewData["searchSelectedYes"]" />
-            </div>
-            <div class="form-input">
-                Nee:<input type="checkbox" name="searchSelectedNo" value="true" checked="@ViewData["searchSelectedNo"]" />
+                <input type="hidden" name="solicitationId" value="@ViewData["SolicitationId"]" />
+                <div class="form-group">
+                    <label class="control-label">Gesprekstijd:</label>
+                    <select name="appointmentId" id="appointmentId" class="form-select">
+                        <option selected disabled>Plan het sollicitatiegesprek.</option>
+                        @foreach (var item in Model)
+                        {
+                            <option value="@item.Id">@Html.DisplayFor(modelItem => item.Date) @Html.DisplayFor(modelItem => item.Time)</option>
+                        }
+                    </select>
+                </div>
+@*                <div class="form-group">
+                    <label asp-for="AppointmentId" class="control-label"></label>
+                    <select asp-for="AppointmentId" class="form-control" asp-items="ViewBag.JobOfferId">
+                        <option value="@null">Geen</option>
+                    </select>
+                </div>*@
             </div>
         </div>
-        <input type="hidden" name="solicitationId" value="@ViewData["SolicitationId"]" />
-        <div class="form-group">
-            <label class="control-label">Gesprekstijd</label>
-            <select name="appointmentId" class="form-select">
-                <option selected disabled>Plan het sollicitatiegesprek.</option>
-                @foreach (var item in Model)
-                {
-                    <option value="@item.Id">@item.Date @item.Time</option>
-                }
-            </select>
         <div class="col-3 d-flex">
             <input type="submit" value="Gesprek bevestigen" class="btn btn-primary" />
         </div>
@@ -50,13 +53,7 @@
                 @Html.DisplayNameFor(model => model.IsOnline)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Available)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Employer)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Candidate)
+                @Html.DisplayNameFor(model => model.Company)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.JobOffer)
@@ -81,13 +78,7 @@
                     @Html.DisplayFor(modelItem => item.IsOnline)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Available)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Employer.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Candidate.Name)
+                    @Html.DisplayFor(modelItem => item.Company.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.JobOffer.Name)

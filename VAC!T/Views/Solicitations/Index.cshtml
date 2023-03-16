@@ -148,14 +148,17 @@
                                 <td>
                                     @if (item.Appointment == null && User.IsInRole("ROLE_CANDIDATE") && item.Selected == true)
                                     {
-                                        <a class="text-decoration-none text-orange" asp-controller="Appointment" asp-action="Select" asp-route-id="@item.Id">
+                                        <a class="text-decoration-none text-orange" asp-controller="Appointments" asp-action="Select" asp-route-id="@item.Id">
                                             Afspraak plannen
                                         </a>
                                     } else
                                     {
                                         if (item.Appointment != null)
                                         {
-                                            @item.Appointment.Date @item.Appointment.Time
+                                            <a class="text-decoration-none text-orange" asp-controller="Appointments" asp-action="Details" asp-route-id="@item.Appointment.Id">
+                                               @Html.DisplayFor(modelItem => item.Appointment.Date) 
+                                               @Html.DisplayFor(modelItem => item.Appointment.Time)
+                                            </a>
                                         } else
                                         {
                                             @Html.DisplayFor(modelItem => item.Appointment)

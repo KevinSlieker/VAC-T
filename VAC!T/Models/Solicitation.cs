@@ -20,6 +20,6 @@ namespace VAC_T.Models
 
         [Display(Name = "Sollicitatie Gesprek")]
         public Appointment? Appointment { get; set; }
-
+        public int? AppointmentId { get; set; }
     }
 }

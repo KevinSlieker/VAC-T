@@ -6,10 +6,12 @@
 }
 
 <h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (User.IsInRole("ROLE_EMPLOYER"))
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -26,13 +28,10 @@
                 @Html.DisplayNameFor(model => model.IsOnline)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Available)
+                @Html.DisplayNameFor(model => model.Company)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Employer)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Candidate)
+                @Html.DisplayNameFor(model => model.Solicitation)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.JobOffer)
@@ -56,13 +55,10 @@
                 @Html.DisplayFor(modelItem => item.IsOnline)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Available)
+                @Html.DisplayFor(modelItem => item.Company.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Employer.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Candidate.Name)
+                @Html.DisplayFor(modelItem => item.Solicitation.User.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.JobOffer.Name)

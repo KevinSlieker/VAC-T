@@ -32,5 +32,6 @@ namespace VAC_T.Models
         public VAC_TUser? User { get; set; }
 
         public ICollection<JobOffer>? JobOffers { get; set; }
+        public ICollection<Appointment>? Appointments { get; set;}
     }
 }

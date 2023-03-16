@@ -37,22 +37,22 @@
             @Html.DisplayFor(model => model.IsOnline)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Available)
+            @Html.DisplayNameFor(model => model.Company)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Available)
+            @Html.DisplayFor(model => model.Company.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Employer)
+            @Html.DisplayNameFor(model => model.Solicitation)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Employer.Id)
+            @Html.DisplayFor(model => model.Solicitation.User.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Candidate)
+            @Html.DisplayNameFor(model => model.JobOffer)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Candidate.Id)
+            @Html.DisplayFor(model => model.JobOffer.Name)
         </dd>
     </dl>
     

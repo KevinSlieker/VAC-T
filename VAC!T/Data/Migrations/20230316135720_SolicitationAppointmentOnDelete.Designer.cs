@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VAC_T.Data;
 
@@ -11,9 +12,11 @@ using VAC_T.Data;
 namespace VACT.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230316135720_SolicitationAppointmentOnDelete")]
+    partial class SolicitationAppointmentOnDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,7 +197,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("JobOfferId");
 
-                    b.ToTable("Appointment", (string)null);
+                    b.ToTable("Appointment");
                 });
 
             modelBuilder.Entity("VAC_T.Models.Company", b =>
@@ -240,7 +243,7 @@ namespace VACT.Data.Migrations
                         .IsUnique()
                         .HasFilter("[UserId] IS NOT NULL");
 
-                    b.ToTable("Company", (string)null);
+                    b.ToTable("Company");
                 });
 
             modelBuilder.Entity("VAC_T.Models.JobOffer", b =>
@@ -280,7 +283,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("JobOffer", (string)null);
+                    b.ToTable("JobOffer");
                 });
 
             modelBuilder.Entity("VAC_T.Models.Solicitation", b =>
@@ -316,7 +319,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Solicitation", (string)null);
+                    b.ToTable("Solicitation");
                 });
 
             modelBuilder.Entity("VAC_T.Models.VAC_TUser", b =>

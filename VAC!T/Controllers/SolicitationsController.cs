@@ -65,18 +65,18 @@ namespace VAC_T.Controllers
             if (User.IsInRole("ROLE_CANDIDATE"))
             {
                 return _context.Solicitation != null ?
-                   View(await solicitation.Where(x => x.User == user).Include(x => x.JobOffer.Company).ToListAsync()) :
+                   View(await solicitation.Where(x => x.User == user).Include(x => x.JobOffer.Company).Include(a => a.Appointment).ToListAsync()) :
                    Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
             } if (User.IsInRole("ROLE_ADMIN")) 
             {
                 return _context.Solicitation != null ?
-                  View(await solicitation.Include(x => x.JobOffer.Company).Include(x => x.User).ToListAsync()) :
+                  View(await solicitation.Include(x => x.JobOffer.Company).Include(x => x.User).Include(a => a.Appointment).ToListAsync()) :
                   Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
             } 
             else
             {
                 return _context.Solicitation != null ?
-                  View(await solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).Include(x => x.User).ToListAsync()) :
+                  View(await solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).Include(x => x.User).Include(a => a.Appointment).ToListAsync()) :
                   Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
             }
         }
