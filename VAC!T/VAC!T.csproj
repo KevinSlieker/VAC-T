@@ -47,6 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VAC!T.Business\VAC!T.Business.csproj" />
     <ProjectReference Include="..\VAC!T.DAL\VAC!T.DAL.csproj" />
   </ItemGroup>
 
