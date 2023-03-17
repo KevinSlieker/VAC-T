@@ -34,6 +34,7 @@ namespace VAC_T.Controllers
             var applications = _context.Appointment.Include(a => a.Company.User).Include(a => a.Solicitation.User).Include(a => a.JobOffer);
             if (User.IsInRole("ROLE_EMPLOYER"))
             {
+                await CleanOldAppointments();
                 applications = _context.Appointment.Where(a => a.Company.User == user).Include(a => a.Solicitation.User).Include(a => a.Company).Include(a => a.JobOffer);
             }
             return View(await applications.ToListAsync());
@@ -82,12 +83,13 @@ namespace VAC_T.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Date,Time,Duration,IsOnline,CompanyId,SolicitationId,JobOfferId")] Appointment appointment)
+        public async Task<IActionResult> Create([Bind("Id,Date,Time,Duration,IsOnline,CompanyId,JobOfferId")] Appointment appointment)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
                 return Unauthorized("Unauthorized");
             }
+            ModelState.Remove("Company");
             if (ModelState.IsValid)
             {
                 _context.Add(appointment);
@@ -126,7 +128,7 @@ namespace VAC_T.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Date,Time,Duration,IsOnline,CompanyId,SolicitationId,JobOfferId")] Appointment appointment)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Date,Time,Duration,IsOnline,CompanyId,JobOfferId")] Appointment appointment)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
@@ -249,17 +251,29 @@ namespace VAC_T.Controllers
             {
                 return NotFound();
             }
-            appointment.SolicitationId= solicitation.Id;
-            appointment.JobOfferId = solicitation.JobOffer.Id;
-
+            appointment.Solicitation= solicitation;
+            appointment.JobOffer = solicitation.JobOffer;
+            solicitation.Appointment= appointment;
             _context.Update(appointment);
-            await _context.SaveChangesAsync();
-
-            solicitation.AppointmentId= appointment.Id;
             _context.Update(solicitation);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index", "Solicitations");
+        }
+
+        public async Task CleanOldAppointments()
+        {
+            if (!User.IsInRole("ROLE_EMPLOYER"))
+            {
+                return;
+            }
+            DateTime dateTime= DateTime.Now;
+            var user = await _userManager.GetUserAsync(User);
+            var company = await _context.Company.Where(c => c.User == user).FirstAsync();
+            var appointments = await _context.Appointment.Where(a => a.CompanyId== company.Id).Where(a => a.Solicitation == null)
+                .Where(a => a.Date.CompareTo(dateTime) < 0).ToListAsync();
+            _context.RemoveRange(appointments);
+            _context.SaveChanges();
         }
 
         private bool AppointmentExists(int id)

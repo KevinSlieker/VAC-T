@@ -17,12 +17,11 @@ namespace VAC_T.Models
         public TimeSpan Duration { get; set; }
         [Display(Name = "Online")]
         public bool IsOnline { get; set; }
-        public Company? Company { get; set; }
-        public int? CompanyId { get; set; }
+        public Company Company { get; set; }
+        public int CompanyId { get; set; }
         public JobOffer? JobOffer { get; set; }
         public int? JobOfferId { get;set; }
-        public Solicitation? Solicitation { get; set; }
-        public int? SolicitationId { get; set; }
+        virtual public Solicitation? Solicitation { get; set; }
 
     }
 }

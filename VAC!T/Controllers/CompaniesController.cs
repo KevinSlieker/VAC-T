@@ -200,7 +200,7 @@ namespace VAC_T.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Company'  is null.");
             }
-            var company = await _context.Company.Include(c => c.User).FirstOrDefaultAsync(c => c.Id == id);
+            var company = await _context.Company.Include(c => c.User).Include(c => c.Appointments).FirstOrDefaultAsync(c => c.Id == id);
             if (company != null)
             {
                 if (company.User != null)
@@ -211,6 +211,10 @@ namespace VAC_T.Controllers
                     {
                         _context.Users.Remove(user);
                     }
+                }
+                if (company.Appointments != null)
+                {
+                    _context.Appointment.RemoveRange(company.Appointments);
                 }
                 _context.Company.Remove(company);
             }
