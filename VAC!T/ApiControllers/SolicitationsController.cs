@@ -1,38 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components.Forms;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using VAC_T.Data;
+using VAC_T.Data.DTO;
 using VAC_T.Models;
 
 namespace VAC_T.ApiControllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SolicitationsController : Controller
     {
         private readonly IVact_TDbContext _context;
         private UserManager<VAC_TUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
+        private readonly IMapper _mapper;
 
-        public SolicitationsController(IVact_TDbContext context, UserManager<VAC_TUser> userManager, RoleManager<IdentityRole> roleManager)
+        public SolicitationsController(IVact_TDbContext context, UserManager<VAC_TUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _mapper = mapper;
         }
 
-        // GET: Solicitations
-        public async Task<IActionResult> GetAllSolicitationsAsync(string searchName, string searchCompany, string searchCandidate, bool searchSelectedYes, bool searchSelectedNo)
+        // GET: api/Solicitations
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<SolicitationDTOComplete>>> GetAllSolicitationsAsync([FromQuery] string? searchName,
+            [FromQuery] string? searchCompany, [FromQuery] string? searchCandidate, [FromQuery] bool? searchSelectedYes, [FromQuery] bool? searchSelectedNo)
         {
-            ViewData["searchName"] = searchName;
-            ViewData["searchCompany"] = searchCompany;
-            ViewData["searchCandidate"] = searchCandidate;
-            ViewData["searchSelectedYes"] = searchSelectedYes;
-            ViewData["searchSelectedNo"] = searchSelectedNo;
+            if (_context.Solicitation == null)
+            {
+                return NotFound("Database not connected");
+            }
 
             var solicitation = from s in _context.Solicitation select s;
 
@@ -64,25 +68,22 @@ namespace VAC_T.ApiControllers
             var user = await _userManager.GetUserAsync(User);
             if (User.IsInRole("ROLE_CANDIDATE"))
             {
-                return _context.Solicitation != null ?
-                   View(await solicitation.Where(x => x.User == user).Include(x => x.JobOffer.Company).ToListAsync()) :
-                   Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
+                solicitation = solicitation.Where(x => x.User == user).Include(x => x.JobOffer.Company);
             }
             if (User.IsInRole("ROLE_ADMIN"))
             {
-                return _context.Solicitation != null ?
-                  View(await solicitation.Include(x => x.JobOffer.Company).Include(x => x.User).ToListAsync()) :
-                  Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
+                solicitation = solicitation.Include(x => x.JobOffer.Company).Include(x => x.User);
             }
-            else
+            if (User.IsInRole("ROLE_EMPLOYER"))
             {
-                return _context.Solicitation != null ?
-                  View(await solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).Include(x => x.User).ToListAsync()) :
-                  Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
+                solicitation = solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).Include(x => x.User);
             }
+            var result = await _mapper.ProjectTo<SolicitationDTOComplete>(solicitation).ToListAsync();
+            return Ok(result);
+
         }
 
-        //public async Task<IActionResult> Solicitate(int jobOfferId)
+        //public async Task<IActionResult> Solicitate(int jobOfferId) what do i do for this?
         //{
         //    var user = await _userManager.GetUserAsync(User);
         //    var jobOffer = _context.JobOffer.Find(jobOfferId);
@@ -105,176 +106,94 @@ namespace VAC_T.ApiControllers
         //    }
         //}
 
-        //public async Task<IActionResult> Select(int id)
-        //{
-        //    var solicitation = await _context.Solicitation.FindAsync(id);
-        //    if (solicitation == null)
-        //    {
-        //        Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
-        //    }
-        //    if (solicitation.Selected == true)
-        //    {
-        //        solicitation.Selected = false;
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    else
-        //    {
-        //        solicitation.Selected = true;
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    return RedirectToAction("Index");
-        //}
+        // Posts: api/Solicitations/4
+        [HttpPost("{jobOfferId}")]
+        public async Task<ActionResult> PostSolicitateAsync(int jobOfferId)
+        {
+            if (_context.Solicitation == null)
+            {
+                return NotFound("Database not connected");
+            }
 
-        //public async Task<IActionResult> UserDetails(string id)
-        //{
-        //    if (id == null || _context.Solicitation == null)
-        //    {
-        //        return NotFound();
-        //    }
+            var user = await _userManager.GetUserAsync(User);
+            var jobOffer = await _context.JobOffer.FindAsync(jobOfferId);
+            if (user == null)
+            {
+                return NotFound("user doesn't exist");
+            }
+            if (jobOffer == null)
+            {
+                return NotFound("jobOffer doesn't exist");
+            }
+            var solicitation = new Solicitation { User = user, JobOffer = jobOffer, Date = DateTime.Now };
+            _context.Add(solicitation);
+            await _context.SaveChangesAsync();
+            var newSolicitation = _mapper.Map<SolicitationDTOComplete>(solicitation);
+            return Ok(newSolicitation);
+        }
 
-        //    var user = await _context.Users
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (user == null)
-        //    {
-        //        return NotFound();
-        //    }
+        // Delete: api/Solicitations
+        [HttpDelete("{jobOfferId}")]
+        public async Task<ActionResult> DeleteSolicitateAsync(int jobOfferId)
+        {
+            if (_context.Solicitation == null)
+            {
+                return NotFound("Database not connected");
+            }
 
-        //    return View(user);
-        //}
-        ////    return Redirect("/Solicitations/Index");
-        ////}
+            var user = await _userManager.GetUserAsync(User);
+            var jobOffer = await _context.JobOffer.FindAsync(jobOfferId);
+            if (user == null)
+            {
+                return NotFound("user doesn't exist");
+            }
+            if (jobOffer == null)
+            {
+                return NotFound("jobOffer doesn't exist");
+            }
 
-        //// GET: Solicitations/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null || _context.Solicitation == null)
-        //    {
-        //        return NotFound();
-        //    }
+            if (_context.Solicitation.Where(x => x.JobOffer == jobOffer && x.User == user).Any())
+            {
+                var solicitation = _context.Solicitation.Where(x => x.JobOffer == jobOffer && x.User == user).First();
+                if (solicitation != null)
+                {
+                    _context.Solicitation.Remove(solicitation);
+                }
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            else
+            {
+                return NotFound("User has not applied to this jobOffer");
+            }
+        }
 
-        //    var solicitation = await _context.Solicitation
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (solicitation == null)
-        //    {
-        //        return NotFound();
-        //    }
 
-        //    return View(solicitation);
-        //}
-
-        //// GET: Solicitations/Create
-        //public IActionResult Create()
-        //{
-        //    return View();
-        //}
-
-        //// POST: Solicitations/Create
-        //// To protect from overposting attacks, enable the specific properties you want to bind to.
-        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Id,Selected,Date")] Solicitation solicitation)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(solicitation);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(solicitation);
-        //}
-
-        //// GET: Solicitations/Edit/5
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null || _context.Solicitation == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var solicitation = await _context.Solicitation.FindAsync(id);
-        //    if (solicitation == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(solicitation);
-        //}
-
-        //// POST: Solicitations/Edit/5
-        //// To protect from overposting attacks, enable the specific properties you want to bind to.
-        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, [Bind("Id,Selected,Date")] Solicitation solicitation)
-        //{
-        //    if (id != solicitation.Id)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            _context.Update(solicitation);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!SolicitationExists(solicitation.Id))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(solicitation);
-        //}
-
-        //// GET: Solicitations/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null || _context.Solicitation == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var solicitation = await _context.Solicitation
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (solicitation == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(solicitation);
-        //}
-
-        //// POST: Solicitations/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    if (_context.Solicitation == null)
-        //    {
-        //        return Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
-        //    }
-        //    var solicitation = await _context.Solicitation.FindAsync(id);
-        //    if (solicitation != null)
-        //    {
-        //        _context.Solicitation.Remove(solicitation);
-        //    }
-
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
-
-        //private bool SolicitationExists(int id)
-        //{
-        //    return (_context.Solicitation?.Any(e => e.Id == id)).GetValueOrDefault();
-        //}
+        // Put: api/Solicitations/4
+        [HttpPut("{id}")]
+        public async Task<ActionResult> PutSolicitationSelectAsync(int id)
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized();
+            }
+            var solicitationEntity = await _context.Solicitation.FindAsync(id);
+            if (solicitationEntity == null)
+            {
+                Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
+            }
+            if (solicitationEntity.Selected == true)
+            {
+                solicitationEntity.Selected = false;
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                solicitationEntity.Selected = true;
+                await _context.SaveChangesAsync();
+            }
+            var updatedSolicitation = _mapper.Map<SolicitationDTOSelect>(solicitationEntity);
+            return Ok(updatedSolicitation);
+        }
     }
 }

@@ -31,7 +31,7 @@ namespace VAC_T.ApiControllers
             _mapper = mapper;
         }
 
-        // GET: JobOffers
+        // GET: api/JobOffers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<JobOfferDTO>>> GetAllJobOffersAsync()
         {
@@ -39,7 +39,7 @@ namespace VAC_T.ApiControllers
             {
                 return NotFound("Database not connected");
             }
-            IQueryable<JobOffer>? jobOffers = _context.JobOffer.Include(j => j.Company);
+            var jobOffers = from s in _context.JobOffer.Include(j => j.Company) select s;
 
 
             if (User.IsInRole("ROLE_EMPLOYER") && _signInManager.IsSignedIn(User))
@@ -64,7 +64,7 @@ namespace VAC_T.ApiControllers
             //}
         }
 
-        // GET: JobOffers/Details/5
+        // GET: api/JobOffers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<JobOfferDTO>> GetJobOfferByIdAsync(int id)
         {
@@ -88,21 +88,10 @@ namespace VAC_T.ApiControllers
             return Ok(result);
         }
 
-        // GET: JobOffers/Create
-        //public async Task<IActionResult> Create()
-        //{
-        //    var jobOffer = new JobOffer();
-        //    var user = await _userManager.GetUserAsync(User);
-        //    var company = _context.Company.Where(x => x.User == user).First();
-        //    jobOffer.CompanyId = company.Id;
-        //    jobOffer.Residence = company.Residence;
-        //    return View(jobOffer);
-        //}
-
-        // POST: JobOffers/Create
+        // POST: api/JobOffers
 
         [HttpPost]
-        public async Task<ActionResult> CreateAsync([FromBody] JobOfferDTOForCreateTemp jobOffer) // JobOfferDTOForUpdateAndCreate
+        public async Task<ActionResult> PostAsync([FromBody] JobOfferDTOForCreateTemp jobOffer) // JobOfferDTOForUpdateAndCreate
         {
             if (_context.JobOffer == null)
             { 
@@ -126,25 +115,8 @@ namespace VAC_T.ApiControllers
             return CreatedAtAction(nameof(GetJobOfferByIdAsync), new {id = newJobOffer.Id}, newJobOffer);
         }
 
-        // GET: JobOffers/Edit/5
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null || _context.JobOffer == null)
-        //    {
-        //        return NotFound();
-        //    }
 
-        //    var jobOffer = await _context.JobOffer.Include(j => j.Company).FirstOrDefaultAsync(x => x.Id == id);
-        //    if (jobOffer == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(jobOffer);
-        //}
-
-        // POST: JobOffers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // Put: api/JobOffers/5
         [HttpPut("{id}")]
         public async Task<ActionResult> PutAsync(int id, [FromBody] JobOfferDTOForUpdateAndCreate jobOffer)
         {
@@ -171,27 +143,9 @@ namespace VAC_T.ApiControllers
             return NoContent();
         }
 
-        // GET: JobOffers/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null || _context.JobOffer == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var jobOffer = await _context.JobOffer
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (jobOffer == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(jobOffer);
-        //}
-
-        // POST: JobOffers/Delete/5
+        // Delete: api/JobOffers/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteAsync(int id)
+        public async Task<ActionResult> DeleteJobOfferAsync(int id)
         {
             if (_context.JobOffer == null)
             {

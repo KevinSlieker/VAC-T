@@ -1,0 +1,89 @@
+﻿@*@model VAC_T.Models.SolicitationAppointmentModel*@
+@model IEnumerable<VAC_T.Models.Appointment>
+@{
+    ViewData["Title"] = "Select";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Select</h1>
+
+<form class="align-items-center" asp-action="Select" method="post">
+    <p>
+        <div class="col-4">
+            <div class="form-input">
+                <input type="hidden" name="solicitationId" value="@ViewData["SolicitationId"]" />
+                <div class="form-group">
+                    <label class="control-label">Gesprekstijd:</label>
+                    <select name="appointmentId" id="appointmentId" class="form-select">
+                        <option selected disabled>Plan het sollicitatiegesprek.</option>
+                        @foreach (var item in Model)
+                        {
+                            <option value="@item.Id">@Html.DisplayFor(modelItem => item.Date) @Html.DisplayFor(modelItem => item.Time)</option>
+                        }
+                    </select>
+                </div>
+@*                <div class="form-group">
+                    <label asp-for="AppointmentId" class="control-label"></label>
+                    <select asp-for="AppointmentId" class="form-control" asp-items="ViewBag.JobOfferId">
+                        <option value="@null">Geen</option>
+                    </select>
+                </div>*@
+            </div>
+        </div>
+        <div class="col-3 d-flex">
+            <input type="submit" value="Gesprek bevestigen" class="btn btn-primary" />
+        </div>
+    </p>
+    <hr />
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Time)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Duration)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsOnline)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Company)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JobOffer)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Time)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Duration)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsOnline)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Company.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.JobOffer.Name)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

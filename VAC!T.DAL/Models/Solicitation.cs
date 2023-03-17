@@ -10,6 +10,7 @@ namespace VAC_T.Models
 
         [Display(Name = "Sollicitant")]
         public VAC_TUser User { get; set; }
+        public string UserId { get; set; }
         public JobOffer JobOffer { get; set; }
 
         [Display(Name = "Uitgenodigd")]
@@ -18,5 +19,8 @@ namespace VAC_T.Models
         [DataType(DataType.Date)]
         public DateTime Date { get; set; } = DateTime.Now;
 
+        [Display(Name = "Sollicitatie Gesprek")]
+        public Appointment? Appointment { get; set; }
+        public int? AppointmentId { get; set; }
     }
 }

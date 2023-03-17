@@ -135,6 +135,10 @@ namespace VAC_T.Business
             {
                 _context.Users.Remove(company.User);
             }
+            if (company.Appointments != null)
+            {
+                _context.Appointment.RemoveRange(company.Appointments);
+            }
             _context.Company.Remove(company);
             await _context.SaveChangesAsync();
         }

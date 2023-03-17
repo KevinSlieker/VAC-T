@@ -4,7 +4,7 @@
 @inject RoleManager<IdentityRole> RoleManager
 @inject SignInManager<VAC_TUser> SignInManager
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Mijn Sollicitaties";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -90,6 +90,9 @@
                             <th>
                                 @Html.DisplayNameFor(model => model.Selected)
                             </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Appointment)
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -142,6 +145,26 @@
                                         </a>
                                     </td>
                                 }
+                                <td>
+                                    @if (item.Appointment == null && User.IsInRole("ROLE_CANDIDATE") && item.Selected == true)
+                                    {
+                                        <a class="text-decoration-none text-orange" asp-controller="Appointments" asp-action="Select" asp-route-id="@item.Id">
+                                            Afspraak plannen
+                                        </a>
+                                    } else
+                                    {
+                                        if (item.Appointment != null)
+                                        {
+                                            <a class="text-decoration-none text-orange" asp-controller="Appointments" asp-action="Details" asp-route-id="@item.Appointment.Id">
+                                               @Html.DisplayFor(modelItem => item.Appointment.Date) 
+                                               @Html.DisplayFor(modelItem => item.Appointment.Time)
+                                            </a>
+                                        } else
+                                        {
+                                            @Html.DisplayFor(modelItem => item.Appointment)
+                                        }
+                                    }
+                                </td>
                             </tr>
                         }
                     </tbody>

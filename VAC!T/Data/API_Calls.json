@@ -1,0 +1,587 @@
+{
+	"info": {
+		"_postman_id": "e96be9ca-14c3-4a31-8eef-bd976e608ebe",
+		"name": "VAC!T",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Companies",
+			"item": [
+				{
+					"name": "Get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Companies",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Companies"
+							],
+							"query": [
+								{
+									"key": "searchName",
+									"value": "DSM",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Companies/16",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Companies",
+								"16"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Company",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"name\": \"Test Api2\",\r\n        \"description\": \"Test\",\r\n        \"logoURL\": \"assets\\\\img\\\\company\\\\default.png\",\r\n        \"websiteURL\": \"http://test.nl\",\r\n        \"address\": \"TEST\",\r\n        \"postcode\": \"1234TE\",\r\n        \"residence\": \"Test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/Companies",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Companies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Company",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"id\": 16,\r\n        \"name\": \"Test Api Update\",\r\n        \"description\": \"Test Update\",\r\n        \"logoURL\": \"assets\\\\img\\\\company\\\\9.svg\",\r\n        \"websiteURL\": \"http://test.nl\",\r\n        \"address\": \"TEST\",\r\n        \"postcode\": \"1234TE\",\r\n        \"residence\": \"Test\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/Companies/16",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Companies",
+								"16"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Company",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Companies/15",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Companies",
+								"15"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "JobOffers",
+			"item": [
+				{
+					"name": "Get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/JobOffers",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"JobOffers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Bearer",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBZG1pbiIsIlVzZXJJZCI6NiwiUm9sZSI6MSwiY3VycmVudExvY2F0aW9ucyI6W3siaWQiOjEsInN0YXJ0RGF0ZSI6eyJ5ZWFyIjoyMDIyLCJtb250aCI6IkRFQ0VNQkVSIiwiY2hyb25vbG9neSI6eyJpZCI6IklTTyIsImNhbGVuZGFyVHlwZSI6Imlzbzg2MDEifSwiZXJhIjoiQ0UiLCJtb250aFZhbHVlIjoxMiwiZGF5T2ZNb250aCI6OCwiZGF5T2ZZZWFyIjozNDIsImRheU9mV2VlayI6IlRIVVJTREFZIiwibGVhcFllYXIiOmZhbHNlfSwiZW5kRGF0ZSI6bnVsbCwibmFtZSI6IlV0cmVjaHQifSx7ImlkIjo1LCJzdGFydERhdGUiOnsieWVhciI6MjAyMiwibW9udGgiOiJERUNFTUJFUiIsImNocm9ub2xvZ3kiOnsiaWQiOiJJU08iLCJjYWxlbmRhclR5cGUiOiJpc284NjAxIn0sImVyYSI6IkNFIiwibW9udGhWYWx1ZSI6MTIsImRheU9mTW9udGgiOjgsImRheU9mWWVhciI6MzQyLCJkYXlPZldlZWsiOiJUSFVSU0RBWSIsImxlYXBZZWFyIjpmYWxzZX0sImVuZERhdGUiOm51bGwsIm5hbWUiOiJUZXN0TG9jYXRpb24ifSx7ImlkIjoyLCJzdGFydERhdGUiOnsieWVhciI6MjAyMiwibW9udGgiOiJERUNFTUJFUiIsImNocm9ub2xvZ3kiOnsiaWQiOiJJU08iLCJjYWxlbmRhclR5cGUiOiJpc284NjAxIn0sImVyYSI6IkNFIiwibW9udGhWYWx1ZSI6MTIsImRheU9mTW9udGgiOjgsImRheU9mWWVhciI6MzQyLCJkYXlPZldlZWsiOiJUSFVSU0RBWSIsImxlYXBZZWFyIjpmYWxzZX0sImVuZERhdGUiOm51bGwsIm5hbWUiOiJBcm5oZW0ifSx7ImlkIjozLCJzdGFydERhdGUiOnsieWVhciI6MjAyMiwibW9udGgiOiJERUNFTUJFUiIsImNocm9ub2xvZ3kiOnsiaWQiOiJJU08iLCJjYWxlbmRhclR5cGUiOiJpc284NjAxIn0sImVyYSI6IkNFIiwibW9udGhWYWx1ZSI6MTIsImRheU9mTW9udGgiOjgsImRheU9mWWVhciI6MzQyLCJkYXlPZldlZWsiOiJUSFVSU0RBWSIsImxlYXBZZWFyIjpmYWxzZX0sImVuZERhdGUiOm51bGwsIm5hbWUiOiJTaXR0YXJkIn0seyJpZCI6NCwic3RhcnREYXRlIjp7InllYXIiOjIwMjIsIm1vbnRoIjoiREVDRU1CRVIiLCJjaHJvbm9sb2d5Ijp7ImlkIjoiSVNPIiwiY2FsZW5kYXJUeXBlIjoiaXNvODYwMSJ9LCJlcmEiOiJDRSIsIm1vbnRoVmFsdWUiOjEyLCJkYXlPZk1vbnRoIjo4LCJkYXlPZlllYXIiOjM0MiwiZGF5T2ZXZWVrIjoiVEhVUlNEQVkiLCJsZWFwWWVhciI6ZmFsc2V9LCJlbmREYXRlIjpudWxsLCJuYW1lIjoiRWluZGhvdmVuIn1dfQ.zxo_51RrX-xhkP2KNDKd-ibUALOApdRm33-L6lXHTFY",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://localhost:7220/api/JobOffers/27",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"JobOffers",
+								"27"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Greate JobOffer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Test Api\",\r\n    \"description\": \"TESTEN1233456458\",\r\n    \"logoURL\": \"assets/img/job_offer/csharp.png\",\r\n    \"companyId\": 7,\r\n    \"level\": \"Test\",\r\n    \"residence\": \"Sittard\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/JobOffers",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"JobOffers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update JobOffer",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 27,\r\n    \"name\": \"Test Api Update\",\r\n    \"description\": \"TESTEN1233456458\",\r\n    \"logoURL\": \"assets/img/job_offer/csharp.png\",\r\n    \"level\": \"Test\",\r\n    \"residence\": \"Sittard\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/JobOffers/27",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"JobOffers",
+								"27"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete JobOffer",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/JobOffers/27",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"JobOffers",
+								"27"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Solicitations",
+			"item": [
+				{
+					"name": "Get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Solicitations",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Solicitations"
+							],
+							"query": [
+								{
+									"key": "searchName",
+									"value": "beheerder",
+									"disabled": true
+								},
+								{
+									"key": "searchCompany",
+									"value": "Edu",
+									"disabled": true
+								},
+								{
+									"key": "searchCandidate",
+									"value": "test",
+									"disabled": true
+								},
+								{
+									"key": "searchSelectedYes",
+									"value": "True",
+									"disabled": true
+								},
+								{
+									"key": "searchSelectedNo",
+									"value": "True",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Solicitation Selected",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Solicitations/5",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Solicitations",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Solicitation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Solicitations/25",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Solicitations",
+								"25"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Solicitation",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Solicitations/13",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Solicitations",
+								"13"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserDetails",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/UserDetails?searchEmail&searchName",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"UserDetails"
+							],
+							"query": [
+								{
+									"key": "searchEmail",
+									"value": null
+								},
+								{
+									"key": "searchName",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/UserDetails/00d49358-3617-4ced-b491-b2ba197f7b16",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"UserDetails",
+								"00d49358-3617-4ced-b491-b2ba197f7b16"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/UserDetails/",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"UserDetails",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login admin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Email\": \"Admin@mail.nl\",\r\n    \"Password\": \"Admin123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7220/api/Authenticate/login",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7220",
+					"path": [
+						"api",
+						"Authenticate",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login DSM employer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Email\": \"EmployerDSM@mail.nl\",\r\n    \"Password\": \"EmployerDSM1!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7220/api/Authenticate/login",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7220",
+					"path": [
+						"api",
+						"Authenticate",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login candidate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Email\": \"Candidate@mail.nl\",\r\n    \"Password\": \"Candidate123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7220/api/Authenticate/login",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7220",
+					"path": [
+						"api",
+						"Authenticate",
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRW1wbG95ZXJEU01AbWFpbC5ubCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiZDEyZWI1ZGMtZDA3MC00Y2JlLTg0YjEtYTA0N2YxNmQ4NmE1IiwianRpIjoiZmRlMjNmZWItM2ZkYi00OGU1LWFhNzgtMTNmZmI1MWRmNzc5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUk9MRV9FTVBMT1lFUiIsImV4cCI6MTY3ODQ3MzUwNCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIwIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIxIn0.drOM9JUcAWpiUIAhbhKjCTcxIJjbiin3KlvyRyXSMUE",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VAC_T.Data;
 
@@ -11,9 +12,11 @@ using VAC_T.Data;
 namespace VACT.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230315134835_SollicitationAppointment")]
+    partial class SollicitationAppointment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -167,14 +170,20 @@ namespace VACT.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompanyId")
-                        .HasColumnType("int");
+                    b.Property<bool>("Available")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("CandidateId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<TimeSpan>("Duration")
                         .HasColumnType("time");
+
+                    b.Property<string>("EmployerId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsOnline")
                         .HasColumnType("bit");
@@ -187,7 +196,9 @@ namespace VACT.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyId");
+                    b.HasIndex("CandidateId");
+
+                    b.HasIndex("EmployerId");
 
                     b.HasIndex("JobOfferId");
 
@@ -301,14 +312,11 @@ namespace VACT.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppointmentId")
-                        .IsUnique()
-                        .HasFilter("[AppointmentId] IS NOT NULL");
+                    b.HasIndex("AppointmentId");
 
                     b.HasIndex("JobOfferId");
 
@@ -459,17 +467,21 @@ namespace VACT.Data.Migrations
 
             modelBuilder.Entity("VAC_T.Models.Appointment", b =>
                 {
-                    b.HasOne("VAC_T.Models.Company", "Company")
+                    b.HasOne("VAC_T.Models.VAC_TUser", "Candidate")
+                        .WithMany("AppointmentsCandidate")
+                        .HasForeignKey("CandidateId");
+
+                    b.HasOne("VAC_T.Models.VAC_TUser", "Employer")
                         .WithMany("Appointments")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("EmployerId");
 
                     b.HasOne("VAC_T.Models.JobOffer", "JobOffer")
                         .WithMany()
                         .HasForeignKey("JobOfferId");
 
-                    b.Navigation("Company");
+                    b.Navigation("Candidate");
+
+                    b.Navigation("Employer");
 
                     b.Navigation("JobOffer");
                 });
@@ -498,9 +510,8 @@ namespace VACT.Data.Migrations
             modelBuilder.Entity("VAC_T.Models.Solicitation", b =>
                 {
                     b.HasOne("VAC_T.Models.Appointment", "Appointment")
-                        .WithOne("Solicitation")
-                        .HasForeignKey("VAC_T.Models.Solicitation", "AppointmentId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .WithMany()
+                        .HasForeignKey("AppointmentId");
 
                     b.HasOne("VAC_T.Models.JobOffer", "JobOffer")
                         .WithMany("Solicitations")
@@ -510,9 +521,7 @@ namespace VACT.Data.Migrations
 
                     b.HasOne("VAC_T.Models.VAC_TUser", "User")
                         .WithMany("Solicitations")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Appointment");
 
@@ -521,15 +530,8 @@ namespace VACT.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("VAC_T.Models.Appointment", b =>
-                {
-                    b.Navigation("Solicitation");
-                });
-
             modelBuilder.Entity("VAC_T.Models.Company", b =>
                 {
-                    b.Navigation("Appointments");
-
                     b.Navigation("JobOffers");
                 });
 
@@ -540,6 +542,10 @@ namespace VACT.Data.Migrations
 
             modelBuilder.Entity("VAC_T.Models.VAC_TUser", b =>
                 {
+                    b.Navigation("Appointments");
+
+                    b.Navigation("AppointmentsCandidate");
+
                     b.Navigation("Company");
 
                     b.Navigation("Solicitations");

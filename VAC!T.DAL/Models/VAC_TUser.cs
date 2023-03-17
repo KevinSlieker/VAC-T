@@ -37,7 +37,7 @@ public class VAC_TUser : IdentityUser
 
     public Company? Company { get; set; }
 
-    public ICollection<Solicitation> Solicitations { get; set; }
+    public ICollection<Solicitation>? Solicitations { get; set; }
 
 }
 

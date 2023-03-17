@@ -65,18 +65,18 @@ namespace VAC_T.Controllers
             if (User.IsInRole("ROLE_CANDIDATE"))
             {
                 return _context.Solicitation != null ?
-                   View(await solicitation.Where(x => x.User == user).Include(x => x.JobOffer.Company).ToListAsync()) :
+                   View(await solicitation.Where(x => x.User == user).Include(x => x.JobOffer.Company).Include(a => a.Appointment).ToListAsync()) :
                    Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
             } if (User.IsInRole("ROLE_ADMIN")) 
             {
                 return _context.Solicitation != null ?
-                  View(await solicitation.Include(x => x.JobOffer.Company).Include(x => x.User).ToListAsync()) :
+                  View(await solicitation.Include(x => x.JobOffer.Company).Include(x => x.User).Include(a => a.Appointment).ToListAsync()) :
                   Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
             } 
             else
             {
                 return _context.Solicitation != null ?
-                  View(await solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).Include(x => x.User).ToListAsync()) :
+                  View(await solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).Include(x => x.User).Include(a => a.Appointment).ToListAsync()) :
                   Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
             }
         }
@@ -133,152 +133,6 @@ namespace VAC_T.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> UserDetails(string id)
-        {
-            if (id == null || _context.Solicitation == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return View(user);
-        }
-        //    return Redirect("/Solicitations/Index");
-        //}
-
-        // GET: Solicitations/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Solicitation == null)
-            {
-                return NotFound();
-            }
-
-            var solicitation = await _context.Solicitation
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (solicitation == null)
-            {
-                return NotFound();
-            }
-
-            return View(solicitation);
-        }
-
-        // GET: Solicitations/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Solicitations/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Selected,Date")] Solicitation solicitation)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Solicitation.Add(solicitation);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(solicitation);
-        }
-
-        // GET: Solicitations/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Solicitation == null)
-            {
-                return NotFound();
-            }
-
-            var solicitation = await _context.Solicitation.FindAsync(id);
-            if (solicitation == null)
-            {
-                return NotFound();
-            }
-            return View(solicitation);
-        }
-
-        // POST: Solicitations/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Selected,Date")] Solicitation solicitation)
-        {
-            if (id != solicitation.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Solicitation.Update(solicitation);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SolicitationExists(solicitation.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(solicitation);
-        }
-
-        // GET: Solicitations/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Solicitation == null)
-            {
-                return NotFound();
-            }
-
-            var solicitation = await _context.Solicitation
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (solicitation == null)
-            {
-                return NotFound();
-            }
-
-            return View(solicitation);
-        }
-
-        // POST: Solicitations/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Solicitation == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
-            }
-            var solicitation = await _context.Solicitation.FindAsync(id);
-            if (solicitation != null)
-            {
-                _context.Solicitation.Remove(solicitation);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
         private bool SolicitationExists(int id)
         {

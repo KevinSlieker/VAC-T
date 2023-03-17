@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VAC_T.Data;
 
@@ -11,9 +12,11 @@ using VAC_T.Data;
 namespace VACT.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230316135720_SolicitationAppointmentOnDelete")]
+    partial class SolicitationAppointmentOnDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -167,7 +170,7 @@ namespace VACT.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompanyId")
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
@@ -180,6 +183,9 @@ namespace VACT.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int?>("JobOfferId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SolicitationId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Time")
@@ -301,7 +307,6 @@ namespace VACT.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -461,9 +466,7 @@ namespace VACT.Data.Migrations
                 {
                     b.HasOne("VAC_T.Models.Company", "Company")
                         .WithMany("Appointments")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("CompanyId");
 
                     b.HasOne("VAC_T.Models.JobOffer", "JobOffer")
                         .WithMany()
@@ -510,9 +513,7 @@ namespace VACT.Data.Migrations
 
                     b.HasOne("VAC_T.Models.VAC_TUser", "User")
                         .WithMany("Solicitations")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Appointment");
 
