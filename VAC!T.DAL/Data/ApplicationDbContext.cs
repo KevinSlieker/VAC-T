@@ -13,6 +13,7 @@ namespace VAC_T.Data
         public DbSet<Company> Company { get; set; } = default!;
         public DbSet<JobOffer> JobOffer { get; set; } = default!;
         public DbSet<Solicitation> Solicitation { get; set; } = default!;
+        public DbSet<Appointment> Appointment { get; set; } = default!;
         public DbSet<UserDetailsModel> UserDetailsModel { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -48,6 +49,5 @@ namespace VAC_T.Data
             //    .OnDelete(DeleteBehavior.SetNull);
         }
 
-        public DbSet<VAC_T.Models.Appointment> Appointment { get; set; } = default!;
     }
 }
