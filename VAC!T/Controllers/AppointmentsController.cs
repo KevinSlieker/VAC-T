@@ -13,10 +13,10 @@ namespace VAC_T.Controllers
 {
     public class AppointmentsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IVact_TDbContext _context;
         private readonly UserManager<VAC_TUser> _userManager;
 
-        public AppointmentsController(ApplicationDbContext context, UserManager<VAC_TUser> userManager)
+        public AppointmentsController(IVact_TDbContext context, UserManager<VAC_TUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -92,7 +92,7 @@ namespace VAC_T.Controllers
             ModelState.Remove("Company");
             if (ModelState.IsValid)
             {
-                _context.Add(appointment);
+                _context.Appointment.Add(appointment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -143,7 +143,7 @@ namespace VAC_T.Controllers
             {
                 try
                 {
-                    _context.Update(appointment);
+                    _context.Appointment.Update(appointment);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -254,8 +254,8 @@ namespace VAC_T.Controllers
             appointment.Solicitation= solicitation;
             appointment.JobOffer = solicitation.JobOffer;
             solicitation.Appointment= appointment;
-            _context.Update(appointment);
-            _context.Update(solicitation);
+            _context.Appointment.Update(appointment);
+            _context.Solicitation.Update(solicitation);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index", "Solicitations");
@@ -272,8 +272,8 @@ namespace VAC_T.Controllers
             var company = await _context.Company.Where(c => c.User == user).FirstAsync();
             var appointments = await _context.Appointment.Where(a => a.CompanyId== company.Id).Where(a => a.Solicitation == null)
                 .Where(a => a.Date.CompareTo(dateTime) < 0).ToListAsync();
-            _context.RemoveRange(appointments);
-            _context.SaveChanges();
+            _context.Appointment.RemoveRange(appointments);
+            await _context.SaveChangesAsync();
         }
 
         private bool AppointmentExists(int id)

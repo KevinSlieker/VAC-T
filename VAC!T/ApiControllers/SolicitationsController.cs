@@ -126,7 +126,7 @@ namespace VAC_T.ApiControllers
                 return NotFound("jobOffer doesn't exist");
             }
             var solicitation = new Solicitation { User = user, JobOffer = jobOffer, Date = DateTime.Now };
-            _context.Add(solicitation);
+            _context.Solicitation.Add(solicitation);
             await _context.SaveChangesAsync();
             var newSolicitation = _mapper.Map<SolicitationDTOComplete>(solicitation);
             return Ok(newSolicitation);
