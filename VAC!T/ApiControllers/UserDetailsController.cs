@@ -60,6 +60,10 @@ namespace VAC_T.ApiControllers
             try
             {
                 var user = await _service.GetUserDetailsAsync(id);
+                if (user == null)
+                {
+                    return NotFound();
+                }
                 var userDetails = _mapper.Map<UserDetailsDTO>(user);
                 userDetails.Role = (await _userManager.GetRolesAsync(user)).First();
                 return Ok(userDetails);

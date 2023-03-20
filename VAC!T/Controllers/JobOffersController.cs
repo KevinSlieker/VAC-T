@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using VAC_T.Business;
+using VAC_T.DAL.Exceptions;
 using VAC_T.Data;
 using VAC_T.Models;
 
@@ -16,56 +13,58 @@ namespace VAC_T.Controllers
         private readonly IVact_TDbContext _context;
         private readonly UserManager<VAC_TUser> _userManager;
         private readonly SignInManager<VAC_TUser> _signInManager;
+        private readonly JobOfferService _service;
 
-        public JobOffersController(IVact_TDbContext context, UserManager<VAC_TUser> userManager, SignInManager<VAC_TUser> signInManager)
+        public JobOffersController(IVact_TDbContext context, UserManager<VAC_TUser> userManager, SignInManager<VAC_TUser> signInManager, JobOfferService service)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
+            _service = service;
         }
 
         // GET: JobOffers
         public async Task<IActionResult> Index()
         {
-            if (User.IsInRole("ROLE_EMPLOYER") && _signInManager.IsSignedIn(User))
+            try
             {
-                var user = await _userManager.GetUserAsync(User);
-                return _context.JobOffer != null ?
-                            View(await _context.JobOffer.Include(j => j.Company).Where(C => C.Company.User == user).ToListAsync()) :
-                            Problem("Entity set 'ApplicationDbContext.JobOffer'  is null.");
+                var jobOffers = await _service.GetJobOffersAsync(User);
+                return View(jobOffers);
             }
-            else
+            catch (InternalServerException)
             {
-                return _context.JobOffer != null ?
-                            View(await _context.JobOffer.Include(j => j.Company).ToListAsync()) :
-                            Problem("Entity set 'ApplicationDbContext.JobOffer'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
             }
         }
 
         // GET: JobOffers/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null || _context.JobOffer == null)
+            try
             {
-                return NotFound();
-            }
-            var user = await _userManager.GetUserAsync(User);
-            var jobOffer = await _context.JobOffer.Include(j => j.Company.JobOffers).Include(j => j.Solicitations.Where( x => x.User == user))
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (jobOffer == null)
-            {
-                return NotFound();
-            }
+                var jobOffer = await _service.GetJobOfferAsync(id, User);
+                if (jobOffer == null)
+                {
+                    return NotFound();
+                }
 
-            return View(jobOffer);
+                return View(jobOffer);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
+            }
         }
 
         // GET: JobOffers/Create
         public async Task<IActionResult> Create()
         {
+            if (!User.IsInRole("ROLE_EMPLOYER"))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
             var jobOffer = new JobOffer();
-            var user = await _userManager.GetUserAsync(User);
-            var company = _context.Company.Where(x => x.User == user).First();
+            var company = await _service.GetCompanyForJobOfferAsync(User);
             jobOffer.CompanyId = company.Id;
             jobOffer.Residence = company.Residence;
             return View(jobOffer);
@@ -78,36 +77,46 @@ namespace VAC_T.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Description,LogoURL,Level,CompanyId,Residence")] JobOffer jobOffer)
         {
+            if (!User.IsInRole("ROLE_EMPLOYER"))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
             ModelState.Remove("Company");
             if (ModelState.IsValid)
             {
-                Company? company = await _context.Company.FindAsync(jobOffer.CompanyId);
-                if (company == null)
+                try
                 {
-                    return Problem("CompanyId is not known");
+                    jobOffer = await _service.CreateJobOfferAsync(jobOffer, User);
+                    return RedirectToAction(nameof(Index));
                 }
-                jobOffer.Company = company;
-                _context.JobOffer.Add(jobOffer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                catch (InternalServerException)
+                {
+                    return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
+                }
             }
             return View(jobOffer);
         }
 
         // GET: JobOffers/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null || _context.JobOffer == null)
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
-                return NotFound();
+                return Unauthorized("Not the correct roles.");
             }
-
-            var jobOffer = await _context.JobOffer.Include(j => j.Company).FirstOrDefaultAsync(x => x.Id == id);
-            if (jobOffer == null)
+            try
             {
-                return NotFound();
+                var jobOffer = await _service.GetJobOfferAsync(id, User);
+                if (jobOffer == null)
+                {
+                    return NotFound();
+                }
+                return View(jobOffer);
             }
-            return View(jobOffer);
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
+            }
         }
 
         // POST: JobOffers/Edit/5
@@ -117,6 +126,10 @@ namespace VAC_T.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,LogoURL,Level,Created,Residence,CompanyId,Company")] JobOffer jobOffer)
         {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
             if (id != jobOffer.Id)
             {
                 return NotFound();
@@ -126,21 +139,17 @@ namespace VAC_T.Controllers
             {
                 try
                 {
-                    _context.JobOffer.Update(jobOffer);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!JobOfferExists(jobOffer.Id))
+                    if (!await _service.DoesJobOfferExistsAsync(id))
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        throw;
-                    }
+                    await _service.UpdateJobOfferAsync(jobOffer);
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                catch (InternalServerException)
+                {
+                    return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
+                }
             }
             return View(jobOffer);
         }
@@ -177,14 +186,14 @@ namespace VAC_T.Controllers
             {
                 _context.JobOffer.Remove(jobOffer);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool JobOfferExists(int id)
         {
-          return (_context.JobOffer?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.JobOffer?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
