@@ -4,6 +4,8 @@ using VAC_T.Models;
 using VAC_T.Data.DTO;
 using VAC_T.Business;
 using VAC_T.DAL.Exceptions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace VAC_T.ApiControllers
 {
@@ -58,36 +60,15 @@ namespace VAC_T.ApiControllers
             }
         }
 
-        //public async Task<IActionResult> DetailsForEmployer()
-        //{
-        //    var user = await _userManager.GetUserAsync(User);
-
-        //    if (_context.Company == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var id = _context.Company.Include(x => x.User).Where(x => x.User == user).FirstOrDefault().Id;
-        //    if (id == 0)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var company = await _context.Company.Include(c => c.JobOffers)
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (company == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View("Details", company);
-        //}
-
-
         // POST: api/Companies
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> PostAsync([FromBody] CompanyDTO company)
         {
+            if (!User.IsInRole("ROLE_ADMIN"))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
             try
             {
                 var companyEntity = _mapper.Map<Company>(company); 
@@ -107,8 +88,14 @@ namespace VAC_T.ApiControllers
         // Put: api/Companies/5
 
         [HttpPut("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> PutAsync(int id, [FromBody] CompanyDTOForUpdate company)
         {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
+
             if (id != company.Id)
             {
                 ModelState.AddModelError("Id", "Does not match Id in URL");
@@ -135,8 +122,13 @@ namespace VAC_T.ApiControllers
 
         // Delete: api/Companies/5
         [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> DeleteCompanyAsync(int id)
         {
+            if (!User.IsInRole("ROLE_ADMIN"))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
             try
             {
                 if (!await _service.DoesCompanyExistsAsync(id))

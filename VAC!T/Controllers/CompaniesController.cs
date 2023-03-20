@@ -71,6 +71,10 @@ namespace VAC_T.Controllers
         // GET: Companies/Create
         public IActionResult Create()
         {
+            if (!User.IsInRole("ROLE_ADMIN"))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
             var company = new Company();
             company.LogoURL = "assets/img/company/default.png";
             return View(company);
@@ -83,6 +87,10 @@ namespace VAC_T.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,LogoURL,WebsiteURL,Address,Postcode,Residence")] Company company)
         {
+            if (!User.IsInRole("ROLE_ADMIN"))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
             if (ModelState.IsValid)
             {
                 try { 
@@ -103,6 +111,10 @@ namespace VAC_T.Controllers
         // GET: Companies/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
             try { 
                 var company = await _service.GetCompanyAsync(id);
                 if (company == null)
@@ -125,6 +137,10 @@ namespace VAC_T.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,LogoURL,WebsiteURL,Address,Postcode,Residence")] Company company)
         {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
             if (id != company.Id)
             {
                 return NotFound();
@@ -152,6 +168,10 @@ namespace VAC_T.Controllers
         // GET: Companies/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
+            if (!User.IsInRole("ROLE_ADMIN"))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
             try { 
                 var company = await _service.GetCompanyAsync(id);
                 if (company == null)
@@ -173,6 +193,10 @@ namespace VAC_T.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (!User.IsInRole("ROLE_ADMIN"))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
             try
             {
                 await _service.DeleteCompanyAsync(id);
