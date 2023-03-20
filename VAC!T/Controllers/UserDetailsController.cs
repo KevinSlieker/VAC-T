@@ -1,127 +1,121 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using VAC_T.Data;
+using VAC_T.DAL.Exceptions;
+using VAC_T.Business;
 using VAC_T.Models;
 
 namespace VAC_T.Controllers
 {
     public class UserDetailsController : Controller
     {
-        private readonly IVact_TDbContext _context;
         private UserManager<VAC_TUser> _userManager;
+        private UserDetailsService _service;
 
-        public UserDetailsController(IVact_TDbContext context, UserManager<VAC_TUser> userManager)
+        public UserDetailsController(UserManager<VAC_TUser> userManager, UserDetailsService service)
         {
-            _context = context;
             _userManager = userManager;
-        }
-
-
-        // GET: UserDetailsModels/Details/5
-        public async Task<IActionResult> Details(string id)
-        {
-            if (_context.Solicitation == null)
-            {
-                return Problem("Database not present");
-            }
-            if (id == null)
-            {
-                return NotFound("Id");
-            }
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
-            {
-                return NotFound("User");
-            }
-
-            return View(new UserDetailsModel() { Id = user.Id,
-                Name = user.Name,
-                PhoneNumber = user.PhoneNumber,
-                Email = user.Email,
-                BirthDate = user.BirthDate,
-                Address = user.Address,
-                Postcode = user.Postcode,
-                Residence = user.Residence,
-                ProfilePicture = user.ProfilePicture,
-                Motivation = user.Motivation,
-                CV = user.CV,
-                Role = (await _userManager.GetRolesAsync(user)).First(),
-                });
-        }
-
-        private bool UserDetailsModelExists(string id)
-        {
-          return (_context.UserDetailsModel?.Any(e => e.Id == id)).GetValueOrDefault();
+            _service = service;
         }
 
         public async Task<IActionResult> Index(string searchEmail, string searchName)
         {
             if (!User.IsInRole("ROLE_ADMIN"))
             {
-                return Unauthorized();
+                return Unauthorized("Not the correct roles.");
             }
 
             ViewData["searchEmail"] = searchEmail;
             ViewData["searchName"] = searchName;
 
-            var users = from s in _context.Users select s;
-            
-            if (!string.IsNullOrEmpty(searchEmail))
+            try
             {
-                users = users.Where(u => u.Email!.Contains(searchEmail));
-            }
+                var users = await _service.GetUsersAsync(searchName, searchEmail);
+                return View(users);
 
-            if (!string.IsNullOrEmpty(searchName))
+            }
+            catch (InternalServerException)
             {
-                users = users.Where(u => u.Name!.Contains(searchName));
+                return Problem("Entity set 'ApplicationDbContext.Users' is null.");
             }
-
-            return _context.Users != null ?
-                          View(await users.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Users'  is null.");
         }
 
-        public async Task<IActionResult> Delete(string? id)
+        // GET: UserDetailsModels/Details/5
+        public async Task<IActionResult> Details(string id)
         {
-            if (id == null || _context.Users == null)
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
-                return NotFound();
+                return Unauthorized("Not the correct roles.");
             }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            try
             {
-                return NotFound();
-            }
+                var user = await _service.GetUserDetailsAsync(id);
+                if (user == null)
+                {
+                    return NotFound("User not found.");
+                }
 
-            return View(user);
+                return View(new UserDetailsModel()
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    PhoneNumber = user.PhoneNumber,
+                    Email = user.Email,
+                    BirthDate = user.BirthDate,
+                    Address = user.Address,
+                    Postcode = user.Postcode,
+                    Residence = user.Residence,
+                    ProfilePicture = user.ProfilePicture,
+                    Motivation = user.Motivation,
+                    CV = user.CV,
+                    Role = (await _userManager.GetRolesAsync(user)).First(),
+                });
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Users' is null.");
+            }
+        }
+
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (!User.IsInRole("ROLE_ADMIN"))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
+            try
+            {
+                var user = await _service.GetUserDetailsAsync(id);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                return View(user);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Users' is null.");
+            }
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            if (_context.Users == null)
+            if (!User.IsInRole("ROLE_ADMIN"))
             {
-                return Problem("Entity set 'ApplicationDbContext.Users'  is null.");
+                return Unauthorized("Not the correct roles.");
             }
-            var user = await _context.Users.FirstOrDefaultAsync(c => c.Id == id);
-            if (user != null)
+            try
             {
-                _context.Users.Remove(user);
+                await _service.DeleteUserAsync(id);
+                return RedirectToAction(nameof(Index));
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Users' is null.");
+            }
         }
     }
 }

@@ -19,7 +19,7 @@ namespace VAC_T.Business
         }
 
         /// <summary>
-        /// Get a list of companies (optional that match a search string
+        /// Get a list of companies (optional) that match a search string
         /// </summary>
         /// <param name="searchString">(optional) string to match the name of the companies to </param>
         /// <returns>a list of entries or null </returns>

@@ -27,7 +27,7 @@ namespace VAC_T.ApiControllers
             try
             {
                 IEnumerable<Company> companies = await _service.GetCompaniesAsync(searchName);
-                var result = _mapper.Map<CompanyDTO>(companies);
+                var result = _mapper.Map<List<CompanyDTO>>(companies);
                 return Ok(result);
             } 
             catch (InternalServerException)

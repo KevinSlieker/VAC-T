@@ -64,6 +64,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IVact_TDbContext, ApplicationDbContext>();
 builder.Services.AddScoped<CompanyService>();
+builder.Services.AddScoped<UserDetailsService>();
 
 var app = builder.Build();
 
