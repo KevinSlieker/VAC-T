@@ -44,7 +44,7 @@ namespace VAC_T.ApiControllers
             }
             catch (InternalServerException)
             {
-                return Problem("Entity set 'ApplicationDbContext.Users' is null.");
+                return Problem("Database not connected");
             }
         }
 
@@ -71,7 +71,7 @@ namespace VAC_T.ApiControllers
             }
             catch (InternalServerException)
             {
-                return Problem("Entity set 'ApplicationDbContext.Users' is null.");
+                return Problem("Database not connected");
             }
         }
 
@@ -95,7 +95,7 @@ namespace VAC_T.ApiControllers
             }
             catch (InternalServerException)
             {
-                return Problem("Entity set 'ApplicationDbContext.Users' is null.");
+                return Problem("Database not connected");
             }
         }
     }

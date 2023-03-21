@@ -155,21 +155,26 @@ namespace VAC_T.Controllers
         }
 
         // GET: JobOffers/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null || _context.JobOffer == null)
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
-                return NotFound();
+                return Unauthorized("Not the correct roles.");
             }
-
-            var jobOffer = await _context.JobOffer
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (jobOffer == null)
+            try
             {
-                return NotFound();
-            }
+                var jobOffer = await _service.GetJobOfferAsync(id, User);
+                if (jobOffer == null)
+                {
+                    return NotFound();
+                }
 
-            return View(jobOffer);
+                return View(jobOffer);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
+            }
         }
 
         // POST: JobOffers/Delete/5
@@ -177,23 +182,19 @@ namespace VAC_T.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.JobOffer == null)
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
-                return Problem("Entity set 'ApplicationDbContext.JobOffer'  is null.");
+                return Unauthorized("Not the correct roles.");
             }
-            var jobOffer = await _context.JobOffer.FindAsync(id);
-            if (jobOffer != null)
+            try
             {
-                _context.JobOffer.Remove(jobOffer);
+                await _service.DeleteJobOfferAsync(id);
+                return RedirectToAction(nameof(Index));
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool JobOfferExists(int id)
-        {
-            return (_context.JobOffer?.Any(e => e.Id == id)).GetValueOrDefault();
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
+            }
         }
     }
 }

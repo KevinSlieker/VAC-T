@@ -98,5 +98,20 @@ namespace VAC_T.Business
             }
             return await _context.JobOffer.AnyAsync(c => c.Id == id);
         }
+
+        public async Task DeleteJobOfferAsync(int id)
+        {
+            if (_context.JobOffer == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            var jobOffer = await _context.JobOffer.FindAsync(id);
+            if (jobOffer == null)
+            {
+                return;
+            }
+            _context.JobOffer.Remove(jobOffer);
+            await _context.SaveChangesAsync();
+        }
     }
 }

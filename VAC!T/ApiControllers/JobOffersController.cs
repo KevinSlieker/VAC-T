@@ -44,7 +44,7 @@ namespace VAC_T.ApiControllers
             }
             catch (InternalServerException)
             {
-                return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
+                return Problem("Database not connected");
             }
 
             //if (User.IsInRole("ROLE_EMPLOYER") && _signInManager.IsSignedIn(User))
@@ -75,7 +75,7 @@ namespace VAC_T.ApiControllers
             }
             catch (InternalServerException)
             {
-                return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
+                return Problem("Database not connected");
             }
         }
 
@@ -98,7 +98,7 @@ namespace VAC_T.ApiControllers
             }
             catch (InternalServerException)
             {
-                return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
+                return Problem("Database not connected");
             }
         }
 
@@ -131,27 +131,34 @@ namespace VAC_T.ApiControllers
             }
             catch (InternalServerException)
             {
-                return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
+                return Problem("Database not connected");
             }
             return NoContent();
         }
 
         // Delete: api/JobOffers/5
         [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> DeleteJobOfferAsync(int id)
         {
-            if (_context.JobOffer == null)
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
-                return Problem("Entity set 'ApplicationDbContext.JobOffer'  is null.");
+                return Unauthorized("Not the correct roles.");
             }
-            var jobOffer = await _context.JobOffer.FindAsync(id);
-            if (jobOffer == null)
+            try
             {
-                return NotFound();
+                if (!await _service.DoesJobOfferExistsAsync(id))
+                {
+                    return NotFound();
+                }
+
+                await _service.DeleteJobOfferAsync(id);
+                return Ok();
             }
-            _context.JobOffer.Remove(jobOffer);
-            await _context.SaveChangesAsync();
-            return Ok();
+            catch (InternalServerException)
+            {
+                return Problem("Database not connected");
+            }
         }
 
         private bool JobOfferExists(int id)
