@@ -44,7 +44,6 @@ namespace VAC_T.ApiControllers
         {
             try
             {
-                // Include(c => c.JobOffers) gives an error. It sais it's a loop and postman can process it.
                 var company = await _service.GetCompanyAsync(id);                
                 if (company == null)
                 {
@@ -133,7 +132,7 @@ namespace VAC_T.ApiControllers
             {
                 if (!await _service.DoesCompanyExistsAsync(id))
                 {
-                    return NotFound();
+                    return NotFound($"No company with Id: {id} in the database");
                 }
 
                 await _service.DeleteCompanyAsync(id);

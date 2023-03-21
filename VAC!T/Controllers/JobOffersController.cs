@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using VAC_T.Business;
 using VAC_T.DAL.Exceptions;
-using VAC_T.Data;
 using VAC_T.Models;
 
 namespace VAC_T.Controllers

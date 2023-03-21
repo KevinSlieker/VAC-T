@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using VAC_T.Business;
 using VAC_T.DAL.Exceptions;
-using VAC_T.Data;
 using VAC_T.Data.DTO;
 using VAC_T.Models;
 
@@ -13,6 +12,7 @@ namespace VAC_T.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class JobOffersController : Controller
     {
         private readonly UserManager<VAC_TUser> _userManager;
@@ -28,7 +28,6 @@ namespace VAC_T.ApiControllers
 
         // GET: api/JobOffers
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<JobOfferDTO>>> GetAllJobOffersAsync()
         {
@@ -42,19 +41,10 @@ namespace VAC_T.ApiControllers
             {
                 return Problem("Database not connected");
             }
-
-            //if (User.IsInRole("ROLE_EMPLOYER") && _signInManager.IsSignedIn(User))
-            //{
-            //    var user = await _userManager.GetUserAsync(User);
-            //    jobOffers = jobOffers.Where(C => C.Company.User == user);
-            //}
-            //var result = await _mapper.ProjectTo<JobOfferDTO>(jobOffers).ToListAsync();
-            //return Ok(result);
         }
 
         // GET: api/JobOffers/5
         [HttpGet("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [AllowAnonymous]
         public async Task<ActionResult<JobOfferDTO>> GetJobOfferByIdAsync(int id)
         {
@@ -78,7 +68,6 @@ namespace VAC_T.ApiControllers
         // POST: api/JobOffers
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> PostAsync([FromBody] JobOfferDTOForCreateTemp jobOffer) // JobOfferDTOForUpdateAndCreate
         {
             if (!User.IsInRole("ROLE_EMPLOYER"))
@@ -101,7 +90,6 @@ namespace VAC_T.ApiControllers
 
         // Put: api/JobOffers/5
         [HttpPut("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> PutAsync(int id, [FromBody] JobOfferDTOForUpdateAndCreate jobOffer)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
@@ -134,7 +122,6 @@ namespace VAC_T.ApiControllers
 
         // Delete: api/JobOffers/5
         [HttpDelete("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> DeleteJobOfferAsync(int id)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
