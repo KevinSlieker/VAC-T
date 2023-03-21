@@ -54,16 +54,18 @@
                     <img class="rounded-circle float-end" src=@Url.Content("~/assets/arrow.png") height="50" width="50" alt="Arrow" />
                 </div>
                 <div class="solicitate-now d-flex col-8">
-                    <a class="navbar-brand text-orange" asp-area="" asp-controller="Solicitations" asp-action="Solicitate" asp-route-jobOfferId="@Model.Id">
                         @if (Model.Solicitations.Count == 0)
                         {
-                            <h4>SOLLICITEER DIRECT</h4>
+                            <a class="navbar-brand text-orange" asp-area="" asp-controller="Solicitations" asp-action="Create" asp-route-jobOfferId="@Model.Id">
+                                <h4>SOLLICITEER DIRECT</h4>
+                            </a>
                         } else
                         {
-                            <h4>ANNULEER SOLLICITATIE</h4>
+                            <a class="navbar-brand text-orange" asp-area="" asp-controller="Solicitations" asp-action="Delete" asp-route-jobOfferId="@Model.Id">
+                                <h4>ANNULEER SOLLICITATIE</h4>
+                            </a>
                         }
 
-                    </a>
                 </div>
             </div>
         }

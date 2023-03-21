@@ -1,142 +1,118 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using VAC_T.Data;
+using VAC_T.Business;
+using VAC_T.DAL.Exceptions;
 using VAC_T.Models;
 
 namespace VAC_T.Controllers
 {
     public class SolicitationsController : Controller
     {
-        private readonly IVact_TDbContext _context;
-        private UserManager<VAC_TUser> _userManager;
-        private RoleManager<IdentityRole> _roleManager;
 
-        public SolicitationsController(IVact_TDbContext context, UserManager<VAC_TUser> userManager, RoleManager<IdentityRole> roleManager)
+        private readonly SolicitationService _service;
+        private readonly SignInManager<VAC_TUser> _signInManager;
+
+        public SolicitationsController(SolicitationService service, SignInManager<VAC_TUser> signInManager)
         {
-            _context = context;
-            _userManager = userManager;
-            _roleManager = roleManager;
+            _service = service;
+            _signInManager = signInManager;
         }
 
         // GET: Solicitations
-        public async Task<IActionResult> Index(string searchName, string searchCompany, string searchCandidate, bool searchSelectedYes, bool searchSelectedNo)
+        public async Task<IActionResult> Index(string? searchName, string? searchCompany, string? searchCandidate, bool? searchSelectedYes, bool? searchSelectedNo)
         {
+            if (_signInManager.IsSignedIn(User) == false)
+            {
+                return Unauthorized("Need to be logged in");
+            }
             ViewData["searchName"] = searchName;
             ViewData["searchCompany"] = searchCompany;
             ViewData["searchCandidate"] = searchCandidate;
             ViewData["searchSelectedYes"] = searchSelectedYes;
             ViewData["searchSelectedNo"] = searchSelectedNo;
 
-            var solicitation = from s in _context.Solicitation select s;
-
-            if (!string.IsNullOrEmpty(searchName))
+            try
             {
-                solicitation = solicitation.Where(s => s.JobOffer.Name.Contains(searchName));
+                var solicitations = await _service.GetSolicitationsAsync(User, searchName, searchCompany, searchCandidate, searchSelectedYes, searchSelectedNo);
+                return View(solicitations);
             }
-
-            if (!string.IsNullOrEmpty(searchCompany))
+            catch (InternalServerException)
             {
-                solicitation = solicitation.Where(s => s.JobOffer.Company.Name.Contains(searchCompany));
-            }
-
-            if (!string.IsNullOrEmpty(searchCandidate))
-            {
-                solicitation = solicitation.Where(s => s.User.Name.Contains(searchCandidate));
-            }
-
-            if (searchSelectedYes == true)
-            {
-                solicitation = solicitation.Where(s => s.Selected == true);
-            }
-
-            if (searchSelectedNo == true)
-            {
-                solicitation = solicitation.Where(s => s.Selected == false);
-            }
-
-            var user = await _userManager.GetUserAsync(User);
-            if (User.IsInRole("ROLE_CANDIDATE"))
-            {
-                return _context.Solicitation != null ?
-                   View(await solicitation.Where(x => x.User == user).Include(x => x.JobOffer.Company).Include(a => a.Appointment).ToListAsync()) :
-                   Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
-            } if (User.IsInRole("ROLE_ADMIN")) 
-            {
-                return _context.Solicitation != null ?
-                  View(await solicitation.Include(x => x.JobOffer.Company).Include(x => x.User).Include(a => a.Appointment).ToListAsync()) :
-                  Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
-            } 
-            else
-            {
-                return _context.Solicitation != null ?
-                  View(await solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).Include(x => x.User).Include(a => a.Appointment).ToListAsync()) :
-                  Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.Solicitation' is null.");
             }
         }
 
-        public async Task<IActionResult> Solicitate(int jobOfferId)
+        public async Task<IActionResult> Create(int jobOfferId)
         {
-            var user = await GetVac_TUser();
-            var jobOffer = _context.JobOffer.Find(jobOfferId);
-            if (jobOffer == null)
+            if (!User.IsInRole("ROLE_CANDIDATE"))
             {
-                return Problem("Job offer no longer exists");
+                return Unauthorized("You need to be be a candidate to solicitate");
             }
-            if (_context.Solicitation.Where(x => x.JobOffer == jobOffer && x.User == user).Any())
+            try
             {
-                var solicitation = _context.Solicitation.Where(x => x.JobOffer == jobOffer && x.User == user).First();
-                if (solicitation != null)
+                if (! await _service.DoesJobOfferExistsAsync(jobOfferId))
                 {
-                    _context.Solicitation.Remove(solicitation);
+                    return NotFound($"JobOffer with Id: {jobOfferId} does not exist.");
                 }
-                await _context.SaveChangesAsync();
-                return Redirect("/JobOffers/Details/" + jobOffer.Id);
+                var solicitation = await _service.CreateSolicitationAsync(jobOfferId, User);
+                if (solicitation == null)
+                {
+                    return BadRequest("You have already solicitated for this jobOffer.");
+                }
+                return Redirect("/JobOffers/Details/" + jobOfferId);
             }
-            else
+            catch (InternalServerException)
             {
-                var solicitation = new Solicitation { User = user, JobOffer = jobOffer, Date = DateTime.Now };
-                _context.Solicitation.Add(solicitation);
-                await _context.SaveChangesAsync();
-                return Redirect("/JobOffers/Details/" + jobOffer.Id);
+                return Problem("Entity set 'ApplicationDbContext.Solicitation' is null.");
             }
         }
 
-        private async Task<VAC_TUser> GetVac_TUser()
+        public async Task<IActionResult> Delete(int jobOfferId)
         {
-            VAC_TUser? user = await _userManager.GetUserAsync(User);
-            return user!;
+            if (!User.IsInRole("ROLE_CANDIDATE"))
+            {
+                return Unauthorized("You need to be be a candidate to solicitate");
+            }
+            try
+            {
+                if (!await _service.DoesJobOfferExistsAsync(jobOfferId))
+                {
+                    return NotFound($"JobOffer with Id: {jobOfferId} does not exist.");
+                }
+                if (!await _service.DoesSolicitationExistWithJobOfferIdAsync(jobOfferId, User))
+                {
+                    return NotFound("Solicitation does not exist.");
+                }
+
+                await _service.DeleteSolicitationAsync(jobOfferId, User);
+                return Redirect("/JobOffers/Details/" + jobOfferId);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Solicitation' is null.");
+            }
         }
 
         public async Task<IActionResult> Select(int id)
         {
-            var solicitation = await _context.Solicitation.FindAsync(id); 
-            if (solicitation == null)
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
-                return Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
+                return Unauthorized("Not the correct roles.");
             }
-            if (solicitation.Selected == true)
+            try
             {
-                solicitation.Selected = false;
-                await _context.SaveChangesAsync();
-            } else
-            {
-                solicitation.Selected = true;
-                await _context.SaveChangesAsync();
+                if (! await _service.DoesSolicitationExistsAsync(id))
+                {
+                    return NotFound();
+                }
+                await _service.SelectSolicitationAsync(id);
+
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
-        }
-
-
-        private bool SolicitationExists(int id)
-        {
-          return (_context.Solicitation?.Any(e => e.Id == id)).GetValueOrDefault();
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Solicitation' is null.");
+            }
         }
     }
 }

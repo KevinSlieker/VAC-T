@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using VAC_T.Data;
+using VAC_T.Business;
+using VAC_T.DAL.Exceptions;
 using VAC_T.Data.DTO;
-using VAC_T.Models;
 
 namespace VAC_T.ApiControllers
 {
@@ -15,17 +13,13 @@ namespace VAC_T.ApiControllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SolicitationsController : Controller
     {
-        private readonly IVact_TDbContext _context;
-        private UserManager<VAC_TUser> _userManager;
-        private RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
+        private readonly SolicitationService _service;
 
-        public SolicitationsController(IVact_TDbContext context, UserManager<VAC_TUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper)
+        public SolicitationsController(IMapper mapper, SolicitationService service)
         {
-            _context = context;
-            _userManager = userManager;
-            _roleManager = roleManager;
             _mapper = mapper;
+            _service = service;
         }
 
         // GET: api/Solicitations
@@ -33,138 +27,71 @@ namespace VAC_T.ApiControllers
         public async Task<ActionResult<IEnumerable<SolicitationDTOComplete>>> GetAllSolicitationsAsync([FromQuery] string? searchName,
             [FromQuery] string? searchCompany, [FromQuery] string? searchCandidate, [FromQuery] bool? searchSelectedYes, [FromQuery] bool? searchSelectedNo)
         {
-            if (_context.Solicitation == null)
+            try
             {
-                return NotFound("Database not connected");
+                var solicitations = await _service.GetSolicitationsAsync(User, searchName, searchCompany, searchCandidate, searchSelectedYes, searchSelectedNo);
+                var result = _mapper.Map<List<SolicitationDTOComplete>>(solicitations);
+                return Ok(result);
             }
-
-            var solicitation = from s in _context.Solicitation select s;
-
-            if (!string.IsNullOrEmpty(searchName))
+            catch (InternalServerException)
             {
-                solicitation = solicitation.Where(s => s.JobOffer.Name.Contains(searchName));
+                return Problem("Database not connected");
             }
-
-            if (!string.IsNullOrEmpty(searchCompany))
-            {
-                solicitation = solicitation.Where(s => s.JobOffer.Company.Name.Contains(searchCompany));
-            }
-
-            if (!string.IsNullOrEmpty(searchCandidate))
-            {
-                solicitation = solicitation.Where(s => s.User.Name.Contains(searchCandidate));
-            }
-
-            if (searchSelectedYes == true)
-            {
-                solicitation = solicitation.Where(s => s.Selected == true);
-            }
-
-            if (searchSelectedNo == true)
-            {
-                solicitation = solicitation.Where(s => s.Selected == false);
-            }
-
-            var user = await _userManager.GetUserAsync(User);
-            if (User.IsInRole("ROLE_CANDIDATE"))
-            {
-                solicitation = solicitation.Where(x => x.User == user).Include(x => x.JobOffer.Company);
-            }
-            if (User.IsInRole("ROLE_ADMIN"))
-            {
-                solicitation = solicitation.Include(x => x.JobOffer.Company).Include(x => x.User);
-            }
-            if (User.IsInRole("ROLE_EMPLOYER"))
-            {
-                solicitation = solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).Include(x => x.User);
-            }
-            var result = await _mapper.ProjectTo<SolicitationDTOComplete>(solicitation).ToListAsync();
-            return Ok(result);
 
         }
-
-        //public async Task<IActionResult> Solicitate(int jobOfferId) what do i do for this?
-        //{
-        //    var user = await _userManager.GetUserAsync(User);
-        //    var jobOffer = _context.JobOffer.Find(jobOfferId);
-        //    if (_context.Solicitation.Where(x => x.JobOffer == jobOffer && x.User == user).Any())
-        //    {
-        //        var solicitation = _context.Solicitation.Where(x => x.JobOffer == jobOffer && x.User == user).First();
-        //        if (solicitation != null)
-        //        {
-        //            _context.Solicitation.Remove(solicitation);
-        //        }
-        //        await _context.SaveChangesAsync();
-        //        return Redirect("/JobOffers/Details/" + jobOffer.Id);
-        //    }
-        //    else
-        //    {
-        //        var solicitation = new Solicitation { User = user, JobOffer = jobOffer, Date = DateTime.Now };
-        //        _context.Add(solicitation);
-        //        await _context.SaveChangesAsync();
-        //        return Redirect("/JobOffers/Details/" + jobOffer.Id);
-        //    }
-        //}
 
         // Posts: api/Solicitations/4
         [HttpPost("{jobOfferId}")]
         public async Task<ActionResult> PostSolicitateAsync(int jobOfferId)
         {
-            if (_context.Solicitation == null)
+            if (!User.IsInRole("ROLE_CANDIDATE"))
             {
-                return NotFound("Database not connected");
+                return Unauthorized("You need to be be a candidate to solicitate");
             }
-
-            var user = await _userManager.GetUserAsync(User);
-            var jobOffer = await _context.JobOffer.FindAsync(jobOfferId);
-            if (user == null)
+            try
             {
-                return NotFound("user doesn't exist");
+                if (!await _service.DoesJobOfferExistsAsync(jobOfferId))
+                {
+                    return NotFound($"JobOffer with Id: {jobOfferId} does not exist.");
+                }
+                var solicitation = await _service.CreateSolicitationAsync(jobOfferId, User);
+                if (solicitation == null)
+                {
+                    return BadRequest("You have already solicitated for this jobOffer.");
+                }
+                var newSolicitation = _mapper.Map<SolicitationDTOComplete>(solicitation);
+                return Ok(newSolicitation);
             }
-            if (jobOffer == null)
+            catch (InternalServerException)
             {
-                return NotFound("jobOffer doesn't exist");
+                return Problem("Database not connected");
             }
-            var solicitation = new Solicitation { User = user, JobOffer = jobOffer, Date = DateTime.Now };
-            _context.Solicitation.Add(solicitation);
-            await _context.SaveChangesAsync();
-            var newSolicitation = _mapper.Map<SolicitationDTOComplete>(solicitation);
-            return Ok(newSolicitation);
         }
 
         // Delete: api/Solicitations
         [HttpDelete("{jobOfferId}")]
         public async Task<ActionResult> DeleteSolicitateAsync(int jobOfferId)
         {
-            if (_context.Solicitation == null)
+            if (!User.IsInRole("ROLE_CANDIDATE"))
             {
-                return NotFound("Database not connected");
+                return Unauthorized("You need to be be a candidate to cancel your solicitation");
             }
-
-            var user = await _userManager.GetUserAsync(User);
-            var jobOffer = await _context.JobOffer.FindAsync(jobOfferId);
-            if (user == null)
+            try
             {
-                return NotFound("user doesn't exist");
-            }
-            if (jobOffer == null)
-            {
-                return NotFound("jobOffer doesn't exist");
-            }
-
-            if (_context.Solicitation.Where(x => x.JobOffer == jobOffer && x.User == user).Any())
-            {
-                var solicitation = _context.Solicitation.Where(x => x.JobOffer == jobOffer && x.User == user).First();
-                if (solicitation != null)
+                if (!await _service.DoesJobOfferExistsAsync(jobOfferId))
                 {
-                    _context.Solicitation.Remove(solicitation);
+                    return NotFound($"JobOffer with Id: {jobOfferId} does not exist.");
                 }
-                await _context.SaveChangesAsync();
+                if (!await _service.DoesSolicitationExistWithJobOfferIdAsync(jobOfferId, User))
+                {
+                    return NotFound("Solicitation does not exist.");
+                }
+                await _service.DeleteSolicitationAsync(jobOfferId, User);
                 return Ok();
             }
-            else
+            catch (InternalServerException)
             {
-                return NotFound("User has not applied to this jobOffer");
+                return Problem("Database not connected");
             }
         }
 
@@ -175,25 +102,24 @@ namespace VAC_T.ApiControllers
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
-                return Unauthorized();
+                return Unauthorized("Not the correct roles.");
             }
-            var solicitationEntity = await _context.Solicitation.FindAsync(id);
-            if (solicitationEntity == null)
+            try
             {
-                Problem("Entity set 'ApplicationDbContext.Solicitation'  is null.");
+                if (! await _service.DoesSolicitationExistsAsync(id))
+                {
+                    return NotFound($"No solicitation with Id: {id} in the database");
+                }
+                await _service.SelectSolicitationAsync(id);
+
+                return Ok();
             }
-            if (solicitationEntity.Selected == true)
+            catch (InternalServerException)
             {
-                solicitationEntity.Selected = false;
-                await _context.SaveChangesAsync();
+                return Problem("Database not connected");
             }
-            else
-            {
-                solicitationEntity.Selected = true;
-                await _context.SaveChangesAsync();
-            }
-            var updatedSolicitation = _mapper.Map<SolicitationDTOSelect>(solicitationEntity);
-            return Ok(updatedSolicitation);
+            //var updatedSolicitation = _mapper.Map<SolicitationDTOSelect>(solicitationEntity);
+            //return Ok(updatedSolicitation);
         }
     }
 }

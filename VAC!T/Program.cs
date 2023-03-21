@@ -66,6 +66,7 @@ builder.Services.AddScoped<IVact_TDbContext, ApplicationDbContext>();
 builder.Services.AddScoped<CompanyService>();
 builder.Services.AddScoped<UserDetailsService>();
 builder.Services.AddScoped<JobOfferService>();
+builder.Services.AddScoped<SolicitationService>();
 
 var app = builder.Build();
 
