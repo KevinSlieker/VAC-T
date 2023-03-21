@@ -15,17 +15,13 @@ namespace VAC_T.ApiControllers
     [ApiController]
     public class JobOffersController : Controller
     {
-        private readonly IVact_TDbContext _context;
         private readonly UserManager<VAC_TUser> _userManager;
-        private readonly SignInManager<VAC_TUser> _signInManager;
         private readonly IMapper _mapper;
         private readonly JobOfferService _service;
 
-        public JobOffersController(IVact_TDbContext context, UserManager<VAC_TUser> userManager, SignInManager<VAC_TUser> signInManager, IMapper mapper, JobOfferService service)
+        public JobOffersController(UserManager<VAC_TUser> userManager, IMapper mapper, JobOfferService service)
         {
-            _context = context;
             _userManager = userManager;
-            _signInManager = signInManager;
             _mapper = mapper;
             _service = service;
         }
@@ -159,11 +155,6 @@ namespace VAC_T.ApiControllers
             {
                 return Problem("Database not connected");
             }
-        }
-
-        private bool JobOfferExists(int id)
-        {
-            return (_context.JobOffer?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

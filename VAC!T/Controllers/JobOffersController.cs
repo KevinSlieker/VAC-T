@@ -10,16 +10,12 @@ namespace VAC_T.Controllers
 {
     public class JobOffersController : Controller
     {
-        private readonly IVact_TDbContext _context;
         private readonly UserManager<VAC_TUser> _userManager;
-        private readonly SignInManager<VAC_TUser> _signInManager;
         private readonly JobOfferService _service;
 
-        public JobOffersController(IVact_TDbContext context, UserManager<VAC_TUser> userManager, SignInManager<VAC_TUser> signInManager, JobOfferService service)
+        public JobOffersController(UserManager<VAC_TUser> userManager, JobOfferService service)
         {
-            _context = context;
             _userManager = userManager;
-            _signInManager = signInManager;
             _service = service;
         }
 
