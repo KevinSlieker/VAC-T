@@ -7,6 +7,10 @@ namespace VAC_T.Data
     {
         public MappingProfile() 
         {
+            CreateMap<Appointment, AppointmentDTO>();
+            CreateMap<Appointment, AppointmentDTOForCreate>();
+            CreateMap<AppointmentDTO, Appointment>();
+            CreateMap<AppointmentDTOForCreate, Appointment>();
             CreateMap<Company, CompanyDTO>();
             CreateMap<Company, CompanyDTOSmall>();
             CreateMap<CompanyDTO, Company>();

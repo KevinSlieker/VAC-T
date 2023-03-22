@@ -67,6 +67,7 @@ builder.Services.AddScoped<CompanyService>();
 builder.Services.AddScoped<UserDetailsService>();
 builder.Services.AddScoped<JobOfferService>();
 builder.Services.AddScoped<SolicitationService>();
+builder.Services.AddScoped<AppointmentService>();
 
 var app = builder.Build();
 

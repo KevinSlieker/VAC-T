@@ -27,7 +27,7 @@ namespace VAC_T.Business
                 throw new InternalServerException("Database not found");
             }
 
-            var solicitation = from s in _context.Solicitation select s;
+            var solicitation = from s in _context.Solicitation.Include(a => a.Appointment) select s;
             if (!string.IsNullOrEmpty(searchName))
             {
                 solicitation = solicitation.Where(s => s.JobOffer.Name.Contains(searchName));

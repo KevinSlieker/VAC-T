@@ -174,7 +174,7 @@
 							}
 						],
 						"url": {
-							"raw": "https://localhost:7220/api/JobOffers/27",
+							"raw": "https://localhost:7220/api/JobOffers/17",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -183,7 +183,7 @@
 							"path": [
 								"api",
 								"JobOffers",
-								"27"
+								"17"
 							]
 						}
 					},
@@ -225,7 +225,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 27,\r\n    \"name\": \"Test Api Update\",\r\n    \"description\": \"TESTEN1233456458\",\r\n    \"logoURL\": \"assets/img/job_offer/csharp.png\",\r\n    \"level\": \"Test\",\r\n    \"residence\": \"Sittard\"\r\n}",
+							"raw": "{\r\n    \"id\": 31,\r\n    \"name\": \"Test Api Update\",\r\n    \"description\": \"TESTEN1233456458\",\r\n    \"logoURL\": \"assets/img/job_offer/csharp.png\",\r\n    \"level\": \"Test\",\r\n    \"residence\": \"Sittard\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -233,7 +233,7 @@
 							}
 						},
 						"url": {
-							"raw": "https://localhost:7220/api/JobOffers/27",
+							"raw": "https://localhost:7220/api/JobOffers/31",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -242,7 +242,7 @@
 							"path": [
 								"api",
 								"JobOffers",
-								"27"
+								"31"
 							]
 						}
 					},
@@ -254,7 +254,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7220/api/JobOffers/27",
+							"raw": "https://localhost:7220/api/JobOffers/31",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -263,7 +263,7 @@
 							"path": [
 								"api",
 								"JobOffers",
-								"27"
+								"31"
 							]
 						}
 					},
@@ -327,7 +327,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7220/api/Solicitations/5",
+							"raw": "https://localhost:7220/api/Solicitations/18",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -336,7 +336,7 @@
 							"path": [
 								"api",
 								"Solicitations",
-								"5"
+								"18"
 							]
 						}
 					},
@@ -348,7 +348,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7220/api/Solicitations/25",
+							"raw": "https://localhost:7220/api/Solicitations/19",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -357,7 +357,7 @@
 							"path": [
 								"api",
 								"Solicitations",
-								"25"
+								"19"
 							]
 						}
 					},
@@ -369,7 +369,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7220/api/Solicitations/13",
+							"raw": "https://localhost:7220/api/Solicitations/19",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -378,7 +378,7 @@
 							"path": [
 								"api",
 								"Solicitations",
-								"13"
+								"19"
 							]
 						}
 					},
@@ -446,7 +446,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7220/api/UserDetails/",
+							"raw": "https://localhost:7220/api/UserDetails/76550509-a1ed-4d6f-9142-1f94e8e80fa5",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -455,7 +455,155 @@
 							"path": [
 								"api",
 								"UserDetails",
-								""
+								"76550509-a1ed-4d6f-9142-1f94e8e80fa5"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Appointments",
+			"item": [
+				{
+					"name": "Get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Appointments",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Appointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Appointments/17",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Appointments",
+								"17"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Appointment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"date\": \"2023-03-28T00:00:00\",\r\n        \"time\": \"2023-03-22T00:00:00\",\r\n        \"duration\": \"00:30:00\",\r\n        \"isOnline\": true,\r\n        \"jobOfferId\": null\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/Appointments",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Appointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Appointment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"id\": \"19\",\r\n        \"date\": \"2023-03-28T00:00:00\",\r\n        \"time\": \"2023-03-22T00:00:00\",\r\n        \"duration\": \"00:30:00\",\r\n        \"isOnline\": true,\r\n        \"jobOfferId\": null\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/Appointments/19",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Appointments",
+								"19"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Appointment",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Appointments/19",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Appointments",
+								"19"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Select Appointment (Candidate)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Appointments/17/11",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Appointments",
+								"17",
+								"11"
 							]
 						}
 					},
@@ -559,7 +707,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRW1wbG95ZXJEU01AbWFpbC5ubCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiZDEyZWI1ZGMtZDA3MC00Y2JlLTg0YjEtYTA0N2YxNmQ4NmE1IiwianRpIjoiZmRlMjNmZWItM2ZkYi00OGU1LWFhNzgtMTNmZmI1MWRmNzc5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUk9MRV9FTVBMT1lFUiIsImV4cCI6MTY3ODQ3MzUwNCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIwIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIxIn0.drOM9JUcAWpiUIAhbhKjCTcxIJjbiin3KlvyRyXSMUE",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQ2FuZGlkYXRlQG1haWwubmwiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQ5MjkwZjA0LWY3ZjEtNGFhOC04NDc0LTU2ZmRhZDgxN2FkOSIsImp0aSI6Ijc1NjVmOTE3LTI1NjctNDRlNS05MDEwLTU5ZmZjNzM1OWRlNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlJPTEVfQ0FORElEQVRFIiwiZXhwIjoxNjc5NDk4MDY0LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcyMjAiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjcyMjEifQ.22xfMzR2Yzk-kdpUQJj4WhkbZll5tOnFZFEBEPUTQMA",
 				"type": "string"
 			}
 		]

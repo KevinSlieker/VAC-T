@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using VAC_T.Data;
+using VAC_T.Business;
+using VAC_T.DAL.Exceptions;
 using VAC_T.Models;
 
 namespace VAC_T.Controllers
 {
     public class AppointmentsController : Controller
     {
-        private readonly IVact_TDbContext _context;
-        private readonly UserManager<VAC_TUser> _userManager;
+        private readonly AppointmentService _service;
 
-        public AppointmentsController(IVact_TDbContext context, UserManager<VAC_TUser> userManager)
+        public AppointmentsController(AppointmentService service)
         {
-            _context = context;
-            _userManager = userManager;
+            _service = service;
         }
 
         // GET: Appointments
@@ -29,53 +22,59 @@ namespace VAC_T.Controllers
             {
                 return Unauthorized("Unauthorized");
             }
-
-            var user = await _userManager.GetUserAsync(User);
-            var applications = _context.Appointment.Include(a => a.Company.User).Include(a => a.Solicitation.User).Include(a => a.JobOffer);
-            if (User.IsInRole("ROLE_EMPLOYER"))
+            try
             {
-                await CleanOldAppointments();
-                applications = _context.Appointment.Where(a => a.Company.User == user).Include(a => a.Solicitation.User).Include(a => a.Company).Include(a => a.JobOffer);
+                var appointments = await _service.GetAppointmentsAsync(User);
+                return View(appointments);
             }
-            return View(await applications.ToListAsync());
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Appointment' is null.");
+            }
         }
 
         // GET: Appointments/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null || _context.Appointment == null)
+            try
             {
-                return NotFound();
+                var appointment = await _service.GetAppointmentAsync(id);
+                if (appointment == null)
+                {
+                    return NotFound();
+                }
+                return View(appointment);
             }
-
-            var appointment = await _context.Appointment
-                .Include(a => a.Solicitation.User)
-                .Include(a => a.Company)
-                .Include(a => a.JobOffer)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (appointment == null)
+            catch (InternalServerException)
             {
-                return NotFound();
+                return Problem("Entity set 'ApplicationDbContext.Appointment' is null.");
             }
-
-            return View(appointment);
         }
 
         // GET: Appointments/Create
         public async Task<IActionResult> Create()
         {
-            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            if (!User.IsInRole("ROLE_EMPLOYER"))
             {
                 return Unauthorized("Unauthorized");
             }
-            var appointment = new Appointment();
-            var user = await _userManager.GetUserAsync(User);
-            var company = await _context.Company.Where(c => c.User == user).FirstAsync();
-            appointment.Company = company;
-            appointment.CompanyId = company.Id;
-            ViewData["JobOfferId"] = new SelectList(_context.JobOffer.Where(j => j.Company == company), "Id", "Name");
-            //appointment.Date = DateTime.Now.Date;
-            return View(appointment);
+            try
+            {
+                var appointment = new Appointment();
+                var company = await _service.GetCompanyAsync(User);
+                if (company == null)
+                {
+                    return NotFound();
+                }
+                appointment.Company = company;
+                appointment.CompanyId = company.Id;
+                ViewData["JobOfferId"] = new SelectList(_service.GetJobOffersForSelectListAsync(company), "Id", "Name");
+                return View(appointment);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Appointment' is null.");
+            }
         }
 
         // POST: Appointments/Create
@@ -85,42 +84,48 @@ namespace VAC_T.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Date,Time,Duration,IsOnline,CompanyId,JobOfferId")] Appointment appointment)
         {
-            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            if (!User.IsInRole("ROLE_EMPLOYER"))
             {
                 return Unauthorized("Unauthorized");
             }
-            ModelState.Remove("Company");
-            if (ModelState.IsValid)
+            try
             {
-                _context.Appointment.Add(appointment);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ModelState.Remove("Company");
+                if (ModelState.IsValid)
+                {
+                    appointment = await _service.CreateAppointmentAsync(appointment, User);
+                    return RedirectToAction(nameof(Index));
+                }
+                ViewData["JobOfferId"] = new SelectList(await _service.GetJobOffersForSelectListWithUserAsync(User), "Id", "Name");
+                return View(appointment);
             }
-            var user = await _userManager.GetUserAsync(User);
-            ViewData["JobOfferId"] = new SelectList(_context.JobOffer.Where(j => j.Company.User == user), "Id", "Name");
-            return View(appointment);
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Appointment' is null.");
+            }
         }
 
         // GET: Appointments/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
                 return Unauthorized("Unauthorized");
             }
-            if (id == null || _context.Appointment == null)
+            try
             {
-                return NotFound();
+                var appointment = await _service.GetAppointmentAsync(id);
+                if (appointment == null)
+                {
+                    return NotFound();
+                }
+                ViewData["JobOfferId"] = new SelectList(await _service.GetJobOffersForSelectListWithUserAsync(User), "Id", "Name");
+                return View(appointment);
             }
-
-            var appointment = await _context.Appointment.FindAsync(id);
-            if (appointment == null)
+            catch (InternalServerException)
             {
-                return NotFound();
+                return Problem("Entity set 'ApplicationDbContext.Appointment' is null.");
             }
-            var user = await _userManager.GetUserAsync(User);
-            ViewData["JobOfferId"] = new SelectList(_context.JobOffer.Where(j => j.Company.User == user), "Id", "Name");
-            return View(appointment);
         }
 
         // POST: Appointments/Edit/5
@@ -138,55 +143,47 @@ namespace VAC_T.Controllers
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            try
             {
-                try
+                ModelState.Remove("Company");
+                if (ModelState.IsValid)
                 {
-                    _context.Appointment.Update(appointment);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AppointmentExists(appointment.Id))
+                    if (!await _service.DoesAppointmentExistAsync(id))
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        throw;
-                    }
+                    await _service.UpdateAppointmentAsync(appointment);
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                ViewData["JobOfferId"] = new SelectList(await _service.GetJobOffersForSelectListWithUserAsync(User), "Id", "Name");
+                return View(appointment);
             }
-            var user = await _userManager.GetUserAsync(User);
-            ViewData["JobOfferId"] = new SelectList(_context.JobOffer.Where(j => j.Company.User == user), "Id", "Name");
-            return View(appointment);
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Appointment' is null.");
+            }
         }
 
         // GET: Appointments/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
                 return Unauthorized("Unauthorized");
             }
-            if (id == null || _context.Appointment == null)
+            try
             {
-                return NotFound();
+                var appointment = await _service.GetAppointmentAsync(id);
+                if (appointment == null)
+                {
+                    return NotFound();
+                }
+                return View(appointment);
             }
-
-            var appointment = await _context.Appointment
-                .Include(a => a.Solicitation.User)
-                .Include(a => a.Company)
-                .Include(a => a.JobOffer)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (appointment == null)
+            catch (InternalServerException)
             {
-                return NotFound();
+                return Problem("Entity set 'ApplicationDbContext.Appointment' is null.");
             }
-
-            return View(appointment);
         }
 
         // POST: Appointments/Delete/5
@@ -198,87 +195,60 @@ namespace VAC_T.Controllers
             {
                 return Unauthorized("Unauthorized");
             }
-            if (_context.Appointment == null)
+            try
             {
-                return Problem("Entity set 'ApplicationDbContext.Appointment'  is null.");
+                await _service.DeleteAppointmentAsync(id);
+                return RedirectToAction(nameof(Index));
             }
-            var appointment = await _context.Appointment.FindAsync(id);
-            if (appointment != null)
+            catch (InternalServerException)
             {
-                _context.Appointment.Remove(appointment);
+                return Problem("Entity set 'ApplicationDbContext.Appointment' is null.");
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Select(int id) // solicitation id
         {
-            if (_context.Appointment == null)
+            try
             {
-                return NotFound();
+                if (!await _service.DoesSolicitationExistsAsync(id))
+                {
+                    return NotFound();
+                }
+                var appointments = await _service.GetAvailableAppointmentsAsync(id);
+                if (appointments == null)
+                {
+                    return NotFound();
+                }
+                ViewData["SolicitationId"] = id;
+                return View(appointments);
             }
-            var solicitation = await _context.Solicitation.Include(s => s.JobOffer.Company.User).FirstAsync(s => s.Id == id);
-
-            var appointments = await _context.Appointment.Where(a => a.Company == solicitation.JobOffer.Company)
-                .Where(a => a.JobOfferId == null || a.JobOfferId == solicitation.JobOffer.Id)
-                .Where(a => a.Solicitation == null).OrderByDescending(a => a.Date).OrderByDescending(a => a.Time).ToListAsync();
-            if (appointments == null)
+            catch (InternalServerException)
             {
-                return NotFound();
+                return Problem("Entity set 'ApplicationDbContext.Appointment' is null.");
             }
-            ViewData["SolicitationId"] = solicitation.Id;
-            //ViewData["AppointmentId"] = new SelectList(appointments, "Id", "Date");
-            //ViewBag.Appointments = appointments;
-            return View(appointments);
         }
 
         [HttpPost, ActionName("Select")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SelectConfirmed(int appointmentId, int solicitationId)
         {
-            if (_context.Appointment == null)
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_CANDIDATE")))
             {
-                return Problem("Entity set 'ApplicationDbContext.Appointment'  is null.");
+                return Unauthorized("Unauthorized");
             }
-            if (appointmentId == 0 || solicitationId == 0)
+            try
             {
-                return RedirectToAction(nameof(Select), solicitationId);
+                if (!(await _service.DoesSolicitationExistsAsync(solicitationId) || await _service.DoesAppointmentExistAsync(appointmentId)))
+                {
+                    return RedirectToAction(nameof(Select), solicitationId);
+                }
+                await _service.SelectAppointmentAsync(appointmentId, solicitationId);
+                return RedirectToAction(nameof(Index), "Solicitations");
             }
-            var appointment = await _context.Appointment.FindAsync(appointmentId);
-            var solicitation = await _context.Solicitation.Include(s => s.JobOffer).FirstAsync(s => s.Id == solicitationId);
-            if (appointment == null || solicitation == null)
+            catch (InternalServerException)
             {
-                return NotFound();
+                return Problem("Entity set 'ApplicationDbContext.Appointment' is null.");
             }
-            appointment.Solicitation= solicitation;
-            appointment.JobOffer = solicitation.JobOffer;
-            solicitation.Appointment= appointment;
-            _context.Appointment.Update(appointment);
-            _context.Solicitation.Update(solicitation);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Index", "Solicitations");
-        }
-
-        public async Task CleanOldAppointments()
-        {
-            if (!User.IsInRole("ROLE_EMPLOYER"))
-            {
-                return;
-            }
-            DateTime dateTime= DateTime.Now;
-            var user = await _userManager.GetUserAsync(User);
-            var company = await _context.Company.Where(c => c.User == user).FirstAsync();
-            var appointments = await _context.Appointment.Where(a => a.CompanyId== company.Id).Where(a => a.Solicitation == null)
-                .Where(a => a.Date.CompareTo(dateTime) < 0).ToListAsync();
-            _context.Appointment.RemoveRange(appointments);
-            await _context.SaveChangesAsync();
-        }
-
-        private bool AppointmentExists(int id)
-        {
-          return (_context.Appointment?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

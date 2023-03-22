@@ -4,5 +4,6 @@
     {
         public JobOfferDTOSmall JobOffer { get; set; }
         public DateTime Date { get; set; } = DateTime.Now;
+        public int? AppointmentId { get; set; }
     }
 }

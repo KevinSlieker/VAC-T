@@ -40,7 +40,7 @@ namespace VAC_T.ApiControllers
 
         }
 
-        // Posts: api/Solicitations/4
+        // Post: api/Solicitations/4
         [HttpPost("{jobOfferId}")]
         public async Task<ActionResult> PostSolicitateAsync(int jobOfferId)
         {
@@ -68,7 +68,7 @@ namespace VAC_T.ApiControllers
             }
         }
 
-        // Delete: api/Solicitations
+        // Delete: api/Solicitations/5
         [HttpDelete("{jobOfferId}")]
         public async Task<ActionResult> DeleteSolicitateAsync(int jobOfferId)
         {
