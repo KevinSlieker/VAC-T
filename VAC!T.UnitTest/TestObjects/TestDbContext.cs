@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -57,11 +57,12 @@ namespace VAC_T.UnitTest.TestObjects
 
         private Solicitation? testUserSolicitationTestCompanyForJobOffer2;
 
-        public TestDbContext() :
+        public TestDbContext(SqliteConnection database) :
             base(new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "Vac!t")
-                .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole())) // Log to the test console
-                //                .EnableSensitiveDataLogging(true)
+                .UseSqlite(database)
+                .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()
+                                  .AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning))) // Log to the test console
+                // .EnableSensitiveDataLogging(true)
                 .Options)
         {
             UserManager = CreateUserManager();

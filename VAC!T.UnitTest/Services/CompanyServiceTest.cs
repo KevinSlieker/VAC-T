@@ -1,10 +1,12 @@
-﻿using VAC_T.Business;
+﻿using Microsoft.Data.Sqlite;
+using VAC_T.Business;
 using VAC_T.UnitTest.TestObjects;
 
 namespace VAC_T.UnitTest.Services
 {
     internal class CompanyServiceTest
     {
+        private SqliteConnection _inMemoryDb;
         private TestDbContext _context;
         private CompanyService _service;
         private int? testCompanyId;
@@ -13,8 +15,11 @@ namespace VAC_T.UnitTest.Services
         [SetUp]
         public async Task Setup()
         {
+            _inMemoryDb = new SqliteConnection("Filename=:memory:");
+            _inMemoryDb.Open();
+
             // Setup the database in a different context
-            using (TestDbContext context = new TestDbContext())
+            using (TestDbContext context = new TestDbContext(_inMemoryDb))
             {
                 await context.SetupDatabase();
                 await context.AddTestUsersAsync();
@@ -24,7 +29,7 @@ namespace VAC_T.UnitTest.Services
                 testCompanyId = context.TestCompanyId;
                 someCompanyId = context.SomeOtherCompanyId;
             }
-            _context = new TestDbContext();
+            _context = new TestDbContext(_inMemoryDb);
             _service = new CompanyService(_context, _context.UserManager);
         }
 
