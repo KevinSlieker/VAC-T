@@ -15,13 +15,11 @@ namespace VAC_T.ApiControllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class JobOffersController : Controller
     {
-        private readonly UserManager<VAC_TUser> _userManager;
         private readonly IMapper _mapper;
         private readonly JobOfferService _service;
 
-        public JobOffersController(UserManager<VAC_TUser> userManager, IMapper mapper, JobOfferService service)
+        public JobOffersController(IMapper mapper, JobOfferService service)
         {
-            _userManager = userManager;
             _mapper = mapper;
             _service = service;
         }

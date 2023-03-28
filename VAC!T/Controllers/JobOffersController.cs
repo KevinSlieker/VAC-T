@@ -8,12 +8,10 @@ namespace VAC_T.Controllers
 {
     public class JobOffersController : Controller
     {
-        private readonly UserManager<VAC_TUser> _userManager;
         private readonly JobOfferService _service;
 
-        public JobOffersController(UserManager<VAC_TUser> userManager, JobOfferService service)
+        public JobOffersController(JobOfferService service)
         {
-            _userManager = userManager;
             _service = service;
         }
 

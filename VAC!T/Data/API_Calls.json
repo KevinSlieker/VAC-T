@@ -612,6 +612,143 @@
 			]
 		},
 		{
+			"name": "FileUpload",
+			"item": [
+				{
+					"name": "Upload Profile Picture",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "FormFile",
+									"description": "ProfilePicture",
+									"type": "file",
+									"src": "/C:/Bitnami/wampstack-8.1.10-0/apache2/htdocs/VAC!T/VAC!T/wwwroot/assets/img/user/74d39ecc-0f5b-4c6e-aad5-f2eef94794ee.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/FileUpload/ProfilePicture/74d39ecc-0f5b-4c6e-aad5-f2eef94794ee",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"FileUpload",
+								"ProfilePicture",
+								"74d39ecc-0f5b-4c6e-aad5-f2eef94794ee"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload CV",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "FormFile",
+									"description": "CV",
+									"type": "file",
+									"src": "/C:/Bitnami/wampstack-8.1.10-0/apache2/htdocs/VAC!T/VAC!T/wwwroot/assets/cv/49290f04-f7f1-4aa8-8474-56fdad817ad9.pdf"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/FileUpload/CV/49290f04-f7f1-4aa8-8474-56fdad817ad9",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"FileUpload",
+								"CV",
+								"49290f04-f7f1-4aa8-8474-56fdad817ad9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create JobOfferLogoURL",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "FormFile",
+									"description": "JobOffer Logo",
+									"type": "file",
+									"src": "/C:/Bitnami/wampstack-8.1.10-0/apache2/htdocs/VAC!T/VAC!T/wwwroot/assets/img/job_offer/windows.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/FileUpload/JobOfferLogoURL/Test4",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"FileUpload",
+								"JobOfferLogoURL",
+								"Test4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Company Logo",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "FormFile",
+									"description": "Company Logo",
+									"type": "file",
+									"src": "/C:/Bitnami/wampstack-8.1.10-0/apache2/htdocs/VAC!T/VAC!T/wwwroot/assets/img/job_offer/windows.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/FileUpload/CompanyLogo/17",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"FileUpload",
+								"CompanyLogo",
+								"17"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Login admin",
 			"request": {
 				"method": "POST",
@@ -707,7 +844,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQ2FuZGlkYXRlQG1haWwubmwiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQ5MjkwZjA0LWY3ZjEtNGFhOC04NDc0LTU2ZmRhZDgxN2FkOSIsImp0aSI6Ijc1NjVmOTE3LTI1NjctNDRlNS05MDEwLTU5ZmZjNzM1OWRlNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlJPTEVfQ0FORElEQVRFIiwiZXhwIjoxNjc5NDk4MDY0LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcyMjAiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjcyMjEifQ.22xfMzR2Yzk-kdpUQJj4WhkbZll5tOnFZFEBEPUTQMA",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRW1wbG95ZXJEU01AbWFpbC5ubCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiZDEyZWI1ZGMtZDA3MC00Y2JlLTg0YjEtYTA0N2YxNmQ4NmE1IiwianRpIjoiMGVmYWQ1YTYtNmRlMy00OWNmLTg1ZjQtZDBkODZlMDA1ZmRhIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUk9MRV9FTVBMT1lFUiIsImV4cCI6MTY3OTkzNjUyNCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIwIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIxIn0.IdHZ2ZfxTtCtvobgN_DMbfbxhRGgWJU_OcDMMi3_l7I",
 				"type": "string"
 			}
 		]

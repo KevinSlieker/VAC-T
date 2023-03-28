@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -82,6 +83,16 @@ namespace VAC_T.Business
             }
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<string> GetUserRolesAsync(VAC_TUser user)
+        {
+            if (_context.Users == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            var role = (await _userManager.GetRolesAsync(user)).First();
+            return role;
         }
     }
 }
