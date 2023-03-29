@@ -125,7 +125,7 @@ namespace VAC_T.Business
             {
                 throw new InternalServerException("Database not found");
             }
-            var company = await _context.Company.Include(c => c.User).FirstOrDefaultAsync(c => c.Id == id);
+            var company = await _context.Company.Include(c => c.User).Include(c => c.Appointments).FirstOrDefaultAsync(c => c.Id == id);
             if (company == null)
             {
                 return;
