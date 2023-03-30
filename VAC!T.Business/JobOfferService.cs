@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using VAC_T.DAL.Exceptions;
 using VAC_T.Data;
 using VAC_T.Models;
@@ -110,6 +111,12 @@ namespace VAC_T.Business
             {
                 return;
             }
+            var appointments = await _context.Appointment.Include(a => a.JobOffer).Where(a => a.JobOffer == jobOffer).ToListAsync();
+            if (!appointments.IsNullOrEmpty())
+            {
+                _context.Appointment.RemoveRange(appointments);
+            }
+
             _context.JobOffer.Remove(jobOffer);
             await _context.SaveChangesAsync();
         }

@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using VAC_T.Business;
 using VAC_T.Models;
 using VAC_T.UnitTest.TestObjects;
@@ -66,6 +67,19 @@ namespace VAC_T.UnitTest.Services
 
             Assert.That(company.JobOffers, Is.Not.Empty);                
             Assert.That(company.Appointments, Is.Null); 
+        }
+
+        [Test]
+        public async Task TestGetCompanyWrongId()
+        {
+            // prepare
+            int id = 0;
+
+            // run
+            var company = await _service.GetCompanyAsync(id);
+
+            //
+            Assert.That(company, Is.Null);
         }
 
         [Test]
@@ -178,7 +192,7 @@ namespace VAC_T.UnitTest.Services
             var userRoles = await _context.UserManager.GetRolesAsync(user);
             var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Name, user.UserName!),
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                 };
             foreach (var userRole in userRoles)
@@ -207,6 +221,32 @@ namespace VAC_T.UnitTest.Services
 
             Assert.That(company.JobOffers, Is.Not.Empty);
             Assert.That(company.Appointments, Is.Null);
+        }
+
+        [Test]
+        public async Task TestGetCompanyForUserWrongUser()
+        {
+            // prepare
+            var user = _context.Users.Where(u => u.Name == "testUser").First();
+            var userRoles = await _context.UserManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                };
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+            ClaimsIdentity identity = new ClaimsIdentity(authClaims);
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+
+
+            // run
+            var company = await _service.GetCompanyForUserAsync(claimsPrincipal);
+
+            // validate
+            Assert.That(company, Is.Null);
         }
 
         [Test]
@@ -247,7 +287,7 @@ namespace VAC_T.UnitTest.Services
         {
             // prepare
             int id = testCompanyId!.Value;
-            var company = (await _service.GetCompanyAsync(id))!;
+            var company = _context.Company.Find(id)!;
             company.Name = "TestUpdate";
             company.WebsiteURL = "http://testUpdateCompany.com";
             company.Address = "Updatestreet 11";
@@ -278,6 +318,22 @@ namespace VAC_T.UnitTest.Services
 
             Assert.That(company, Is.Null);
             Assert.That(user, Is.Null);
+        }
+
+        [Test]
+        public async Task TestDeleteCompanyWrongId()
+        {
+            // prepare
+            int id = 123456;
+
+            // run
+            await _service.DeleteCompanyAsync(id);
+
+            // validate
+            var company = await _context.Company.ToListAsync();
+
+            Assert.That(company, Is.Not.Null);
+            Assert.That(company.Count, Is.EqualTo(2));
         }
 
     }
