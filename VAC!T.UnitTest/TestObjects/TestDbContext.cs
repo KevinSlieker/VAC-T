@@ -289,10 +289,11 @@ namespace VAC_T.UnitTest.TestObjects
             idOptions.Password.RequireLowercase = true;
             idOptions.Password.RequireNonAlphanumeric = true;
             idOptions.Password.RequireUppercase = true;
-            idOptions.Password.RequiredLength = 8;
+            idOptions.Password.RequiredLength = 6;
             idOptions.Password.RequiredUniqueChars = 1;
 
             idOptions.SignIn.RequireConfirmedEmail = false;
+            idOptions.SignIn.RequireConfirmedAccount = true;
 
             // Lockout settings.
             idOptions.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
