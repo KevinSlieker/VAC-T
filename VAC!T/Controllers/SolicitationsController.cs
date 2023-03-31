@@ -19,13 +19,13 @@ namespace VAC_T.Controllers
         }
 
         // GET: Solicitations
-        public async Task<IActionResult> Index(string? searchName, string? searchCompany, string? searchCandidate, bool? searchSelectedYes, bool? searchSelectedNo)
+        public async Task<IActionResult> Index(string? searchJobOffer, string? searchCompany, string? searchCandidate, bool? searchSelectedYes, bool? searchSelectedNo)
         {
             if (_signInManager.IsSignedIn(User) == false)
             {
                 return Unauthorized("Need to be logged in");
             }
-            ViewData["searchName"] = searchName;
+            ViewData["searchJobOffer"] = searchJobOffer;
             ViewData["searchCompany"] = searchCompany;
             ViewData["searchCandidate"] = searchCandidate;
             ViewData["searchSelectedYes"] = searchSelectedYes;
@@ -33,7 +33,7 @@ namespace VAC_T.Controllers
 
             try
             {
-                var solicitations = await _service.GetSolicitationsAsync(User, searchName, searchCompany, searchCandidate, searchSelectedYes, searchSelectedNo);
+                var solicitations = await _service.GetSolicitationsAsync(User, searchJobOffer, searchCompany, searchCandidate, searchSelectedYes, searchSelectedNo);
                 return View(solicitations);
             }
             catch (InternalServerException)

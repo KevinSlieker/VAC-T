@@ -18,7 +18,7 @@ namespace VAC_T.Business
             _userManager = userManager;
         }
 
-        public async Task<IEnumerable<Solicitation>> GetSolicitationsAsync(ClaimsPrincipal User, string? searchName, string? searchCompany,
+        public async Task<IEnumerable<Solicitation>> GetSolicitationsAsync(ClaimsPrincipal User, string? searchJobOffer, string? searchCompany,
             string? searchCandidate, bool? searchSelectedYes, bool? searchSelectedNo)
         {
 
@@ -28,9 +28,9 @@ namespace VAC_T.Business
             }
 
             var solicitation = from s in _context.Solicitation.Include(a => a.Appointment) select s;
-            if (!string.IsNullOrEmpty(searchName))
+            if (!string.IsNullOrEmpty(searchJobOffer))
             {
-                solicitation = solicitation.Where(s => s.JobOffer.Name.Contains(searchName));
+                solicitation = solicitation.Where(s => s.JobOffer.Name.Contains(searchJobOffer));
             }
 
             if (!string.IsNullOrEmpty(searchCompany))

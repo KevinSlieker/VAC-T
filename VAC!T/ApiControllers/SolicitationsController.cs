@@ -24,12 +24,12 @@ namespace VAC_T.ApiControllers
 
         // GET: api/Solicitations
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SolicitationDTOComplete>>> GetAllSolicitationsAsync([FromQuery] string? searchName,
+        public async Task<ActionResult<IEnumerable<SolicitationDTOComplete>>> GetAllSolicitationsAsync([FromQuery] string? searchJobOffer,
             [FromQuery] string? searchCompany, [FromQuery] string? searchCandidate, [FromQuery] bool? searchSelectedYes, [FromQuery] bool? searchSelectedNo)
         {
             try
             {
-                var solicitations = await _service.GetSolicitationsAsync(User, searchName, searchCompany, searchCandidate, searchSelectedYes, searchSelectedNo);
+                var solicitations = await _service.GetSolicitationsAsync(User, searchJobOffer, searchCompany, searchCandidate, searchSelectedYes, searchSelectedNo);
                 var result = _mapper.Map<List<SolicitationDTOComplete>>(solicitations);
                 return Ok(result);
             }
