@@ -54,8 +54,10 @@ namespace VAC_T.UnitTest.TestObjects
         private Appointment? testCompanyAppointmentInPast;
 
         private Solicitation? testUserSolicitationTestCompanyWithAppointmentForJobOffer1;
+        public int? TestUserSolicitationTestCompanyWithAppointmentForJobOffer1Id { get { return testUserSolicitationTestCompanyWithAppointmentForJobOffer1?.Id; } }
 
         private Solicitation? testUserSolicitationTestCompanyForJobOffer2;
+        public int? TestUserSolicitationTestCompanyForJobOffer2Id { get { return testUserSolicitationTestCompanyForJobOffer2?.Id; } }
 
         public TestDbContext(SqliteConnection database) :
             base(new DbContextOptionsBuilder<ApplicationDbContext>()
