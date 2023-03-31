@@ -40,7 +40,7 @@ namespace VAC_T.Business
 
             if (!string.IsNullOrEmpty(searchCandidate))
             {
-                solicitation = solicitation.Where(s => s.User.Name.Contains(searchCandidate));
+                solicitation = solicitation.Where(s => s.User.Name!.Contains(searchCandidate));
             }
 
             if (searchSelectedYes == true)
@@ -67,7 +67,7 @@ namespace VAC_T.Business
             }
             return await solicitation.ToListAsync();
         }
-        public async Task<Solicitation> CreateSolicitationAsync(int jobOfferId, ClaimsPrincipal User)
+        public async Task<Solicitation?> CreateSolicitationAsync(int jobOfferId, ClaimsPrincipal User)
         {
             if (_context.JobOffer == null)
             {
