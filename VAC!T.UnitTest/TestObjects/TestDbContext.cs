@@ -140,7 +140,7 @@ namespace VAC_T.UnitTest.TestObjects
                 Name = "TestJustJoinedUser",
                 UserName = "TestJustJoinedUser",
                 ProfilePicture = "assets/img/testUser/profile.png",
-                Email = "testuser@test.nl",
+                Email = "justtestuser@test.nl",
                 EmailConfirmed = true,
             };
             await AddUserWithPasswordAndRoleAsync(testJustJoinedUser, "pas$C0de", "ROLE_CANDIDATE");
