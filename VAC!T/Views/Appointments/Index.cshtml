@@ -1,4 +1,4 @@
-﻿@model IEnumerable<VAC_T.Models.Appointment>
+﻿@model AppointmentViewModel
 
 @{
     ViewData["Title"] = "Sollicitatie gesprekken";
@@ -11,36 +11,39 @@
     <p>
         <a asp-action="Create">Create New</a>
     </p>
+    <p>
+        <a asp-action="CreateRepeatAppointment">Create RepeatAppointment New</a>
+    </p>
 }
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Date)
+                @Html.DisplayNameFor(Model => Model.Appointments.FirstOrDefault().Date)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Time)
+                @Html.DisplayNameFor(Model => Model.Appointments.FirstOrDefault().Time)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Duration)
+                @Html.DisplayNameFor(Model => Model.Appointments.FirstOrDefault().Duration)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsOnline)
+                @Html.DisplayNameFor(Model => Model.Appointments.FirstOrDefault().IsOnline)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Company)
+                @Html.DisplayNameFor(Model => Model.Appointments.FirstOrDefault().Company)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Solicitation)
+                @Html.DisplayNameFor(Model => Model.Appointments.FirstOrDefault().Solicitation)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.JobOffer)
+                @Html.DisplayNameFor(Model => Model.Appointments.FirstOrDefault().JobOffer)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (Appointment item in Model.Appointments) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Date)
@@ -70,5 +73,55 @@
             </td>
         </tr>
 }
+    </tbody>
+</table>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(Model => Model.RepeatAppointments.FirstOrDefault().Company)
+            </th>
+            <th>
+                @Html.DisplayNameFor(Model => Model.RepeatAppointments.FirstOrDefault().Repeats)
+            </th>
+            <th>
+                @Html.DisplayNameFor(Model => Model.RepeatAppointments.FirstOrDefault().Time)
+            </th>
+            <th>
+                @Html.DisplayNameFor(Model => Model.RepeatAppointments.FirstOrDefault().Duration)
+            </th>
+            <th>
+                @Html.DisplayNameFor(Model => Model.RepeatAppointments.FirstOrDefault().IsOnline)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (RepeatAppointment item in Model.RepeatAppointments)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Company.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Repeats)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Time)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Duration)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsOnline)
+                </td>
+                <td>
+                    <a asp-action="EditRepeatAppointment" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="DetailsRepeatAppointment" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="DeleteRepeatAppointment" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

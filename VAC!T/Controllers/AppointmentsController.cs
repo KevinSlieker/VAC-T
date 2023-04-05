@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Dynamic;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using VAC_T.Business;
 using VAC_T.DAL.Exceptions;
@@ -24,8 +25,10 @@ namespace VAC_T.Controllers
             }
             try
             {
-                var appointments = await _service.GetAppointmentsAsync(User);
-                return View(appointments);
+                AppointmentViewModel mymodel = new AppointmentViewModel();
+                mymodel.Appointments = await _service.GetAppointmentsAsync(User);
+                mymodel.RepeatAppointments = await _service.GetRepeatAppointmentsAsync();
+                return View(mymodel);
             }
             catch (InternalServerException)
             {
@@ -248,6 +251,195 @@ namespace VAC_T.Controllers
             catch (InternalServerException)
             {
                 return Problem("Entity set 'ApplicationDbContext.Appointment' is null.");
+            }
+        }
+
+        public async Task<IActionResult> DetailsRepeatAppointment(int id)
+        {
+            try
+            {
+                var repeatAppointment = await _service.GetRepeatAppointmentAsync(id);
+                if (repeatAppointment == null)
+                {
+                    return NotFound();
+                }
+                return View(repeatAppointment);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.RepeatAppointment' is null.");
+            }
+        }
+
+        // GET: Appointments/CreateRepeatAppointment
+        public async Task<IActionResult> CreateRepeatAppointment()
+        {
+            if (!User.IsInRole("ROLE_EMPLOYER"))
+            {
+                return Unauthorized("Unauthorized");
+            }
+            try
+            {
+                var repeatAppointment = new RepeatAppointment();
+                var company = await _service.GetCompanyAsync(User);
+                if (company == null)
+                {
+                    return NotFound();
+                }
+                repeatAppointment.Company = company;
+                repeatAppointment.CompanyId = company.Id;
+                return View(repeatAppointment);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.RepeatAppointment' is null.");
+            }
+        }
+
+        // POST: Appointments/CreateRepeatAppointment
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateRepeatAppointment([Bind("Id,CompanyId,Repeats, RepeatsVar,Time,Duration")] RepeatAppointment repeatAppointment)
+        {
+            if (!User.IsInRole("ROLE_EMPLOYER"))
+            {
+                return Unauthorized("Unauthorized");
+            }
+            try
+            {
+                ModelState.Remove("Company");
+                if (ModelState.IsValid)
+                {
+                    repeatAppointment = await _service.CreateRepeatAppointmentAsync(repeatAppointment, User);
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(repeatAppointment);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.RepeatAppointment' is null.");
+            }
+        }
+
+        public async Task<IActionResult> SetRepeatAppointmentRepeatInfoAsync(int id)
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Unauthorized");
+            }
+            try
+            {
+                var repeatAppointment = await _service.GetRepeatAppointmentAsync(id);
+                if (repeatAppointment == null)
+                {
+                    return NotFound();
+                }
+                return View(repeatAppointment);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.RepeatAppointment' is null.");
+            }
+        }
+
+        // GET: Appointments/Edit/5
+        public async Task<IActionResult> EditRepeatAppointment(int id)
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Unauthorized");
+            }
+            try
+            {
+                var repeatAppointment = await _service.GetRepeatAppointmentAsync(id);
+                if (repeatAppointment == null)
+                {
+                    return NotFound();
+                }
+                return View(repeatAppointment);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.RepeatAppointment' is null.");
+            }
+        }
+
+        // POST: Appointments/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditRepeatAppointment(int id, [Bind("Id,Date,Time,Duration,IsOnline,CompanyId,JobOfferId")] RepeatAppointment repeatAppointment)
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Unauthorized");
+            }
+            if (id != repeatAppointment.Id)
+            {
+                return NotFound();
+            }
+            try
+            {
+                ModelState.Remove("Company");
+                if (ModelState.IsValid)
+                {
+                    if (!await _service.DoesRepeatAppointmentExistAsync(id))
+                    {
+                        return NotFound();
+                    }
+                    await _service.UpdateRepeatAppointmentAsync(repeatAppointment);
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(repeatAppointment);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.RepeatAppointment' is null.");
+            }
+        }
+
+        // GET: Appointments/Delete/5
+        public async Task<IActionResult> DeleteRepeatAppointment(int id)
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Unauthorized");
+            }
+            try
+            {
+                var repeatAppointment = await _service.GetRepeatAppointmentAsync(id);
+                if (repeatAppointment == null)
+                {
+                    return NotFound();
+                }
+                return View(repeatAppointment);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.RepeatAppointment' is null.");
+            }
+        }
+
+        // POST: Appointments/Delete/5
+        [HttpPost, ActionName("DeleteRepeatAppointment")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmedRepeatAppointment(int id)
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Unauthorized");
+            }
+            try
+            {
+                await _service.DeleteRepeatAppointmentAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.RepeatAppointment' is null.");
             }
         }
     }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VAC_T.Data;
 
@@ -11,9 +12,11 @@ using VAC_T.Data;
 namespace VACT.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230404091745_RepeatAppointments")]
+    partial class RepeatAppointments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -294,20 +297,11 @@ namespace VACT.Data.Migrations
                     b.Property<TimeSpan>("Duration")
                         .HasColumnType("time");
 
-                    b.Property<bool>("IsOnline")
-                        .HasColumnType("bit");
-
                     b.Property<int>("Repeats")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RepeatsDay")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RepeatsRelativeWeek")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RepeatsWeekdays")
-                        .HasColumnType("int");
+                    b.Property<string>("RepeatsVar")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Time")
                         .HasColumnType("datetime2");

@@ -9,6 +9,7 @@ namespace VAC_T.Data
         DbSet<JobOffer> JobOffer { get; set; }
         DbSet<Solicitation> Solicitation { get; set; }
         DbSet<Appointment> Appointment { get; set; }
+        DbSet<RepeatAppointment> RepeatAppointment { get; set; }
         DbSet<UserDetailsModel> UserDetailsModel { get; set; }
         DbSet<VAC_TUser> Users { get; set; }
 

@@ -1,0 +1,52 @@
+﻿@model VAC_T.Models.RepeatAppointment
+
+@{
+    ViewData["Title"] = "DetailsRepeatAppointment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Details RepeatAppointment</h1>
+
+<div>
+    <h4>RepeatAppointment</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Company)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Company.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Repeats)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Repeats)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Time)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Time)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Duration)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Duration)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IsOnline)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.IsOnline)
+        </dd>
+    </dl>
+</div>
+@if (User.IsInRole("ROLE_EMPLOYER") || User.IsInRole("ROLE_ADMIN"))
+{
+    <div>
+        <a asp-action="EditRepeatAppointment" asp-route-id="@Model?.Id">Edit</a> |
+        <a asp-action="Index">Back to List</a>
+    </div>
+}

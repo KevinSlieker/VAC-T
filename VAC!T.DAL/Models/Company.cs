@@ -33,5 +33,6 @@ namespace VAC_T.Models
 
         public ICollection<JobOffer>? JobOffers { get; set; }
         public ICollection<Appointment>? Appointments { get; set;}
+        public ICollection<RepeatAppointment>? RepeatAppointments { get; set; }
     }
 }

@@ -59,6 +59,7 @@ namespace VAC_T.Business
             var company = await _context.Company.Where(c => c.User == user).FirstOrDefaultAsync();
             appointment.Company = company;
             appointment.CompanyId = company.Id;
+            appointment.Time = appointment.Date.Add(appointment.Time.TimeOfDay);
             _context.Appointment.Add(appointment);
             await _context.SaveChangesAsync();
             return appointment;
@@ -102,7 +103,7 @@ namespace VAC_T.Business
             {
                 throw new InternalServerException("Database not found");
             }
-
+            appointment.Time = appointment.Date.Add(appointment.Time.TimeOfDay);
             _context.Appointment.Update(appointment);
             await _context.SaveChangesAsync();
         }
@@ -149,6 +150,9 @@ namespace VAC_T.Business
             var appointments = await _context.Appointment.Where(a => a.Company == solicitation.JobOffer.Company)
                 .Where(a => a.JobOfferId == null || a.JobOfferId == solicitation.JobOffer.Id)
                 .Where(a => a.Solicitation == null).OrderByDescending(a => a.Date).OrderByDescending(a => a.Time).ToListAsync();
+
+            //var repeatAppointments = await _context.RepeatAppointment.Where(ra => ra.Company == solicitation.JobOffer.Company).ToListAsync();
+            
             return appointments;
         }
 
@@ -195,5 +199,88 @@ namespace VAC_T.Business
             _context.Appointment.RemoveRange(appointments);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<RepeatAppointment?> GetRepeatAppointmentAsync(int id)
+        {
+            if (_context.RepeatAppointment == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            var repeatAppointment = await _context.RepeatAppointment
+                .Include(a => a.Company)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            return repeatAppointment;
+        }
+        public async Task<IEnumerable<RepeatAppointment>> GetRepeatAppointmentsAsync()
+        {
+            if (_context.RepeatAppointment == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            var repeatAppointments = await _context.RepeatAppointment
+                .Include(a => a.Company)
+                .ToListAsync();
+            return repeatAppointments;
+        }
+
+        public async Task<RepeatAppointment> CreateRepeatAppointmentAsync(RepeatAppointment repeatAppointment, ClaimsPrincipal User)
+        {
+            if (_context.RepeatAppointment == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            var company = await GetCompanyAsync(User);
+            repeatAppointment.CompanyId = company.Id;
+            repeatAppointment.Company = company;
+            _context.RepeatAppointment.Add(repeatAppointment);
+            await _context.SaveChangesAsync();
+            return repeatAppointment;
+        }
+
+        //public async Task SetRepeatAppointmentRepeatInfoAsync(RepeatAppointment repeatAppointment)
+        //{
+        //    if (_context.RepeatAppointment == null)
+        //    {
+        //        throw new InternalServerException("Database not found");
+        //    }
+        //    _context.RepeatAppointment.Update(repeatAppointment);
+        //    await _context.SaveChangesAsync();
+        //}
+
+        public async Task UpdateRepeatAppointmentAsync(RepeatAppointment repeatAppointment)
+        {
+            if (_context.RepeatAppointment == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+
+            _context.RepeatAppointment.Update(repeatAppointment);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> DoesRepeatAppointmentExistAsync(int id)
+        {
+            if (_context.RepeatAppointment == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            return await _context.RepeatAppointment.AnyAsync(a => a.Id == id);
+        }
+
+        public async Task DeleteRepeatAppointmentAsync(int id)
+        {
+            if (_context.RepeatAppointment == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            var repeatAppointment = await _context.RepeatAppointment.FindAsync(id);
+            if (repeatAppointment == null)
+            {
+                return;
+            }
+            _context.RepeatAppointment.Remove(repeatAppointment);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

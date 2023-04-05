@@ -14,6 +14,7 @@ namespace VAC_T.Data
         public DbSet<JobOffer> JobOffer { get; set; } = default!;
         public DbSet<Solicitation> Solicitation { get; set; } = default!;
         public DbSet<Appointment> Appointment { get; set; } = default!;
+        public DbSet<RepeatAppointment> RepeatAppointment { get; set; } = default!;
         public DbSet<UserDetailsModel> UserDetailsModel { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -41,6 +42,11 @@ namespace VAC_T.Data
                 .HasMany(c => c.Appointments)
                 .WithOne(a => a.Company)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Company>()
+                .HasMany(c => c.RepeatAppointments)
+                .WithOne(a => a.Company)
+                .OnDelete(DeleteBehavior.Cascade);
 
             //modelBuilder.Entity<Appointment>()
             //    .HasOne(a => a.Solicitation)

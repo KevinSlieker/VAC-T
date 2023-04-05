@@ -1,0 +1,62 @@
+﻿@model VAC_T.Models.RepeatAppointment
+@using static VAC_T.Models.RepeatAppointment;
+@{
+    ViewData["Title"] = "CreateRepeatAppointment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    TimeSpan duration = new TimeSpan(0,0,0);
+    int minuts = 0;
+}
+
+<h1>Create</h1>
+
+<h4>Appointment</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateRepeatAppointment">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CompanyId" />
+            <div class="form-group">
+                <label asp-for="Repeats" class="control-label"></label>
+                <select asp-for="Repeats" class="form-select" asp-items="Html.GetEnumSelectList<RepeatsType>()">
+                    <option selected disabled>Kies het type herhaling.</option>
+                </select>
+                <span asp-validation-for="Repeats" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Time" class="control-label"></label>
+                <input asp-for="Time" class="form-control" />
+                <span asp-validation-for="Time" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Duration" class="control-label"></label>
+                <select asp-for="Duration" class="form-select">
+                    <option selected disabled>Kies de duur.</option>
+                    @while (duration != new TimeSpan(2, 0, 0))
+                    {
+                        minuts += 15;
+                        duration += new TimeSpan(0,15,0);
+                        <option value="@duration">@minuts min</option>
+                    }
+                </select>
+                <span asp-validation-for="Duration" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsOnline" /> @Html.DisplayNameFor(model => model.IsOnline)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
