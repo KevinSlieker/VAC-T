@@ -1,4 +1,6 @@
 ﻿@model AppointmentViewModel
+@using static VAC_T.Models.RepeatAppointment;
+@using VAC_T.Services;
 
 @{
     ViewData["Title"] = "Sollicitatie gesprekken";
@@ -83,9 +85,6 @@
                 @Html.DisplayNameFor(Model => Model.RepeatAppointments.FirstOrDefault().Company)
             </th>
             <th>
-                @Html.DisplayNameFor(Model => Model.RepeatAppointments.FirstOrDefault().Repeats)
-            </th>
-            <th>
                 @Html.DisplayNameFor(Model => Model.RepeatAppointments.FirstOrDefault().Time)
             </th>
             <th>
@@ -93,6 +92,12 @@
             </th>
             <th>
                 @Html.DisplayNameFor(Model => Model.RepeatAppointments.FirstOrDefault().IsOnline)
+            </th>
+            <th>
+                @Html.DisplayNameFor(Model => Model.RepeatAppointments.FirstOrDefault().Repeats)
+            </th>
+            <th>
+                Herhalingstijdstip
             </th>
             <th></th>
         </tr>
@@ -105,9 +110,6 @@
                     @Html.DisplayFor(modelItem => item.Company.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Repeats)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.Time)
                 </td>
                 <td>
@@ -117,9 +119,34 @@
                     @Html.DisplayFor(modelItem => item.IsOnline)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.Repeats)
+                </td>
+                <td>
+                    @if (item.Repeats.HasFlag(RepeatsType.Daily))
+                    {
+                        @Html.DisplayFor(modelItem => item.Repeats)
+                    }
+                    @if (item.Repeats.HasFlag(RepeatsType.Weekly))
+                    {
+                        @if (item.RepeatsWeekdays.HasValue == false)
+                        {
+                            <a asp-action="SetRepeatAppointmentRepeatInfo" asp-route-id="@item.Id">Dagen kiezen</a>
+                        }
+                        else
+                        {
+@*                            @Html.DisplayFor(modelItem => item.RepeatsWeekdays)*@
+                            <p>@item.RepeatsWeekdays.GetDisplayName()</p>
+                        }
+                    }
+                </td>
+                <td>
                     <a asp-action="EditRepeatAppointment" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="DetailsRepeatAppointment" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="DeleteRepeatAppointment" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="DeleteRepeatAppointment" asp-route-id="@item.Id">Delete</a> |
+                    @if (item.Repeats.HasFlag(RepeatsType.Daily) == false)
+                    {
+                            <a asp-action="SetRepeatAppointmentRepeatInfo" asp-route-id="@item.Id">Edit Herhaal Info</a>
+                    }
                 </td>
             </tr>
         }

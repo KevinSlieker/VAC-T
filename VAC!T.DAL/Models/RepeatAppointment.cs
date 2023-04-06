@@ -42,20 +42,30 @@ namespace VAC_T.Models
         [Flags]
         public enum Repeats_Weekdays
         {
+            [Display(Name = "Maandag")]
             Monday = 1,
+            [Display(Name = "Dinsdag")]
             Tuesday = 2,
+            [Display(Name = "Woensdag")]
             Wednesday = 4,
+            [Display(Name = "Donderdag")]
             Thursday = 8,
+            [Display(Name = "Vrijdag")]
             Friday = 16,
         }
 
         [Flags]
         public enum Repeats_Relative_Week
         {
-            Frist = 1,
+            [Display(Name = "Eerste")]
+            First = 1,
+            [Display(Name = "Tweede")]
             Second = 2,
+            [Display(Name = "Derde")]
             Third = 4,
+            [Display(Name = "Vierde")]
             Fourth = 8,
+            [Display(Name = "Laatste")]
             Last = 16,
         }
     }

@@ -1,5 +1,5 @@
 ﻿@using static VAC_T.Models.RepeatAppointment;
-@model VAC_T.Models.RepeatAppointment
+@model VAC_T.Models.RepeatAppointmentEnumViewModel
 
 @{
     ViewData["Title"] = "SetRepeatAppointmentRepeatInfo";
@@ -17,37 +17,72 @@
         <form asp-action="SetRepeatAppointmentRepeatInfo">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="CompanyId" />
-            <div class="form-group">
-                <label asp-for="Repeats" class="control-label"></label>
-                <select asp-for="Repeats" class="form-select" asp-items="Html.GetEnumSelectList<RepeatsType>()">
-                    <option selected disabled>Kies het type herhaling.</option>
-                </select>
-                <span asp-validation-for="Repeats" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Time" class="control-label"></label>
-                <input asp-for="Time" class="form-control" />
-                <span asp-validation-for="Time" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Duration" class="control-label"></label>
-                <select asp-for="Duration" class="form-select">
-                    <option selected disabled>Kies de duur.</option>
-                    @while (duration != new TimeSpan(2, 0, 0))
-                    {
-                        minuts += 15;
-                        duration += new TimeSpan(0, 15, 0);
-                        <option value="@duration">@minuts min</option>
-                    }
-                </select>
-                <span asp-validation-for="Duration" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsOnline" /> @Html.DisplayNameFor(model => model.IsOnline)
-                </label>
-            </div>
+            <input type="hidden" asp-for="Repeats" />
+            @if (Model.Repeats.HasFlag(RepeatsType.Monthly))
+            {
+                <div class="form-group">
+                    <label asp-for="RepeatsDay" class="control-label"></label>
+                    <input asp-for="RepeatsDay" class="form-control" />
+                    <span asp-validation-for="RepeatsDay" class="text-danger"></span>
+                </div>
+            }
+            @if (Model.Repeats.HasFlag(RepeatsType.Weekly) | Model.Repeats.HasFlag(RepeatsType.MonthlyRelative))
+            {
+                <div class="form-group">
+                    <label asp-for="IsMonday" class="control-label"></label>
+                    <input asp-for="IsMonday" type="checkbox" />
+                    <span asp-validation-for="IsMonday" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IsTuesday" class="control-label"></label>
+                    <input asp-for="IsTuesday" type="checkbox" />
+                    <span asp-validation-for="IsTuesday" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IsWednesday" class="control-label"></label>
+                    <input asp-for="IsWednesday" type="checkbox" />
+                    <span asp-validation-for="IsWednesday" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IsThursday" class="control-label"></label>
+                    <input asp-for="IsThursday" type="checkbox" />
+                    <span asp-validation-for="IsThursday" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IsFriday" class="control-label"></label>
+                    <input asp-for="IsFriday" type="checkbox" />
+                    <span asp-validation-for="IsFriday" class="text-danger"></span>
+                </div>
+            }
+            <br />
+            @if (Model.Repeats.HasFlag(RepeatsType.MonthlyRelative))
+            {
+                <div class="form-group">
+                    <label asp-for="IsFirst" class="control-label"></label>
+                    <input asp-for="IsFirst" type="checkbox" />
+                    <span asp-validation-for="IsFirst" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IsSecond" class="control-label"></label>
+                    <input asp-for="IsSecond" type="checkbox" />
+                    <span asp-validation-for="IsSecond" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IsThird" class="control-label"></label>
+                    <input asp-for="IsThird" type="checkbox" />
+                    <span asp-validation-for="IsThird" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IsFourth" class="control-label"></label>
+                    <input asp-for="IsFourth" type="checkbox" />
+                    <span asp-validation-for="IsFourth" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IsLast" class="control-label"></label>
+                    <input asp-for="IsLast" type="checkbox" />
+                    <span asp-validation-for="IsLast" class="text-danger"></span>
+                </div>
+            }
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

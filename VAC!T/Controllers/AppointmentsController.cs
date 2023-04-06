@@ -1,4 +1,4 @@
-﻿using System.Dynamic;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using VAC_T.Business;
@@ -10,10 +10,11 @@ namespace VAC_T.Controllers
     public class AppointmentsController : Controller
     {
         private readonly AppointmentService _service;
-
-        public AppointmentsController(AppointmentService service)
+        private readonly IMapper _mapper;
+        public AppointmentsController(AppointmentService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
         // GET: Appointments
@@ -301,7 +302,7 @@ namespace VAC_T.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateRepeatAppointment([Bind("Id,CompanyId,Repeats, RepeatsVar,Time,Duration")] RepeatAppointment repeatAppointment)
+        public async Task<IActionResult> CreateRepeatAppointment([Bind("Id,CompanyId,Repeats,RepeatsWeekdays,RepeatsDay,RepeatsRelativeWeek,Time,Duration")] RepeatAppointment repeatAppointment)
         {
             if (!User.IsInRole("ROLE_EMPLOYER"))
             {
@@ -323,7 +324,7 @@ namespace VAC_T.Controllers
             }
         }
 
-        public async Task<IActionResult> SetRepeatAppointmentRepeatInfoAsync(int id)
+        public async Task<IActionResult> SetRepeatAppointmentRepeatInfo(int id)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
@@ -336,12 +337,46 @@ namespace VAC_T.Controllers
                 {
                     return NotFound();
                 }
-                return View(repeatAppointment);
+                var viewModel = _mapper.Map<RepeatAppointmentEnumViewModel>(repeatAppointment);
+                return View(viewModel);
             }
             catch (InternalServerException)
             {
                 return Problem("Entity set 'ApplicationDbContext.RepeatAppointment' is null.");
             }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SetRepeatAppointmentRepeatInfo(int id, RepeatAppointmentEnumViewModel repeatAppointmentEnumViewModel)
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Unauthorized");
+            }
+            if (id != repeatAppointmentEnumViewModel.Id)
+            {
+                return NotFound();
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var repeatAppointment = await _service.GetRepeatAppointmentAsync(id);
+                    if (repeatAppointment == null)
+                    {
+                        return NotFound();
+                    }
+                    _mapper.Map(repeatAppointmentEnumViewModel, repeatAppointment);
+                    await _service.UpdateRepeatAppointmentAsync(repeatAppointment);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (InternalServerException)
+                {
+                    return Problem("Entity set 'ApplicationDbContext.RepeatAppointment' is null.");
+                }
+            }
+            return View(repeatAppointmentEnumViewModel);
         }
 
         // GET: Appointments/Edit/5
@@ -371,7 +406,7 @@ namespace VAC_T.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditRepeatAppointment(int id, [Bind("Id,Date,Time,Duration,IsOnline,CompanyId,JobOfferId")] RepeatAppointment repeatAppointment)
+        public async Task<IActionResult> EditRepeatAppointment(int id, [Bind("Id,Date,Time,Duration,IsOnline,CompanyId")] RepeatAppointment repeatAppointment)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
