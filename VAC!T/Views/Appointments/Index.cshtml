@@ -122,11 +122,11 @@
                     @Html.DisplayFor(modelItem => item.Repeats)
                 </td>
                 <td>
-                    @if (item.Repeats.HasFlag(RepeatsType.Daily))
+                    @if (item.Repeats == RepeatsType.Daily)
                     {
                         @Html.DisplayFor(modelItem => item.Repeats)
                     }
-                    @if (item.Repeats.HasFlag(RepeatsType.Weekly))
+                    @if (item.Repeats == RepeatsType.Weekly)
                     {
                         @if (item.RepeatsWeekdays.HasValue == false)
                         {
@@ -134,18 +134,39 @@
                         }
                         else
                         {
-@*                            @Html.DisplayFor(modelItem => item.RepeatsWeekdays)*@
                             <p>@item.RepeatsWeekdays.GetDisplayName()</p>
+                        }
+                    }
+                    @if (item.Repeats == RepeatsType.Monthly)
+                    {
+                        @if (item.RepeatsDay.HasValue == false)
+                        {
+                            <a asp-action="SetRepeatAppointmentRepeatInfo" asp-route-id="@item.Id">Dag kiezen</a>
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(modelItem => item.RepeatsDay)
+                        }
+                    }
+                    @if (item.Repeats == RepeatsType.MonthlyRelative)
+                    {
+                        @if (item.RepeatsRelativeWeek.HasValue == false || item.RepeatsWeekdays.HasValue == false)
+                        {
+                            <a asp-action="SetRepeatAppointmentRepeatInfo" asp-route-id="@item.Id">Dagen kiezen</a>
+                        }
+                        else
+                        {
+                            <p>@item.RepeatsRelativeWeek.GetDisplayName() @item.RepeatsWeekdays.GetDisplayName()</p>
                         }
                     }
                 </td>
                 <td>
                     <a asp-action="EditRepeatAppointment" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="DetailsRepeatAppointment" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="DeleteRepeatAppointment" asp-route-id="@item.Id">Delete</a> |
-                    @if (item.Repeats.HasFlag(RepeatsType.Daily) == false)
+                    <a asp-action="DeleteRepeatAppointment" asp-route-id="@item.Id">Delete</a>  |
+                    @if (item.Repeats != RepeatsType.Daily)
                     {
-                            <a asp-action="SetRepeatAppointmentRepeatInfo" asp-route-id="@item.Id">Edit Herhaal Info</a>
+                        <a asp-action="SetRepeatAppointmentRepeatInfo" asp-route-id="@item.Id">Edit Herhaal Info</a>
                     }
                 </td>
             </tr>

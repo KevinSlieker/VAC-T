@@ -253,6 +253,17 @@ namespace VAC_T.Business
             {
                 throw new InternalServerException("Database not found");
             }
+            var old = await _context.RepeatAppointment.Where(ra => ra.Id == repeatAppointment.Id).Select(a => a.Repeats).FirstOrDefaultAsync();
+            if (old != null)
+            {
+                var newRepeats = repeatAppointment.Repeats;
+                if (old != newRepeats)
+                {
+                    repeatAppointment.RepeatsDay = null;
+                    repeatAppointment.RepeatsRelativeWeek = null;
+                    repeatAppointment.RepeatsWeekdays = null;
+                }
+            }
 
             _context.RepeatAppointment.Update(repeatAppointment);
             await _context.SaveChangesAsync();

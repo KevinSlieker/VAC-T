@@ -1,4 +1,6 @@
-﻿@model VAC_T.Models.RepeatAppointment
+﻿@using static VAC_T.Models.RepeatAppointment;
+@model VAC_T.Models.RepeatAppointment
+@using VAC_T.Services;
 
 @{
     ViewData["Title"] = "DetailsRepeatAppointment";
@@ -41,12 +43,58 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.IsOnline)
         </dd>
+        <dt class="col-sm-2">
+            Herhaaltijdstip:
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.Repeats == RepeatsType.Daily)
+            {
+                @Html.DisplayFor(modelItem => Model.Repeats)
+            }
+            @if (Model.Repeats == RepeatsType.Weekly)
+            {
+                @if (Model.RepeatsWeekdays.HasValue == false)
+                {
+                    <a asp-action="SetRepeatAppointmentRepeatInfo" asp-route-id="@Model.Id">Dagen kiezen</a>
+                }
+                else
+                {
+                    <p>@Model.RepeatsWeekdays.GetDisplayName()</p>
+                }
+            }
+            @if (Model.Repeats == RepeatsType.Monthly)
+            {
+                @if (Model.RepeatsDay.HasValue == false)
+                {
+                    <a asp-action="SetRepeatAppointmentRepeatInfo" asp-route-id="@Model.Id">Dag kiezen</a>
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => Model.RepeatsDay)
+                }
+            }
+            @if (Model.Repeats == RepeatsType.MonthlyRelative)
+            {
+                @if (Model.RepeatsRelativeWeek.HasValue == false || Model.RepeatsWeekdays.HasValue == false)
+                {
+                    <a asp-action="SetRepeatAppointmentRepeatInfo" asp-route-id="@Model.Id">Dagen kiezen</a>
+                }
+                else
+                {
+                    <p>@Model.RepeatsRelativeWeek.GetDisplayName() @Model.RepeatsWeekdays.GetDisplayName()</p>
+                }
+            }
+        </dd>
     </dl>
 </div>
 @if (User.IsInRole("ROLE_EMPLOYER") || User.IsInRole("ROLE_ADMIN"))
 {
     <div>
         <a asp-action="EditRepeatAppointment" asp-route-id="@Model?.Id">Edit</a> |
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Index">Back to List</a> |
+        @if (Model!.Repeats != RepeatsType.Daily)
+        {
+            <a asp-action="SetRepeatAppointmentRepeatInfo" asp-route-id="@Model.Id">Edit Herhaal Info</a>
+        }
     </div>
 }

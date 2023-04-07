@@ -406,7 +406,7 @@ namespace VAC_T.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditRepeatAppointment(int id, [Bind("Id,Date,Time,Duration,IsOnline,CompanyId")] RepeatAppointment repeatAppointment)
+        public async Task<IActionResult> EditRepeatAppointment(int id, [Bind("Id,Time,Repeats,RepeatsWeekdays,RepeatsDay,RepeatsRelativeWeek,Duration,IsOnline,CompanyId")] RepeatAppointment repeatAppointment)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
@@ -419,6 +419,8 @@ namespace VAC_T.Controllers
             try
             {
                 ModelState.Remove("Company");
+                ModelState.Remove("RepeatsWeekdays");
+                ModelState.Remove("RepeatsRelativeWeek");
                 if (ModelState.IsValid)
                 {
                     if (!await _service.DoesRepeatAppointmentExistAsync(id))
