@@ -237,16 +237,6 @@ namespace VAC_T.Business
             return repeatAppointment;
         }
 
-        //public async Task SetRepeatAppointmentRepeatInfoAsync(RepeatAppointment repeatAppointment)
-        //{
-        //    if (_context.RepeatAppointment == null)
-        //    {
-        //        throw new InternalServerException("Database not found");
-        //    }
-        //    _context.RepeatAppointment.Update(repeatAppointment);
-        //    await _context.SaveChangesAsync();
-        //}
-
         public async Task UpdateRepeatAppointmentAsync(RepeatAppointment repeatAppointment)
         {
             if (_context.RepeatAppointment == null)
@@ -307,7 +297,7 @@ namespace VAC_T.Business
             }
 
             var dateNow = DateTime.Today;
-            var threeWeeksFromNow = dateNow.AddDays(61);
+            var threeWeeksFromNow = dateNow.AddDays(21);
             foreach (var repeatAppointment in repeatAppointments)
             {
                 var date = dateNow;
