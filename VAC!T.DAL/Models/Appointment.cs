@@ -21,6 +21,8 @@ namespace VAC_T.Models
         public int CompanyId { get; set; }
         public JobOffer? JobOffer { get; set; }
         public int? JobOfferId { get;set; }
+        public RepeatAppointment? RepeatAppointment { get; set; }
+        public int? RepeatAppointmentId { get; set; }
         virtual public Solicitation? Solicitation { get; set; }
 
     }
