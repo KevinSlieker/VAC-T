@@ -48,6 +48,11 @@ namespace VAC_T.Data
                 .WithOne(a => a.Company)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.RepeatAppointment)
+                .WithMany(ra => ra.Appointments)
+                .OnDelete(DeleteBehavior.SetNull);
+
             //modelBuilder.Entity<Appointment>()
             //    .HasOne(a => a.Solicitation)
             //    .WithOne(s => s.Appointment)

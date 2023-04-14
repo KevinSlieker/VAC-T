@@ -487,7 +487,50 @@
 					"response": []
 				},
 				{
-					"name": "Get by id",
+					"name": "Get all RepeatAppointments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Appointments/Repeat",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Appointments",
+								"Repeat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get RepeatAppointment by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Appointments/Repeat/11",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Appointments",
+								"Repeat",
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by id Copy",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -537,6 +580,36 @@
 					"response": []
 				},
 				{
+					"name": "Create RepeatAppointment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"repeats\": 2,\r\n        \"time\": \"2023-03-22T21:00:00\",\r\n        \"duration\": \"00:30:00\",\r\n        \"isOnline\": true\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/Appointments/Repeat",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Appointments",
+								"Repeat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Update Appointment",
 					"request": {
 						"method": "PUT",
@@ -567,6 +640,69 @@
 					"response": []
 				},
 				{
+					"name": "Update Info RepeatAppointment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"id\": \"11\",\r\n        \"repeats\": 2,\r\n        \"repeatsday\": null,\r\n        \"ismonday\": true,\r\n        \"istuesday\": false,\r\n        \"iswednesday\": false,\r\n        \"isthursday\": false,\r\n        \"isfriday\": true,\r\n        \"isfirst\": false,\r\n        \"issecond\": false,\r\n        \"isthird\": false,\r\n        \"isfourth\": false,\r\n        \"islast\": false\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/Appointments/Repeat/Info/11",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Appointments",
+								"Repeat",
+								"Info",
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update RepeatAppointment Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"id\": \"10\",\r\n        \"repeats\": 2,\r\n        \"time\": \"2023-03-22T21:00:00\",\r\n        \"duration\": \"00:30:00\",\r\n        \"isOnline\": true\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/Appointments/Repeat/10",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Appointments",
+								"Repeat",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Delete Appointment",
 					"request": {
 						"method": "DELETE",
@@ -588,12 +724,12 @@
 					"response": []
 				},
 				{
-					"name": "Select Appointment (Candidate)",
+					"name": "Delete RepeatAppointment",
 					"request": {
-						"method": "PUT",
+						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7220/api/Appointments/17/11",
+							"raw": "https://localhost:7220/api/Appointments/Repeat/10",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -602,8 +738,30 @@
 							"path": [
 								"api",
 								"Appointments",
-								"17",
-								"11"
+								"Repeat",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Select Appointment (Candidate)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Appointments/14-4-2023 14:00:00_6/41",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Appointments",
+								"14-4-2023 14:00:00_6",
+								"41"
 							]
 						}
 					},
@@ -844,7 +1002,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRW1wbG95ZXJEU01AbWFpbC5ubCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiZDEyZWI1ZGMtZDA3MC00Y2JlLTg0YjEtYTA0N2YxNmQ4NmE1IiwianRpIjoiMGVmYWQ1YTYtNmRlMy00OWNmLTg1ZjQtZDBkODZlMDA1ZmRhIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUk9MRV9FTVBMT1lFUiIsImV4cCI6MTY3OTkzNjUyNCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIwIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIxIn0.IdHZ2ZfxTtCtvobgN_DMbfbxhRGgWJU_OcDMMi3_l7I",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRW1wbG95ZXJEU01AbWFpbC5ubCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiZDEyZWI1ZGMtZDA3MC00Y2JlLTg0YjEtYTA0N2YxNmQ4NmE1IiwianRpIjoiN2NhZjc2NzEtYjY1ZC00NDBlLWIwNTgtYWRlYTMzODUzZDNhIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUk9MRV9FTVBMT1lFUiIsImV4cCI6MTY4MTM4NTgwNywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIwIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIxIn0.fDdeUXGkgW4V59CVW9GNve09NLAhz-w2aCfVHGnRdVA",
 				"type": "string"
 			}
 		]

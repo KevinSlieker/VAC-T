@@ -28,7 +28,7 @@ namespace VAC_T.Controllers
             {
                 AppointmentViewModel mymodel = new AppointmentViewModel();
                 mymodel.Appointments = await _service.GetAppointmentsAsync(User);
-                mymodel.RepeatAppointments = await _service.GetRepeatAppointmentsAsync();
+                mymodel.RepeatAppointments = await _service.GetRepeatAppointmentsAsync(User);
                 return View(mymodel);
             }
             catch (InternalServerException)
@@ -223,8 +223,9 @@ namespace VAC_T.Controllers
                 {
                     return NotFound();
                 }
+                var viewModel = new SelectAppointmentViewModel() { Appointments = appointments, SolicitationId = id };
                 ViewData["SolicitationId"] = id;
-                return View(appointments);
+                return View(viewModel);
             }
             catch (InternalServerException)
             {
@@ -234,7 +235,7 @@ namespace VAC_T.Controllers
 
         [HttpPost, ActionName("Select")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SelectConfirmed(int appointmentId, int solicitationId)
+        public async Task<IActionResult> SelectConfirmed([Bind("SolicitationId,SelectedAppointmentId")] SelectAppointmentViewModel viewModel)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_CANDIDATE")))
             {
@@ -242,11 +243,27 @@ namespace VAC_T.Controllers
             }
             try
             {
-                if (!(await _service.DoesSolicitationExistsAsync(solicitationId) || await _service.DoesAppointmentExistAsync(appointmentId)))
+                var solicitationId = viewModel.SolicitationId;
+                if (viewModel.SelectedAppointmentId.Contains("_"))
                 {
-                    return RedirectToAction(nameof(Select), solicitationId);
+                    var split = viewModel.SelectedAppointmentId.Split('_');
+                    var repeatAppointmentId = Int32.Parse(split.LastOrDefault());
+                    var date = DateTime.Parse(split.FirstOrDefault());
+                    if (!(await _service.DoesSolicitationExistsAsync(solicitationId)))
+                    {
+                        return RedirectToAction(nameof(Select), solicitationId);
+                    }
+                    await _service.SelectRepeatAppointmentAsync(repeatAppointmentId, date, solicitationId);
                 }
-                await _service.SelectAppointmentAsync(appointmentId, solicitationId);
+                else
+                {
+                    var appointmentId = Int32.Parse(viewModel.SelectedAppointmentId);
+                    if (!(await _service.DoesSolicitationExistsAsync(solicitationId) || await _service.DoesAppointmentExistAsync(appointmentId)))
+                    {
+                        return RedirectToAction(nameof(Select), solicitationId);
+                    }
+                    await _service.SelectAppointmentAsync(appointmentId, solicitationId);
+                }
                 return RedirectToAction(nameof(Index), "Solicitations");
             }
             catch (InternalServerException)

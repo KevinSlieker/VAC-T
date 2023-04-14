@@ -26,6 +26,7 @@ namespace VAC_T.Models
         [Display(Name = "Duur")]
         public TimeSpan Duration { get; set; }
         public bool IsOnline { get; set; }
+        virtual public ICollection<Appointment>? Appointments { get; set; }
 
         public enum RepeatsType
         {

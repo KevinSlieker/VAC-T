@@ -211,16 +211,21 @@ namespace VAC_T.Business
                 .FirstOrDefaultAsync(m => m.Id == id);
             return repeatAppointment;
         }
-        public async Task<IEnumerable<RepeatAppointment>> GetRepeatAppointmentsAsync()
+        public async Task<IEnumerable<RepeatAppointment>> GetRepeatAppointmentsAsync(ClaimsPrincipal User)
         {
             if (_context.RepeatAppointment == null)
             {
                 throw new InternalServerException("Database not found");
             }
-            var repeatAppointments = await _context.RepeatAppointment
-                .Include(a => a.Company)
-                .ToListAsync();
-            return repeatAppointments;
+            var user = await _userManager.GetUserAsync(User);
+            var repeatAppointments = _context.RepeatAppointment
+                .Include(a => a.Company);
+            if (User.IsInRole("ROLE_EMPLOYER"))
+            {
+                await DeleteOldOpenAppointmentsAsync(User);
+                repeatAppointments = _context.RepeatAppointment.Where(a => a.Company.User == user).Include(a => a.Company);
+            }
+            return await repeatAppointments.ToListAsync();
         }
 
         public async Task<RepeatAppointment> CreateRepeatAppointmentAsync(RepeatAppointment repeatAppointment, ClaimsPrincipal User)
@@ -295,20 +300,21 @@ namespace VAC_T.Business
             {
                 return appointments;
             }
+            var takenRepeatAppointments = await _context.Appointment.Where(a => a.RepeatAppointmentId != null).ToListAsync();
 
             var dateNow = DateTime.Today;
             var threeWeeksFromNow = dateNow.AddDays(21);
             foreach (var repeatAppointment in repeatAppointments)
             {
                 var date = dateNow;
-                while (date <= threeWeeksFromNow && repeatAppointment.Repeats == RepeatAppointment.RepeatsType.MonthlyRelative)
+                while (date <= threeWeeksFromNow)
                 {
                     if (repeatAppointment.Repeats == RepeatAppointment.RepeatsType.Daily)
                     {
                         date = date.AddDays(1);
-                        if (appointments.Where(a => a.Date == date).Where(a => a.RepeatAppointmentId == repeatAppointment.Id).Any())
+                        if (takenRepeatAppointments.Where(a => a.Date == date).Where(a => a.RepeatAppointmentId == repeatAppointment.Id).Any())
                         {
-                            break;
+                            continue;
                         }
                         if (date.DayOfWeek != DayOfWeek.Sunday && date.DayOfWeek != DayOfWeek.Saturday)
                         {
@@ -338,9 +344,9 @@ namespace VAC_T.Business
                             break;
                         }
                         date = date.AddDays(1);
-                        if (appointments.Where(a => a.Date == date).Where(a => a.RepeatAppointmentId == repeatAppointment.Id).Any())
+                        if (takenRepeatAppointments.Where(a => a.Date == date).Where(a => a.RepeatAppointmentId == repeatAppointment.Id).Any())
                         {
-                            break;
+                            continue;
                         }
                         var weekday = date.DayOfWeek;
                         var mask = 1 << ((int)weekday - 1);
@@ -375,9 +381,9 @@ namespace VAC_T.Business
                             break;
                         }
                         date = date.AddDays(1);
-                        if (appointments.Where(a => a.Date == date).Where(a => a.RepeatAppointmentId == repeatAppointment.Id).Any())
+                        if (takenRepeatAppointments.Where(a => a.Date == date).Where(a => a.RepeatAppointmentId == repeatAppointment.Id).Any())
                         {
-                            break;
+                            continue;
                         }
                         while (repeatAppointment.RepeatsDay != date.Day)
                         {
@@ -411,9 +417,9 @@ namespace VAC_T.Business
                             break;
                         }
                         date = date.AddDays(1);
-                        if (appointments.Where(a => a.Date == date).Where(a => a.RepeatAppointmentId == repeatAppointment.Id).Any())
+                        if (takenRepeatAppointments.Where(a => a.Date == date).Where(a => a.RepeatAppointmentId == repeatAppointment.Id).Any())
                         {
-                            break;
+                            continue;
                         }
                         var weekday = date.DayOfWeek;
                         var mask = 1 << ((int)weekday - 1);
@@ -476,7 +482,39 @@ namespace VAC_T.Business
                     }
                 }
             }
-            return appointments;
+            return appointments.OrderBy(a => a.Time).ToList();
+        }
+
+        public async Task SelectRepeatAppointmentAsync(int repeatAppointmentId, DateTime date, int solicitationId)
+        {
+            if (_context.Appointment == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            var repeatAppointment = await _context.RepeatAppointment.Include(ra => ra.Company).FirstOrDefaultAsync(ra => ra.Id == repeatAppointmentId);
+            var solicitation = await _context.Solicitation.Include(s => s.JobOffer).FirstOrDefaultAsync(s => s.Id == solicitationId);
+            if (repeatAppointment == null || solicitation == null)
+            {
+                return;
+            }
+            var appointment = new Appointment()
+            {
+                Date = date.Date,
+                Time = date,
+                Duration = repeatAppointment.Duration,
+                IsOnline = repeatAppointment.IsOnline,
+                Company = repeatAppointment.Company,
+                CompanyId = repeatAppointment.CompanyId,
+                RepeatAppointment = repeatAppointment,
+                RepeatAppointmentId= repeatAppointment.Id,
+                Solicitation = solicitation,
+                //appointment.JobOffer = solicitation.JobOffer;
+
+            };
+            solicitation.Appointment = appointment;
+            await _context.Appointment.AddAsync(appointment);
+            _context.Solicitation.Update(solicitation);
+            await _context.SaveChangesAsync();
         }
 
     }

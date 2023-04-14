@@ -15,5 +15,6 @@ namespace VAC_T.Data.DTO
         public JobOfferDTOSmall? JobOffer { get; set; }
         public int? JobOfferId { get; set; }
         virtual public SolicitationDTOSmall? Solicitation { get; set; }
+        public int? RepeatAppointmentId { get; set; }
     }
 }

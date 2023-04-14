@@ -1,5 +1,5 @@
 ﻿@*@model VAC_T.Models.SolicitationAppointmentModel*@
-@model IEnumerable<VAC_T.Models.Appointment>
+@model SelectAppointmentViewModel
 @{
     ViewData["Title"] = "Select";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -11,14 +11,24 @@
     <p>
         <div class="col-4">
             <div class="form-input">
-                <input type="hidden" name="solicitationId" value="@ViewData["SolicitationId"]" />
+                <input type="hidden" asp-for="SolicitationId" />
                 <div class="form-group">
-                    <label class="control-label">Gesprekstijd:</label>
-                    <select name="appointmentId" id="appointmentId" class="form-select">
+                    <label asp-for="SelectedAppointmentId" class="control-label">Gesprekstijd:</label>
+                    <select asp-for="SelectedAppointmentId" class="form-select">
                         <option selected disabled>Plan het sollicitatiegesprek.</option>
-                        @foreach (var item in Model)
+                        @foreach (var item in Model.Appointments)
                         {
-                            <option value="@item.Id">@Html.DisplayFor(modelItem => item.Date) @Html.DisplayFor(modelItem => item.Time)</option>
+                            var value = "";
+                            @if (item.Id != 0)
+                            {
+                                value = item.Id.ToString();
+                            } else
+                            {
+                                value = item.Time.ToString() + "_" + item.RepeatAppointmentId.ToString();
+                            }
+
+                            <option value="@value">@Html.DisplayFor(modelItem => item.Date) @Html.DisplayFor(modelItem => item.Time)</option>
+                            @*<input type="hidden" name="repeatAppointment" value="@item"/>*@
                         }
                     </select>
                 </div>
@@ -41,28 +51,28 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Date)
+                @Html.DisplayNameFor(model => model.Appointments.FirstOrDefault().Date)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Time)
+                @Html.DisplayNameFor(model => model.Appointments.FirstOrDefault().Time)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Duration)
+                @Html.DisplayNameFor(model => model.Appointments.FirstOrDefault().Duration)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsOnline)
+                @Html.DisplayNameFor(model => model.Appointments.FirstOrDefault().IsOnline)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Company)
+                @Html.DisplayNameFor(model => model.Appointments.FirstOrDefault().Company)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.JobOffer)
+                @Html.DisplayNameFor(model => model.Appointments.FirstOrDefault().JobOffer)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Appointments)
         {
             <tr>
                 <td>

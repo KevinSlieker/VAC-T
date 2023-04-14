@@ -42,6 +42,9 @@ namespace VAC_T.Data
             CreateMap<RepeatAppointmentEnumViewModel, RepeatAppointment>()
                 .ForMember(dest => dest.RepeatsWeekdays, opt => opt.MapFrom(src => MappingService.MapRepeatsWeekdays(src)))
                 .ForMember(dest => dest.RepeatsRelativeWeek, opt => opt.MapFrom(src => MappingService.MapRepeatsRelativeWeek(src)));
+            CreateMap<RepeatAppointment, RepeatAppointmentDTO>();
+            CreateMap<RepeatAppointment, RepeatAppointmentDTOForCreate>();
+            CreateMap<RepeatAppointmentDTOForCreate, RepeatAppointment>();
         }
     }
 }

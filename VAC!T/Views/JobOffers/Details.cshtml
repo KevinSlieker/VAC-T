@@ -58,12 +58,20 @@
                         {
                             <a class="navbar-brand text-orange" asp-area="" asp-controller="Solicitations" asp-action="Create" asp-route-jobOfferId="@Model.Id">
                                 <h4>SOLLICITEER DIRECT</h4>
-                            </a>
-                        } else
+                        </a>
+                    } else
+                    {
+                        if (Model.Solicitations.First().AppointmentId == null)
                         {
                             <a class="navbar-brand text-orange" asp-area="" asp-controller="Solicitations" asp-action="Delete" asp-route-jobOfferId="@Model.Id">
                                 <h4>ANNULEER SOLLICITATIE</h4>
                             </a>
+                        } else
+                        {
+                            <a class="navbar-brand text-orange" asp-area="" asp-controller="Appointments" asp-action="Details" asp-route-Id="@Model.Solicitations.First().AppointmentId">
+                                <h4>GESPREK GEPLANNED</h4>
+                            </a>
+                        }
                         }
 
                 </div>
