@@ -32,6 +32,7 @@ namespace VAC_T.Models
         [DisplayFormat(DataFormatString = "{0:dd-MMMM-yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Datum")]
         public DateTime Created { get; set; } = DateTime.Now;
+        public DateTime? Closed { get; set; } = null;
         public ICollection<Solicitation> Solicitations { get; set; } = new List<Solicitation>();
     }
 }
