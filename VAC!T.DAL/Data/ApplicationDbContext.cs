@@ -1,11 +1,26 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using VAC_T.Models;
 
 namespace VAC_T.Data
 {
     public class ApplicationDbContext : IdentityDbContext<VAC_TUser>, IVact_TDbContext
     {
+        public ApplicationDbContext() : base(CreateOptions()) { }
+
+        private static DbContextOptions<ApplicationDbContext> CreateOptions()
+        {
+            var configuration = new ConfigurationBuilder()
+            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            return optionsBuilder.Options;
+        }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

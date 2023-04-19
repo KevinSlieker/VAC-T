@@ -196,7 +196,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("RepeatAppointmentId");
 
-                    b.ToTable("Appointment");
+                    b.ToTable("Appointment", (string)null);
                 });
 
             modelBuilder.Entity("VAC_T.Models.Company", b =>
@@ -242,7 +242,7 @@ namespace VACT.Data.Migrations
                         .IsUnique()
                         .HasFilter("[UserId] IS NOT NULL");
 
-                    b.ToTable("Company");
+                    b.ToTable("Company", (string)null);
                 });
 
             modelBuilder.Entity("VAC_T.Models.JobOffer", b =>
@@ -285,7 +285,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("JobOffer");
+                    b.ToTable("JobOffer", (string)null);
                 });
 
             modelBuilder.Entity("VAC_T.Models.RepeatAppointment", b =>
@@ -324,7 +324,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("RepeatAppointment");
+                    b.ToTable("RepeatAppointment", (string)null);
                 });
 
             modelBuilder.Entity("VAC_T.Models.Solicitation", b =>
@@ -367,7 +367,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Solicitation");
+                    b.ToTable("Solicitation", (string)null);
                 });
 
             modelBuilder.Entity("VAC_T.Models.VAC_TUser", b =>

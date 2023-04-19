@@ -1,0 +1,126 @@
+﻿<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/stock/highstock.src.js"></script>
+
+@model IEnumerable<VAC_T.Models.Solicitation>;
+@using Highsoft.Web.Mvc.Charts;
+@using Highsoft.Web.Mvc.Charts.Rendering;
+@{
+    ViewData["Title"] = "DashBoardCandidate";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var total = Model.Count();
+    var invited = Model.Where(s => s.Selected == true).Count();
+    var percentage = Math.Round((double)(100 * invited) / total, 1);
+    var solicitations = Model.Where(s => s.DateAppointmentSelected != null).ToList();
+    var averageTimeDiff = Math.Round((double)solicitations.Select(s => ((s.DateAppointmentSelected!.Value - s.Date).TotalDays)).Average(), 1);
+
+    var chartOptions = new Highcharts {
+                Title = new Title {
+                    Text = "Solicitatie Informatie"
+                },
+                Subtitle = new Subtitle {
+                    Text = "Source: DataBase"
+                },
+                //XAxis = new List<XAxis> {
+                //  new XAxis {
+                //    Categories = new List <string> {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"}
+                //  }
+                //},
+                XAxis = new List<XAxis>
+                {
+                    new XAxis
+                    {
+                        Type = "category"
+                    }
+                },
+
+                YAxis = new List<YAxis> {
+                    new YAxis {
+                        Min = 0,
+                        Title = new YAxisTitle {
+                            Text = "Hoeveelheid"
+                        }
+                    }
+                },
+                Tooltip = new Tooltip {
+                    HeaderFormat = "<span style='font-size:10px'>{point.key}</span><table style='font-size:12px'>",
+                    PointFormat = "<tr><td style='color:{series.color};padding:0'></td><td style='padding:0'><b>{point.y:.1f}{point.description}</b></td></tr>",
+                    //PointFormat = "<tr><td style='color:{series.color};padding:0'>{series.name}: </td><td style='padding:0'><b>{point.y:.1f}{point.description}</b></td></tr>",
+                    FooterFormat = "</table>",
+                    Shared = true,
+                    UseHTML = true
+                },
+                PlotOptions = new PlotOptions {
+                    Column = new PlotOptionsColumn {
+                        PointPadding = 0.2,
+                        BorderWidth = 0
+                    },
+                    Series = new PlotOptionsSeries
+                    {
+                        DataLabels = new PlotOptionsSeriesDataLabels
+                        {
+                            Enabled = true,
+                            VerticalAlign = PlotOptionsSeriesDataLabelsVerticalAlign.Bottom,
+                            Inside = false,
+                            Format = "{point.y}{point.description}"
+
+                        }
+                    }
+                },
+
+                //Series = new List<Series> {
+                //  new ColumnSeries {
+                //    Name = "Tokyo",
+                //      Data = (List<ColumnSeriesData>)ViewData["tokyoData"]
+                //  },
+                //  new ColumnSeries {
+                //    Name = "New York",
+                //      Data = (List<ColumnSeriesData>)ViewData["nyData"]
+                //  },
+                //  new ColumnSeries {
+                //    Name = "Berlin",
+                //      Data = (List<ColumnSeriesData>)@ViewData["berlinData"]
+                //  },
+                //  new ColumnSeries {
+                //    Name = "London",
+                //      Data = (List<ColumnSeriesData>)@ViewData["londonData"]
+                //  }
+                //}
+                Legend = new Legend
+                {
+                    Enabled = false,
+                },
+                Chart = new Chart
+                {
+                    Width = "1000",
+                    Height = 400,
+                    Type = ChartType.Column
+                },
+                Series = new List<Series>
+                {
+                    new ColumnSeries
+                    {
+                        //ShowInLegend = false,
+                        Name = "Solicitaties",
+                        ColorByPoint = true,
+                        Data = new List<ColumnSeriesData>
+                        {
+                            new ColumnSeriesData { Name = "Solicitaties", Y = total},
+                            new ColumnSeriesData { Name = "Solicitatiegesprek uitnodigingen", Y = invited},
+                            new ColumnSeriesData { Name = "Percentage solicitatiegesprek uitnodigingen", Y = percentage, Description = "%" },
+                            new ColumnSeriesData { Name = "Gemiddelde dagen van solicitatie tot solicitatiegesprek plannen", Y = averageTimeDiff, Description = " Dagen"},
+                        }
+                    }
+                }
+  };
+
+  chartOptions.ID = "chart";
+  var renderer = new HighchartsRenderer(chartOptions);
+
+}
+
+<h1>DashBoardCandidate</h1>
+
+<p>@Html.Raw(renderer.RenderHtml())</p>
+

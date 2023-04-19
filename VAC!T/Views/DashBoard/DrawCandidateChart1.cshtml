@@ -1,0 +1,17 @@
+﻿@*@using System.Web.Helpers;
+@model IEnumerable<VAC_T.Models.Solicitation>;
+@{
+    var total = Model.Count();
+    var invited = Model.Where(s => s.Selected == true).Count();
+    var percentage = (int)Math.Round((double)(100 * invited) / total);
+    var solicitations = Model.Where(s => s.DateAppointmentSelected != null).ToList();
+    var averageTimeDiff = solicitations.Select(s => ((s.DateAppointmentSelected!.Value - s.Date).TotalDays)).Average();
+
+    var myChart = new Chart(width: 600, height: 400)
+        .AddTitle("Solicitaties")
+        .AddSeries(
+            name: "Naam",
+            xValue: new[] { "Aantal solicitaties", "Percentage uitgenodigd", "Tijd tussen solicitatie en afspraakplannen" },
+            yValues: new[] { total, percentage, averageTimeDiff})
+        .Write();
+}*@
