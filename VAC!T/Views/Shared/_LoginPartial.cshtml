@@ -25,6 +25,9 @@
             <li class="nav-item">
                 <a class="nav-link text-white" asp-area="" asp-controller="Appointments" asp-action="Index">Sollicitatie gesprekken</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" asp-area="" asp-controller="DashBoard" asp-action="DashBoardCompany">DashBoard</a>
+            </li>
         }
         @if (User.IsInRole("ROLE_CANDIDATE"))
         {

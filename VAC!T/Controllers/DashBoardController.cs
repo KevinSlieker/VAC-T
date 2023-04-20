@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VAC_T.Business;
 using VAC_T.DAL.Exceptions;
+using VAC_T.Models;
 
 namespace VAC_T.Controllers
 {
@@ -17,8 +18,23 @@ namespace VAC_T.Controllers
         {
             try
             {
-                var solicitations = await _service.GetSolicitationsAsync();
+                var solicitations = await _service.GetSolicitationsAsync(User);
                 return View(solicitations);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Solicitation' is null.");
+            }
+        }
+
+        public async Task<IActionResult> DashBoardCompany()
+        {
+            try
+            {
+                var solicitations = await _service.GetSolicitationsAsync(User);
+                var companyInfo = await _service.GetCompanyAsync(User);
+                var viewModel = new CompanyDashBoardViewModel() { Company = companyInfo, Solicitations = solicitations };
+                return View(viewModel);
             }
             catch (InternalServerException)
             {

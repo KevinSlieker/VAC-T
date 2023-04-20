@@ -2,24 +2,32 @@
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/stock/highstock.src.js"></script>
 
-@model IEnumerable<VAC_T.Models.Solicitation>;
+@model CompanyDashBoardViewModel;
 @using Highsoft.Web.Mvc.Charts;
 @using Highsoft.Web.Mvc.Charts.Rendering;
 @{
-    ViewData["Title"] = "DashBoardCandidate";
+    ViewData["Title"] = "DashBoardCompany";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    var total = Model != null ? Model.Count() : 0;
-    var invited = Model != null && Model.Where(s => s.Selected == true) != null? Model.Where(s => s.Selected == true).Count() : 0;
-    var percentage = total != 0 ? Math.Round((double)(100 * invited) / total, 1) : 0;
-    var solicitations = Model != null ? Model.Where(s => s.DateAppointmentSelected != null).ToList() : null;
-    var averageTimeDiff = solicitations.Count() != 0 ? Math.Round((double)solicitations.Select(s => ((s.DateAppointmentSelected!.Value - s.Date).TotalDays)).Average(), 1) : 0;
+    var jobOffers = Model.Company.JobOffers != null ? Model.Company.JobOffers.Count() : 0;
+    var solicitations = Model.Solicitations != null ? Model.Solicitations.Count() : 0;
+    var averageSolicitationsPerJobOffer = Model.Solicitations != null ? Math.Round((double)solicitations / jobOffers, 1) : 0;
+    var invited = Model.Solicitations != null ? Model.Solicitations.Where(s => s.Selected == true).Count() : 0;
+    var percentageInvited = solicitations != 0 ? Math.Round((double)(100 * invited) / solicitations, 1) : 100;
+    var solicitationsWAppointment = Model.Solicitations != null ? Model.Solicitations.Where(s => s.DateAppointmentSelected != null).Count() : 0 ;
+    var percentageSolicitationsWappointment = solicitations != 0 ? Math.Round((double)(100 * solicitationsWAppointment) / invited, 1) : 100;
 
-    var chartOptions = new Highcharts {
-                Title = new Title {
-                    Text = "Solicitatie Informatie"
+    var averageJobOfferLifeSpan = Model.Company.JobOffers != null ? Math.Round((double)Model.Company.JobOffers.Where(j => j.Closed != null).Select(j => ((j.Closed!.Value - j.Created).TotalDays)).Average(), 1) : 0;
+
+
+    var chartOptions = new Highcharts
+            {
+                Title = new Title
+                {
+                    Text = "Bedrijf Informatie"
                 },
-                Subtitle = new Subtitle {
+                Subtitle = new Subtitle
+                {
                     Text = "Source: DataBase"
                 },
                 //XAxis = new List<XAxis> {
@@ -43,7 +51,8 @@
                         }
                     }
                 },
-                Tooltip = new Tooltip {
+                Tooltip = new Tooltip
+                {
                     HeaderFormat = "<span style='font-size:10px'>{point.key}</span><table style='font-size:12px'>",
                     PointFormat = "<tr><td style='color:{series.color};padding:0'></td><td style='padding:0'><b>{point.y:.1f}{point.description}</b></td></tr>",
                     //PointFormat = "<tr><td style='color:{series.color};padding:0'>{series.name}: </td><td style='padding:0'><b>{point.y:.1f}{point.description}</b></td></tr>",
@@ -51,8 +60,10 @@
                     Shared = true,
                     UseHTML = true
                 },
-                PlotOptions = new PlotOptions {
-                    Column = new PlotOptionsColumn {
+                PlotOptions = new PlotOptions
+                {
+                    Column = new PlotOptionsColumn
+                    {
                         PointPadding = 0.2,
                         BorderWidth = 0
                     },
@@ -89,7 +100,7 @@
                 //}
                 Legend = new Legend
                 {
-                    Enabled = false,
+                    Enabled = true,
                 },
                 Chart = new Chart
                 {
@@ -102,25 +113,25 @@
                     new ColumnSeries
                     {
                         //ShowInLegend = false,
-                        Name = "Solicitaties",
+                        Name = "Vacatures en Solicitaties",
                         ColorByPoint = true,
                         Data = new List<ColumnSeriesData>
                         {
-                            new ColumnSeriesData { Name = "Solicitaties", Y = total},
-                            new ColumnSeriesData { Name = "Solicitatiegesprek uitnodigingen", Y = invited},
-                            new ColumnSeriesData { Name = "Percentage solicitatiegesprek uitnodigingen", Y = percentage, Description = "%" },
-                            new ColumnSeriesData { Name = "Gemiddelde dagen van solicitatie tot solicitatiegesprek plannen", Y = averageTimeDiff, Description = " Dagen"},
+                            new ColumnSeriesData { Name = "Vacatures", Y = jobOffers},
+                            new ColumnSeriesData { Name = "Gemiddelde Vacature duur", Y = averageJobOfferLifeSpan, Description = " dagen"},
+                            new ColumnSeriesData { Name = "Gemiddelde Sollicitaties per vacature", Y = averageSolicitationsPerJobOffer},
+                            new ColumnSeriesData { Name = "Percentage solicitatiegesprek uitnodigingen", Y = percentageInvited, Description = "%" },
+                            new ColumnSeriesData { Name = "Percentage solicitatiegesprek plannen", Y = percentageSolicitationsWappointment, Description = "%"},
                         }
                     }
                 }
-  };
+            };
 
-  chartOptions.ID = "chart";
-  var renderer = new HighchartsRenderer(chartOptions);
+    chartOptions.ID = "chart";
+    var renderer = new HighchartsRenderer(chartOptions);
 
 }
 
-<h1>DashBoardCandidate</h1>
+<h1>DashBoard @Model.Company.Name</h1>
 
 <p>@Html.Raw(renderer.RenderHtml())</p>
-
