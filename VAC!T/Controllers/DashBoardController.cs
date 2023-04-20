@@ -33,7 +33,8 @@ namespace VAC_T.Controllers
             {
                 var solicitations = await _service.GetSolicitationsAsync(User);
                 var companyInfo = await _service.GetCompanyAsync(User);
-                var viewModel = new CompanyDashBoardViewModel() { Company = companyInfo, Solicitations = solicitations };
+                var repeatAppointmentsAmount = await _service.GetAmountRepeatAppointmentsLast30DaysAsync(companyInfo.Id);
+                var viewModel = new CompanyDashBoardViewModel() { Company = companyInfo, Solicitations = solicitations, repeatAppointmentsAmount = repeatAppointmentsAmount };
                 return View(viewModel);
             }
             catch (InternalServerException)

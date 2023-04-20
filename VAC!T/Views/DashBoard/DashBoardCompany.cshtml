@@ -1,10 +1,11 @@
 ﻿<script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/stock/highstock.src.js"></script>
+@*<script src="https://code.highcharts.com/stock/highstock.src.js"></script>*@
 
 @model CompanyDashBoardViewModel;
 @using Highsoft.Web.Mvc.Charts;
 @using Highsoft.Web.Mvc.Charts.Rendering;
+@using VAC_T.Services;
 @{
     ViewData["Title"] = "DashBoardCompany";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -18,6 +19,7 @@
     var percentageSolicitationsWappointment = solicitations != 0 ? Math.Round((double)(100 * solicitationsWAppointment) / invited, 1) : 100;
 
     var averageJobOfferLifeSpan = Model.Company.JobOffers != null ? Math.Round((double)Model.Company.JobOffers.Where(j => j.Closed != null).Select(j => ((j.Closed!.Value - j.Created).TotalDays)).Average(), 1) : 0;
+
 
 
     var chartOptions = new Highcharts
@@ -100,13 +102,13 @@
                 //}
                 Legend = new Legend
                 {
-                    Enabled = true,
+                    Enabled = false,
                 },
                 Chart = new Chart
                 {
                     Width = "1000",
                     Height = 400,
-                    Type = ChartType.Column
+                    //Type = ChartType.Column
                 },
                 Series = new List<Series>
                 {
@@ -114,6 +116,7 @@
                     {
                         //ShowInLegend = false,
                         Name = "Vacatures en Solicitaties",
+                        //Selected = true,
                         ColorByPoint = true,
                         Data = new List<ColumnSeriesData>
                         {
@@ -130,8 +133,123 @@
     chartOptions.ID = "chart";
     var renderer = new HighchartsRenderer(chartOptions);
 
+    var enums = Enum.GetValues(typeof(RepeatAppointment.RepeatsType));
+    List<string> list = new List<string>();
+    foreach (RepeatAppointment.RepeatsType name in enums)
+    {
+        list.Add(name.GetSingleDisplayName());
+    }
+    List<ColumnSeriesData> selectedRepeatAppointments = new List<ColumnSeriesData>();
+    foreach (KeyValuePair<RepeatAppointment.RepeatsType,int> s in Model.repeatAppointmentsAmount)
+    {
+        if (Model.Company.Appointments != null)
+        {
+            var repeatsId = Model.Company.RepeatAppointments.Where(a => a.Repeats == s.Key).Select(ra => ra.Id).ToList();
+            var selected = Model.Company.Appointments.Where(a => a.RepeatAppointment.Repeats == s.Key).ToList();
+            var valueSelected = selected != null ? selected.Count() : 0;
+            selectedRepeatAppointments.Add(new ColumnSeriesData { Y = valueSelected });
+
+        } else
+        {
+            selectedRepeatAppointments.Add(new ColumnSeriesData { Y = 0 });
+        }
+    };
+    List<ColumnSeriesData> notSelectedRepeatAppointments = new List<ColumnSeriesData>();
+    foreach (KeyValuePair<RepeatAppointment.RepeatsType, int> s in Model.repeatAppointmentsAmount)
+    {
+        var valueSelected = 0;
+        if (Model.Company.Appointments != null)
+        {
+            var selected = Model.Company.Appointments.Where(a => a.RepeatAppointment.Repeats == s.Key).ToList();
+            valueSelected = selected != null ? selected.Count() : 0;
+        }
+        notSelectedRepeatAppointments.Add(new ColumnSeriesData { Y = (s.Value - valueSelected) });
+    };
+
+    var chartOptions2 = new Highcharts
+            {
+                Title = new Title
+                {
+                    Text = "Bedrijf Informatie2"
+                },
+                Subtitle = new Subtitle
+                {
+                    Text = "Source: DataBase"
+                },
+                XAxis = new List<XAxis> {
+                  new XAxis {
+                    Categories = list
+                  }
+                },
+                YAxis = new List<YAxis> {
+                    new YAxis {
+                        Min = 0,
+                        Title = new YAxisTitle {
+                            Text = "Percentage (%)"
+                        }
+                    }
+                },
+                Tooltip = new Tooltip
+                {
+                    //HeaderFormat = "<span style='font-size:10px'>{point.key}</span><table style='font-size:12px'>",
+                    PointFormat = "<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br/>",
+                    //PointFormat = "<tr><td style='color:{series.color};padding:0'>{series.name}: </td><td style='padding:0'><b>{point.y:.1f}{point.description}</b></td></tr>",
+                    FooterFormat = "</table>",
+                    Shared = true,
+                    UseHTML = true
+                },
+                PlotOptions = new PlotOptions
+                {
+                    Column = new PlotOptionsColumn
+                    {
+                        PointPadding = 0.2,
+                        BorderWidth = 0,
+                        Stacking = PlotOptionsColumnStacking.Percent,
+                    },
+                    Series = new PlotOptionsSeries
+                    {
+                        DataLabels = new PlotOptionsSeriesDataLabels
+                        {
+                            Enabled = true,
+                            VerticalAlign = PlotOptionsSeriesDataLabelsVerticalAlign.Bottom,
+                            Inside = false,
+                            Format = "{point.y}{point.description}"
+
+                        }
+                    }
+                },
+                Legend = new Legend
+                {
+                    Enabled = true,
+                },
+                Chart = new Chart
+                {
+                    Width = "1000",
+                    Height = 400,
+                    //Type = ChartType.Column
+                },
+                Series = new List<Series>
+                {
+                    new ColumnSeries
+                    {
+                        Name = "Niet geselecteerde herhaalafspraken",
+                        Data = notSelectedRepeatAppointments,
+                    },
+                    new ColumnSeries
+                    {
+                        Name = "Geselecteerde herhaalafspraken",
+                        Data = selectedRepeatAppointments,
+                    },
+                    
+                }
+            };
+
+    chartOptions2.ID = "chart2";
+    var renderer2 = new HighchartsRenderer(chartOptions2);
+
 }
 
 <h1>DashBoard @Model.Company.Name</h1>
 
 <p>@Html.Raw(renderer.RenderHtml())</p>
+<p>@Html.Raw(renderer2.RenderHtml())</p>

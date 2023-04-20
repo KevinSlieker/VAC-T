@@ -48,5 +48,141 @@ namespace VAC_T.Business
             return await _context.Company.Where(c => c.User == user).Include(c => c.JobOffers).Include(c => c.Appointments).Include(c => c.RepeatAppointments).FirstAsync();
         }
 
+        public async Task<Dictionary<RepeatAppointment.RepeatsType,int>> GetAmountRepeatAppointmentsLast30DaysAsync(int companyId)
+        {
+            if (_context.RepeatAppointment == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            var appointments = new Dictionary<RepeatAppointment.RepeatsType,int>() 
+            { 
+                { RepeatAppointment.RepeatsType.Daily, 0 },
+                { RepeatAppointment.RepeatsType.Weekly, 0 },
+                { RepeatAppointment.RepeatsType.Monthly, 0 },
+                { RepeatAppointment.RepeatsType.MonthlyRelative, 0 }
+            };
+            var repeatAppointments = await _context.RepeatAppointment.Where(ra => ra.CompanyId == companyId).Include(ra => ra.Company).ToListAsync();
+            if (repeatAppointments == null)
+            {
+                return appointments;
+            }
+            var date30DaysAgo = DateTime.Today.AddDays(-30);
+            var now = DateTime.Today;
+            foreach (var repeatAppointment in repeatAppointments)
+            {
+                var date = date30DaysAgo;
+                while (date <= now)
+                {
+                    if (repeatAppointment.Repeats == RepeatAppointment.RepeatsType.Daily)
+                    {
+                        date = date.AddDays(1);
+                        if (date.DayOfWeek != DayOfWeek.Sunday && date.DayOfWeek != DayOfWeek.Saturday)
+                        {
+                            if (date <= now)
+                            {
+                                appointments[RepeatAppointment.RepeatsType.Daily] += 1;
+                            }
+                        }
+                    }
+
+                    if (repeatAppointment.Repeats == RepeatAppointment.RepeatsType.Weekly)
+                    {
+                        if (repeatAppointment.RepeatsWeekdays.HasValue == false)
+                        {
+                            break;
+                        }
+                        date = date.AddDays(1);
+                        var weekday = date.DayOfWeek;
+                        var mask = 1 << ((int)weekday - 1);
+                        if (date.DayOfWeek != DayOfWeek.Sunday && date.DayOfWeek != DayOfWeek.Saturday)
+                        {
+                            if ((mask & (int)repeatAppointment.RepeatsWeekdays) == mask)
+                            {
+                                if (date <= now)
+                                {
+                                    appointments[RepeatAppointment.RepeatsType.Weekly] += 1;
+                                }
+                            }
+                        }
+                    }
+
+                    if (repeatAppointment.Repeats == RepeatAppointment.RepeatsType.Monthly)
+                    {
+                        if (repeatAppointment.RepeatsDay.HasValue == false)
+                        {
+                            break;
+                        }
+                        date = date.AddDays(1);
+                        while (repeatAppointment.RepeatsDay != date.Day)
+                        {
+                            date = date.AddDays(1);
+                        }
+                        if (date.DayOfWeek != DayOfWeek.Sunday && date.DayOfWeek != DayOfWeek.Saturday)
+                        {
+                            if (date <= now)
+                            {
+                                appointments[RepeatAppointment.RepeatsType.Monthly] += 1;
+                            }
+                        }
+                    }
+
+                    if (repeatAppointment.Repeats == RepeatAppointment.RepeatsType.MonthlyRelative)
+                    {
+                        if (repeatAppointment.RepeatsWeekdays.HasValue == false || repeatAppointment.RepeatsRelativeWeek.HasValue == false)
+                        {
+                            break;
+                        }
+                        date = date.AddDays(1);
+                        var weekday = date.DayOfWeek;
+                        var mask = 1 << ((int)weekday - 1);
+                        if (date.DayOfWeek != DayOfWeek.Sunday && date.DayOfWeek != DayOfWeek.Saturday)
+                        {
+                            if ((mask & (int)repeatAppointment.RepeatsWeekdays) == mask)
+                            {
+
+                                var day = date.Day;
+                                var weeknumber = 0;
+                                if (day <= 7)
+                                {
+                                    weeknumber = 1;
+                                }
+                                if (day > 7 && day <= 14)
+                                {
+                                    weeknumber = 2;
+                                }
+                                if (day > 14 && day <= 21)
+                                {
+                                    weeknumber = 3;
+                                }
+                                if (day > 21 && day <= 28)
+                                {
+                                    weeknumber = 4;
+                                }
+                                if (day > 28)
+                                {
+                                    weeknumber = 5;
+                                }
+                                if (repeatAppointment.RepeatsRelativeWeek.Value.HasFlag(RepeatAppointment.Repeats_Relative_Week.Last))
+                                {
+                                    if (date.Month != date.AddDays(7).Month)
+                                    {
+                                        weeknumber = 5;
+                                    }
+                                }
+                                var mask2 = 1 << ((int)weeknumber - 1);
+                                if ((mask2 & (int)repeatAppointment.RepeatsRelativeWeek) == mask2)
+                                {
+                                    if (date <= now)
+                                    {
+                                        appointments[RepeatAppointment.RepeatsType.MonthlyRelative] += 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return appointments;
+        }
     }
 }
