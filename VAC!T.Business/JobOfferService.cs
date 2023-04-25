@@ -32,7 +32,7 @@ namespace VAC_T.Business
                 throw new InternalServerException("Database not found");
             }
 
-            var jobOffers = from s in _context.JobOffer.Include(j => j.Company) select s;
+            var jobOffers = from s in _context.JobOffer.Include(j => j.Company).Where(j => j.Closed == null) select s;
                 if (User.IsInRole("ROLE_EMPLOYER"))
                 {
                     var user = await _userManager.GetUserAsync(User);

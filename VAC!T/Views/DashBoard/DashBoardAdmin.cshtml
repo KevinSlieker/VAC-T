@@ -2,12 +2,12 @@
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 @*<script src="https://code.highcharts.com/stock/highstock.src.js"></script>*@
 
-@model Company;
+
 @using Highsoft.Web.Mvc.Charts;
 @using Highsoft.Web.Mvc.Charts.Rendering;
 @using VAC_T.Services;
 @{
-    ViewData["Title"] = "DashBoardCompany";
+    ViewData["Title"] = "DashBoardAdmin";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var chartOptions = new Highcharts
@@ -27,7 +27,6 @@
                         Type = "category"
                     }
                 },
-
                 YAxis = new List<YAxis> {
                     new YAxis {
                         Min = 0,
@@ -82,11 +81,9 @@
                         ColorByPoint = true,
                         Data = new List<ColumnSeriesData>
                         {
-                            new ColumnSeriesData { Name = "Vacatures", Y = (double)@ViewData["jobOffers"]!},
                             new ColumnSeriesData { Name = "Gemiddelde Vacature duur", Y = (double)@ViewData["averageJobOfferLifeSpan"]!, Description = " dagen"},
-                            new ColumnSeriesData { Name = "Gemiddelde Sollicitaties per vacature", Y = (double)@ViewData["averageSolicitationsPerJobOffer"]!},
                             new ColumnSeriesData { Name = "Percentage solicitatiegesprek uitnodigingen", Y = (double)@ViewData["percentageInvited"]!, Description = "%" },
-                            new ColumnSeriesData { Name = "Percentage solicitatiegesprek plannen", Y = (double)@ViewData["percentageSolicitationsWAppointment"]!, Description = "%"},
+                            new ColumnSeriesData { Name = "Percentage actieve reacties", Y = (double)@ViewData["percentageActiveReactionJobOffer"]!, Description = "%"},
                         }
                     }
                 }
@@ -99,29 +96,31 @@
             {
                 Title = new Title
                 {
-                    Text = "Herhaalafspraak effectiviteit afgelopen 6 maanden"
+                    Text = "Sollicitaties per vacatureniveau"
                 },
                 Subtitle = new Subtitle
                 {
                     Text = "Source: DataBase"
                 },
-                XAxis = new List<XAxis> {
-                  new XAxis {
-                    Categories = (List<string>)@ViewData["list"]!
-                  }
+                XAxis = new List<XAxis>
+                {
+                    new XAxis
+                    {
+                        Type = "category"
+                    }
                 },
                 YAxis = new List<YAxis> {
                     new YAxis {
                         Min = 0,
                         Title = new YAxisTitle {
-                            Text = "Percentage (%)"
+                            Text = "Gemiddelde sollicitaties per vacatureniveau (sollicitaties)"
                         }
                     }
                 },
                 Tooltip = new Tooltip
                 {
-                    //HeaderFormat = "<span style='font-size:10px'>{point.key}</span><table style='font-size:12px'>",
-                    PointFormat = "<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.1f}%)<br/>",
+                    HeaderFormat = "<span style='font-size:10px'>{point.key}</span><table style='font-size:12px'>",
+                    PointFormat = "<tr><td style='color:{series.color};padding:0'></td><td style='padding:0'><b>{point.y:.1f}{point.description}</b></td></tr>",
                     //PointFormat = "<tr><td style='color:{series.color};padding:0'>{series.name}: </td><td style='padding:0'><b>{point.y:.1f}{point.description}</b></td></tr>",
                     FooterFormat = "</table>",
                     Shared = true,
@@ -132,8 +131,7 @@
                     Column = new PlotOptionsColumn
                     {
                         PointPadding = 0.2,
-                        BorderWidth = 0,
-                        Stacking = PlotOptionsColumnStacking.Percent,
+                        BorderWidth = 0
                     },
                     Series = new PlotOptionsSeries
                     {
@@ -149,7 +147,7 @@
                 },
                 Legend = new Legend
                 {
-                    Enabled = true,
+                    Enabled = false,
                 },
                 Chart = new Chart
                 {
@@ -161,24 +159,17 @@
                 {
                     new ColumnSeries
                     {
-                        Name = "Niet geselecteerde herhaalafspraken",
-                        Data = (List<ColumnSeriesData>)@ViewData["notSelectedRepeatAppointments"]!,
-                    },
-                    new ColumnSeries
-                    {
-                        Name = "Geselecteerde herhaalafspraken",
-                        Data = (List<ColumnSeriesData>)@ViewData["selectedRepeatAppointments"]!,
-                    },
-                    
-                },
+                        Name = "Vacatures en Solicitaties",
+                        ColorByPoint = true,
+                        Data = (List<ColumnSeriesData>)ViewData["averageSolicitationsPerJobOfferLevel"]!,
+                    }
+                }
             };
-
     chartOptions2.ID = "chart2";
     var renderer2 = new HighchartsRenderer(chartOptions2);
-
 }
 
-<h1>DashBoard @Model.Name</h1>
+<h1>DashBoard Admin</h1>
 
 <p>@Html.Raw(renderer.RenderHtml())</p>
 <p>@Html.Raw(renderer2.RenderHtml())</p>

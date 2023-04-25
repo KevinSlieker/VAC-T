@@ -306,7 +306,7 @@ namespace VAC_T.UnitTest.Services
 
             // validate
             Assert.That(appointments, Is.Not.Null);
-            Assert.That(appointments.Count, Is.EqualTo(2));
+            Assert.That(appointments.Count, Is.EqualTo(1));
         }
 
         [Test]

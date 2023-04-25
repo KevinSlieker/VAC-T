@@ -1,12 +1,9 @@
-﻿using System.Net;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
+﻿using System.Security.Claims;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using VAC_T.Business;
 using VAC_T.Models;
 using VAC_T.UnitTest.TestObjects;
-using VACT.Data.Migrations;
 
 namespace VAC_T.UnitTest.Services
 {
@@ -48,9 +45,22 @@ namespace VAC_T.UnitTest.Services
         {
             // prepare
             int id = testCompanyId!.Value;
+            var user = _context.Users.FirstOrDefault(u => u.Name == "testAdmin")!;
+            var userRoles = await _context.UserManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                };
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+            ClaimsIdentity identity = new ClaimsIdentity(authClaims);
+            var claimsPrincipal = new ClaimsPrincipal(identity);
 
             // run 
-            var company = await _service.GetCompanyAsync(id);
+            var company = await _service.GetCompanyAsync(id, claimsPrincipal);
 
             // validate
             Assert.That(company, Is.Not.Null);
@@ -65,8 +75,8 @@ namespace VAC_T.UnitTest.Services
             Assert.That(company.User, Is.Not.Null);
             Assert.That(company.User.Name, Is.EqualTo("testCompanyUser"));
 
-            Assert.That(company.JobOffers, Is.Not.Empty);                
-            Assert.That(company.Appointments, Is.Null); 
+            Assert.That(company.JobOffers, Is.Not.Empty);
+            Assert.That(company.Appointments, Is.Null);
         }
 
         [Test]
@@ -74,9 +84,15 @@ namespace VAC_T.UnitTest.Services
         {
             // prepare
             int id = 0;
-
+            var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, ""),
+                    new Claim(ClaimTypes.NameIdentifier, "")
+                };
+            ClaimsIdentity identity = new ClaimsIdentity(authClaims);
+            var claimsPrincipal = new ClaimsPrincipal(identity);
             // run
-            var company = await _service.GetCompanyAsync(id);
+            var company = await _service.GetCompanyAsync(id, claimsPrincipal);
 
             //
             Assert.That(company, Is.Null);
@@ -253,8 +269,9 @@ namespace VAC_T.UnitTest.Services
         public async Task TestCreateCompanyWithUser()
         {
             // prepare
-            var company = new Company() 
-            {   Name = "TestCreate",
+            var company = new Company()
+            {
+                Name = "TestCreate",
                 Description = "A TestCreate Company",
                 LogoURL = "assets/img/company/testcompany.jpg",
                 WebsiteURL = "http://testCreateCompany.com",

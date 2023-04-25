@@ -9,12 +9,6 @@
     ViewData["Title"] = "DashBoardCandidate";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    var total = Model != null ? Model.Count() : 0;
-    var invited = Model != null && Model.Where(s => s.Selected == true) != null? Model.Where(s => s.Selected == true).Count() : 0;
-    var percentage = total != 0 ? Math.Round((double)(100 * invited) / total, 1) : 0;
-    var solicitations = Model != null ? Model.Where(s => s.DateAppointmentSelected != null).ToList() : null;
-    var averageTimeDiff = solicitations.Count() != 0 ? Math.Round((double)solicitations.Select(s => ((s.DateAppointmentSelected!.Value - s.Date).TotalDays)).Average(), 1) : 0;
-
     var chartOptions = new Highcharts {
                 Title = new Title {
                     Text = "Solicitatie Informatie"
@@ -22,11 +16,6 @@
                 Subtitle = new Subtitle {
                     Text = "Source: DataBase"
                 },
-                //XAxis = new List<XAxis> {
-                //  new XAxis {
-                //    Categories = new List <string> {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"}
-                //  }
-                //},
                 XAxis = new List<XAxis>
                 {
                     new XAxis
@@ -68,25 +57,6 @@
                         }
                     }
                 },
-
-                //Series = new List<Series> {
-                //  new ColumnSeries {
-                //    Name = "Tokyo",
-                //      Data = (List<ColumnSeriesData>)ViewData["tokyoData"]
-                //  },
-                //  new ColumnSeries {
-                //    Name = "New York",
-                //      Data = (List<ColumnSeriesData>)ViewData["nyData"]
-                //  },
-                //  new ColumnSeries {
-                //    Name = "Berlin",
-                //      Data = (List<ColumnSeriesData>)@ViewData["berlinData"]
-                //  },
-                //  new ColumnSeries {
-                //    Name = "London",
-                //      Data = (List<ColumnSeriesData>)@ViewData["londonData"]
-                //  }
-                //}
                 Legend = new Legend
                 {
                     Enabled = false,
@@ -106,10 +76,10 @@
                         ColorByPoint = true,
                         Data = new List<ColumnSeriesData>
                         {
-                            new ColumnSeriesData { Name = "Solicitaties", Y = total},
-                            new ColumnSeriesData { Name = "Solicitatiegesprek uitnodigingen", Y = invited},
-                            new ColumnSeriesData { Name = "Percentage solicitatiegesprek uitnodigingen", Y = percentage, Description = "%" },
-                            new ColumnSeriesData { Name = "Gemiddelde dagen van solicitatie tot solicitatiegesprek plannen", Y = averageTimeDiff, Description = " Dagen"},
+                            new ColumnSeriesData { Name = "Solicitaties", Y = (double)@ViewData["total"]!},
+                            new ColumnSeriesData { Name = "Solicitatiegesprek uitnodigingen", Y = (double)@ViewData["invited"]!},
+                            new ColumnSeriesData { Name = "Percentage solicitatiegesprek uitnodigingen", Y = (double)@ViewData["percentage"]!, Description = "%" },
+                            new ColumnSeriesData { Name = "Gemiddelde dagen van solicitatie tot solicitatiegesprek plannen", Y = (double)@ViewData["averageTimeDiff"]!, Description = " Dagen"},
                         }
                     }
                 }

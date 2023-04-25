@@ -44,16 +44,21 @@ namespace VAC_T.Business
         /// <param name="id">The id to find</param>
         /// <returns>An IQueriable with zero or one result</returns>
         /// <exception cref="InternalServerException"></exception>
-        public async Task<Company?> GetCompanyAsync(int id)
+        public async Task<Company?> GetCompanyAsync(int id, ClaimsPrincipal User)
         {
             if (_context.Company == null)
             {
                 throw new InternalServerException("Database not found");
             }
-            var company = _context.Company.Include(c => c.JobOffers)
-                                          .Include(c => c.User)
-                                          .FirstOrDefaultAsync(m => m.Id == id);
-            return await company;
+            var company = from c in _context.Company.Include(c => c.User) select c;
+            if (User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER"))
+            {
+                company = company.Include(c => c.JobOffers);
+            } else
+            {
+                company = company.Include(c => c.JobOffers.Where(j => j.Closed == null));
+            }
+            return await company.FirstOrDefaultAsync(m => m.Id == id);
         }
 
         public async Task<bool> DoesCompanyExistsAsync(int id)

@@ -36,7 +36,7 @@ namespace VAC_T.Controllers
         {
             try
             {
-                var company = await _service.GetCompanyAsync(id);
+                var company = await _service.GetCompanyAsync(id, User);
                 if (company == null)
                 {
                     return NotFound();
@@ -116,7 +116,7 @@ namespace VAC_T.Controllers
                 return Unauthorized("Not the correct roles.");
             }
             try { 
-                var company = await _service.GetCompanyAsync(id);
+                var company = await _service.GetCompanyAsync(id, User);
                 if (company == null)
                 {
                     return NotFound();
@@ -173,7 +173,7 @@ namespace VAC_T.Controllers
                 return Unauthorized("Not the correct roles.");
             }
             try { 
-                var company = await _service.GetCompanyAsync(id);
+                var company = await _service.GetCompanyAsync(id, User);
                 if (company == null)
                 {
                     return NotFound();

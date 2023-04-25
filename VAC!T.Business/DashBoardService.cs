@@ -4,6 +4,7 @@ using System.Security.Claims;
 using VAC_T.DAL.Exceptions;
 using VAC_T.Data;
 using VAC_T.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace VAC_T.Business
 {
@@ -35,7 +36,7 @@ namespace VAC_T.Business
             {
                 return await _context.Solicitation.Where(s => s.User == user).ToListAsync();
             }
-            return await _context.Solicitation.ToListAsync();
+            return await _context.Solicitation.Include(s => s.JobOffer).ToListAsync();
         }
 
         public async Task<Company> GetCompanyAsync(ClaimsPrincipal User)
@@ -48,7 +49,18 @@ namespace VAC_T.Business
             return await _context.Company.Where(c => c.User == user).Include(c => c.JobOffers).Include(c => c.Appointments).Include(c => c.RepeatAppointments).FirstAsync();
         }
 
-        public async Task<Dictionary<RepeatAppointment.RepeatsType,int>> GetAmountRepeatAppointmentsLast30DaysAsync(int companyId)
+        public async Task<IEnumerable<Appointment>> GetCompanyAppointmentsAsync(ClaimsPrincipal User)
+        {
+            if (_context.Company == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            var user = await _userManager.GetUserAsync(User);
+            var company = await _context.Company.Where(c => c.User == user).Include(c => c.JobOffers).Include(c => c.Appointments).Include(c => c.RepeatAppointments).FirstAsync();
+            return await _context.Appointment.Where(a => a.Company == company).Include(a => a.RepeatAppointment).ToListAsync();
+        }
+
+        public async Task<Dictionary<RepeatAppointment.RepeatsType,int>> GetAmountRepeatAppointmentsLast6MonthsAsync(int companyId)
         {
             if (_context.RepeatAppointment == null)
             {
@@ -66,7 +78,7 @@ namespace VAC_T.Business
             {
                 return appointments;
             }
-            var date30DaysAgo = DateTime.Today.AddDays(-30);
+            var date30DaysAgo = DateTime.Today.AddMonths(-6);
             var now = DateTime.Today;
             foreach (var repeatAppointment in repeatAppointments)
             {
@@ -183,6 +195,15 @@ namespace VAC_T.Business
                 }
             }
             return appointments;
+        }
+
+        public async Task<IEnumerable<JobOffer>> GetJobOffersAsync()
+        {
+            if (_context.JobOffer == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            return await _context.JobOffer.ToListAsync();
         }
     }
 }

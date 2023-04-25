@@ -44,7 +44,7 @@ namespace VAC_T.ApiControllers
         {
             try
             {
-                var company = await _service.GetCompanyAsync(id);                
+                var company = await _service.GetCompanyAsync(id, User);                
                 if (company == null)
                 {
                     return NotFound();
@@ -101,7 +101,7 @@ namespace VAC_T.ApiControllers
                 return BadRequest(ModelState);
             }
             try { 
-                var companyEntity = await _service.GetCompanyAsync(id);
+                var companyEntity = await _service.GetCompanyAsync(id, User);
                 if (companyEntity == null)
                 {
                     return NotFound($"No company with Id: {id} in the database");

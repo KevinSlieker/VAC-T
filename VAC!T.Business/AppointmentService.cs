@@ -32,7 +32,7 @@ namespace VAC_T.Business
                 await DeleteOldOpenAppointmentsAsync(User);
                 appointments = _context.Appointment.Where(a => a.Company.User == user).Include(a => a.Solicitation.User).Include(a => a.Company).Include(a => a.JobOffer);
             }
-            return await appointments.ToListAsync();
+            return await appointments.OrderBy(a => a.Company.Name).ThenByDescending(a => a.Date).ThenByDescending(a => a.Time).ToListAsync();
         }
 
         public async Task<Appointment?> GetAppointmentAsync(int id)
@@ -149,7 +149,7 @@ namespace VAC_T.Business
             }
             var appointments = await _context.Appointment.Where(a => a.Company == solicitation.JobOffer.Company)
                 .Where(a => a.JobOfferId == null || a.JobOfferId == solicitation.JobOffer.Id)
-                .Where(a => a.Solicitation == null).OrderByDescending(a => a.Date).OrderByDescending(a => a.Time).ToListAsync();
+                .Where(a => a.Solicitation == null).Where(a => a.Date.CompareTo(DateTime.Now) == 1).OrderByDescending(a => a.Date).OrderByDescending(a => a.Time).ToListAsync();
 
             appointments = await GetAvailableRepeatAppointmentsAsync(appointments, solicitation.JobOffer.Company.Id);
 
