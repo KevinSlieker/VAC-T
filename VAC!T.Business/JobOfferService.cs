@@ -120,5 +120,28 @@ namespace VAC_T.Business
             _context.JobOffer.Remove(jobOffer);
             await _context.SaveChangesAsync();
         }
+
+        public async Task ChangeJobOfferStatusAsync(int id)
+        {
+            if (_context.JobOffer == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            var jobOffer = await _context.JobOffer.FindAsync(id);
+            if (jobOffer == null)
+            {
+                return;
+            }
+            if (jobOffer.Closed == null)
+            {
+                jobOffer.Closed = DateTime.Now;
+            }
+            else
+            {
+                jobOffer.Closed = null;
+            }
+            _context.JobOffer.Update(jobOffer);
+            await _context.SaveChangesAsync();
+        }
     }
 }

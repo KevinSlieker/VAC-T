@@ -12,6 +12,21 @@
 </div>
 <hr />
 <div class="row">
+    <div class="row Solicitate align-items-center">
+        <div class="solicitate-now col-8 w-max d-inline-flex">
+            <div class="text-orange white-space-pre-wrap d-inline-flex">
+                <h5>Status: </h5>
+            </div>
+            @if (Model.Closed == null)
+            {
+                <h5>Open</h5>
+            }
+            else
+            {
+                <h5>Gesloten op: @Model.Closed</h5>
+            }
+        </div>
+    </div>
     <div class="col-md-7">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
@@ -58,6 +73,11 @@
     <div class="Opload-new-LogoURL-JobOffer padding-top-5">
         <a class="navbar-brand" asp-area="" asp-controller="FileUpload" asp-action="CreateJobOfferLogoURL">
             <input type="button" value="Upload een Logo voor het Software type" class="btn btn-primary" />
+        </a>
+    </div>
+    <div class="Opload-new-LogoURL-JobOffer padding-top-5">
+        <a class="navbar-brand" asp-area="" asp-controller="JobOffers" asp-action="ChangeJobOfferStatus" asp-route-id="@Model.Id">
+            <input type="button" value="Verander vacature status" class="btn btn-primary" />
         </a>
     </div>
 </div>

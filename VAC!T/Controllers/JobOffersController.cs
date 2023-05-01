@@ -136,7 +136,7 @@ namespace VAC_T.Controllers
                         return NotFound();
                     }
                     await _service.UpdateJobOfferAsync(jobOffer);
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Details", new { id });
                 }
                 catch (InternalServerException)
                 {
@@ -182,6 +182,23 @@ namespace VAC_T.Controllers
             {
                 await _service.DeleteJobOfferAsync(id);
                 return RedirectToAction(nameof(Index));
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
+            }
+        }
+
+        public async Task<IActionResult> ChangeJobOfferStatus(int id)
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
+            try
+            {
+                await _service.ChangeJobOfferStatusAsync(id);
+                return RedirectToAction("Edit", new { id });
             }
             catch (InternalServerException)
             {

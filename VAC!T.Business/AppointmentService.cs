@@ -180,6 +180,7 @@ namespace VAC_T.Business
             appointment.Solicitation = solicitation;
             //appointment.JobOffer = solicitation.JobOffer;
             solicitation.Appointment = appointment;
+            solicitation.DateAppointmentSelected = DateTime.Now;
             _context.Appointment.Update(appointment);
             _context.Solicitation.Update(solicitation);
             await _context.SaveChangesAsync();
@@ -512,6 +513,7 @@ namespace VAC_T.Business
 
             };
             solicitation.Appointment = appointment;
+            solicitation.DateAppointmentSelected = DateTime.Now;
             await _context.Appointment.AddAsync(appointment);
             _context.Solicitation.Update(solicitation);
             await _context.SaveChangesAsync();

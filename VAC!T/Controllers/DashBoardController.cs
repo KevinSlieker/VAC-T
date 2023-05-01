@@ -63,13 +63,13 @@ namespace VAC_T.Controllers
                 var percentageInvited = solicitationsCount != 0 ? Math.Round((double)(100 * invited) / solicitationsCount, 1) : 100;
                 var solicitationsWAppointment = solicitations != null ? solicitations.Where(s => s.DateAppointmentSelected != null).Count() : 0;
                 var percentageSolicitationsWAppointment = solicitationsCount != 0 ? Math.Round((double)(100 * solicitationsWAppointment) / invited, 1) : 100;
-                var averageJobOfferLifeSpan = companyInfo.JobOffers != null ? Math.Round((double)companyInfo.JobOffers.Where(j => j.Closed != null).Select(j => ((j.Closed!.Value - j.Created).TotalDays)).Average(), 1) : 0;
+                var averageJobOfferLifeSpan = companyInfo.JobOffers != null ? (companyInfo.JobOffers.Any(j => j.Closed != null) ? Math.Round((double)companyInfo.JobOffers.Where(j => j.Closed != null).Select(j => ((j.Closed!.Value - j.Created).TotalDays)).Average(), 1) : 0) : 0;
 
                 ViewData["jobOffers"] = (double)jobOffers;
                 ViewData["averageJobOfferLifeSpan"] = averageJobOfferLifeSpan;
                 ViewData["averageSolicitationsPerJobOffer"] = averageSolicitationsPerJobOffer;
                 ViewData["percentageInvited"] = percentageInvited;
-                ViewData["percentageSolicitationsWAppointment"] = (double)solicitationsWAppointment;
+                ViewData["percentageSolicitationsWAppointment"] = percentageSolicitationsWAppointment;
 
                 var enums = Enum.GetValues(typeof(RepeatAppointment.RepeatsType));
                 List<string> list = new List<string>();

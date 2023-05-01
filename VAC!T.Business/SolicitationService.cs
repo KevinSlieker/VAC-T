@@ -149,12 +149,14 @@ namespace VAC_T.Business
             if (solicitation.Selected == true)
             {
                 solicitation.Selected = false;
+                solicitation.DateSelectedIsTrue = null;
                 _context.Solicitation.Update(solicitation);
                 await _context.SaveChangesAsync();
             }
             else
             {
                 solicitation.Selected = true;
+                solicitation.DateSelectedIsTrue = DateTime.Now;
                 _context.Solicitation.Update(solicitation);
                 await _context.SaveChangesAsync();
             }
