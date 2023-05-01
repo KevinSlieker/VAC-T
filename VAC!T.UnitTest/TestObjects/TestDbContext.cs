@@ -59,6 +59,11 @@ namespace VAC_T.UnitTest.TestObjects
         private Solicitation? testUserSolicitationTestCompanyForJobOffer2;
         public int? TestUserSolicitationTestCompanyForJobOffer2Id { get { return testUserSolicitationTestCompanyForJobOffer2?.Id; } }
 
+        private RepeatAppointment? testCompanyRepeatAppointment1;
+        public int? TestCompanyRepeatAppointment1Id { get { return testCompanyRepeatAppointment1?.Id; } }
+        private RepeatAppointment? testCompanyRepeatAppointment2;
+        public int? TestCompanyRepeatAppointment2Id { get { return testCompanyRepeatAppointment2?.Id; } }
+
         public TestDbContext(SqliteConnection database) :
             base(new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseSqlite(database)
@@ -240,6 +245,27 @@ namespace VAC_T.UnitTest.TestObjects
                 JobOffer = testCompanyJobOffer2,
             };
             await Appointment.AddAsync(testCompanyAppointmentInPast);
+
+            testCompanyRepeatAppointment1 = new RepeatAppointment
+            {
+                Company = testCompany,
+                Repeats = Models.RepeatAppointment.RepeatsType.Daily,
+                Time = DateTime.UnixEpoch.AddHours(14),
+                Duration = TimeSpan.FromMinutes(45),
+                IsOnline = false,
+            };
+            await RepeatAppointment.AddAsync(testCompanyRepeatAppointment1);
+
+            testCompanyRepeatAppointment2 = new RepeatAppointment
+            {
+                Company = testCompany,
+                Repeats = Models.RepeatAppointment.RepeatsType.Weekly,
+                RepeatsWeekdays = Models.RepeatAppointment.Repeats_Weekdays.Tuesday | Models.RepeatAppointment.Repeats_Weekdays.Friday,
+                Time = DateTime.UnixEpoch.AddHours(10),
+                Duration = TimeSpan.FromMinutes(60),
+                IsOnline = false,
+            };
+            await RepeatAppointment.AddAsync(testCompanyRepeatAppointment2);
 
             await SaveChangesAsync();
         }

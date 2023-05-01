@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using VAC_T.Business;
 using VAC_T.Models;
 using VAC_T.UnitTest.TestObjects;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace VAC_T.UnitTest.Services
 {
@@ -18,6 +19,9 @@ namespace VAC_T.UnitTest.Services
         private int? testUserSolicitationId2;
         private int? testAppointmentJobOffer1Id;
         private int? testAppointmentAnyJobOfferId;
+        private int? testCompanyRepeatAppointment1Id;
+        private int? testCompanyRepeatAppointment2Id;
+        private int? someOtherCompanyId;
 
         [SetUp]
         public async Task Setup()
@@ -39,6 +43,9 @@ namespace VAC_T.UnitTest.Services
                 testUserSolicitationId2 = context.TestUserSolicitationTestCompanyForJobOffer2Id;
                 testAppointmentJobOffer1Id = context.TestCompanyAppointmentForJobOffer1Id;
                 testAppointmentAnyJobOfferId = context.TestCompanyAppointmentForAnyJobOfferId;
+                testCompanyRepeatAppointment1Id = context.TestCompanyRepeatAppointment1Id;
+                testCompanyRepeatAppointment2Id = context.TestCompanyRepeatAppointment2Id;
+                someOtherCompanyId = context.SomeOtherCompanyId;
 
             }
             _context = new TestDbContext(_inMemoryDb);
@@ -306,7 +313,7 @@ namespace VAC_T.UnitTest.Services
 
             // validate
             Assert.That(appointments, Is.Not.Null);
-            Assert.That(appointments.Count, Is.EqualTo(1));
+            Assert.That(appointments.Count, Is.EqualTo(22));
         }
 
         [Test]
@@ -372,6 +379,215 @@ namespace VAC_T.UnitTest.Services
 
             Assert.That(appointments, Is.Not.Null);
             Assert.That(appointments.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public async Task TestGetRepeatAppointmentAsync()
+        {
+            // prepare
+            int id = testCompanyRepeatAppointment1Id!.Value;
+            int idWrong = 1234567890;
+
+            // run
+            var repeatAppointment1 = await _service.GetRepeatAppointmentAsync(id);
+            var repeatAppointment2 = await _service.GetRepeatAppointmentAsync(idWrong);
+
+            // validate
+            Assert.That(repeatAppointment1, Is.Not.Null);
+            Assert.That(repeatAppointment2, Is.Null);
+
+            Assert.That(repeatAppointment1.Repeats, Is.EqualTo(RepeatAppointment.RepeatsType.Daily));
+        }
+
+        [Test]
+        public async Task TestGetRepeatAppointmentsAsync()
+        {
+            // prepare
+            var user = _context.Users.FirstOrDefault(u => u.Name == "testAdmin")!;
+            var userRoles = await _context.UserManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                };
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+            ClaimsIdentity identity = new ClaimsIdentity(authClaims);
+            var claimsPrincipalAdmin = new ClaimsPrincipal(identity);
+
+            var user2 = _context.Users.FirstOrDefault(u => u.Name == "testCompanyUser")!;
+            var userRoles2 = await _context.UserManager.GetRolesAsync(user2);
+            var authClaims2 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user2.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user2.Id.ToString())
+                };
+            foreach (var userRole2 in userRoles2)
+            {
+                authClaims2.Add(new Claim(ClaimTypes.Role, userRole2));
+            }
+            ClaimsIdentity identity2 = new ClaimsIdentity(authClaims2);
+            var claimsPrincipalCompanyUser = new ClaimsPrincipal(identity2);
+
+            // run
+            var repeatAppointments1 = await _service.GetRepeatAppointmentsAsync(claimsPrincipalAdmin);
+            var repeatAppointments2 = await _service.GetRepeatAppointmentsAsync(claimsPrincipalCompanyUser);
+
+            // validate
+            Assert.That(repeatAppointments1, Is.Not.Null);
+            Assert.That(repeatAppointments2, Is.Not.Null);
+
+            Assert.That(repeatAppointments1.Count(), Is.EqualTo(2));
+            Assert.That(repeatAppointments2.Count(), Is.EqualTo(2));
+        }
+
+        [Test]
+        public async Task TestCreateRepeatAppointmentAsync()
+        {
+            // prepare
+            var companyId = testCompanyId!.Value;
+            var company = await _context.Company.FindAsync(companyId);
+            var user2 = _context.Users.FirstOrDefault(u => u.Name == "testCompanyUser")!;
+            var userRoles2 = await _context.UserManager.GetRolesAsync(user2);
+            var authClaims2 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user2.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user2.Id.ToString())
+                };
+            foreach (var userRole2 in userRoles2)
+            {
+                authClaims2.Add(new Claim(ClaimTypes.Role, userRole2));
+            }
+            ClaimsIdentity identity2 = new ClaimsIdentity(authClaims2);
+            var claimsPrincipalCompanyUser = new ClaimsPrincipal(identity2);
+
+            var repeatAppointment = new RepeatAppointment()
+            {
+                CompanyId = companyId,
+                Company = company,
+                Repeats = RepeatAppointment.RepeatsType.MonthlyRelative,
+                RepeatsDay = 10,
+                Time = DateTime.UnixEpoch.AddHours(16),
+                Duration = TimeSpan.FromMinutes(75),
+                IsOnline = true,
+            };
+
+            // run
+            var createdRepeatAppointment = await _service.CreateRepeatAppointmentAsync(repeatAppointment, claimsPrincipalCompanyUser);
+
+            // validate
+            var repeatAppointmentsCheck = await _context.RepeatAppointment.Where(ra => ra.CompanyId == companyId).ToListAsync();
+
+            Assert.That(createdRepeatAppointment, Is.Not.Null);
+            Assert.That(repeatAppointmentsCheck, Is.Not.Null);
+            Assert.That(repeatAppointmentsCheck.Count(), Is.EqualTo(3));
+            Assert.That(createdRepeatAppointment.Repeats, Is.EqualTo(RepeatAppointment.RepeatsType.MonthlyRelative));
+            Assert.That(createdRepeatAppointment.Id, Is.Not.EqualTo(null));
+        }
+
+        [Test]
+        public async Task TestUpdateRepeatAppointmentAsync()
+        {
+            // prepare
+            var id = testCompanyRepeatAppointment1Id!.Value;
+            var repeatAppointment = await _context.RepeatAppointment.FindAsync(id);
+
+            repeatAppointment.Repeats = RepeatAppointment.RepeatsType.MonthlyRelative;
+            repeatAppointment.RepeatsDay = 20;
+
+            var id2 = testCompanyRepeatAppointment2Id!.Value;
+            var repeatAppointment2 = await _context.RepeatAppointment.FindAsync(id2);
+
+            repeatAppointment2.RepeatsWeekdays = RepeatAppointment.Repeats_Weekdays.Monday;
+
+            // run
+            await _service.UpdateRepeatAppointmentAsync(repeatAppointment);
+            await _service.UpdateRepeatAppointmentAsync(repeatAppointment2);
+
+            // validate
+            var repeatAppointmentCheck = await _context.RepeatAppointment.FindAsync(id);
+            var repeatAppointmentCheck2 = await _context.RepeatAppointment.FindAsync(id2);
+
+            Assert.That(repeatAppointmentCheck, Is.Not.Null);
+            Assert.That(repeatAppointmentCheck2, Is.Not.Null);
+
+            Assert.That(repeatAppointmentCheck.Repeats, Is.EqualTo(RepeatAppointment.RepeatsType.MonthlyRelative));
+            Assert.That(repeatAppointmentCheck.RepeatsDay, Is.Null);
+
+            Assert.That(repeatAppointmentCheck2.Repeats, Is.EqualTo(RepeatAppointment.RepeatsType.Weekly));
+            Assert.That(repeatAppointmentCheck2.RepeatsWeekdays, Is.EqualTo(RepeatAppointment.Repeats_Weekdays.Monday));
+        }
+
+        [Test]
+        public async Task TestDoesRepeatAppointExistAsync()
+        {
+            // prepare
+            var id = testCompanyRepeatAppointment1Id!.Value;
+            var idWrong = 1234567890;
+
+            // run
+            var result1 = await _service.DoesRepeatAppointmentExistAsync(id);
+            var result2 = await _service.DoesRepeatAppointmentExistAsync(idWrong);
+
+            // validate
+            Assert.That(result1, Is.True);
+            Assert.That(result2, Is.False);
+        }
+
+        [Test]
+        public async Task TestDeleteRepeatAppointmentAsync()
+        {
+            // prepare
+            var id = testCompanyRepeatAppointment1Id!.Value;
+
+            // run
+            await _service.DeleteRepeatAppointmentAsync(id);
+
+            // validate
+            var repeatAppointments = await _context.RepeatAppointment.CountAsync();
+            Assert.That(repeatAppointments, Is.EqualTo(1));
+        }
+
+        [Test]
+        public async Task TestGetAvailableRepeatAppointmentsAsync()
+        {
+            // prepare
+            var id = testCompanyId!.Value;
+            var id2 = someOtherCompanyId!.Value;
+            var list = new List<Appointment>();
+            var list2 = new List<Appointment>();
+
+            // run
+            var availableAppointments1 = await _service.GetAvailableRepeatAppointmentsAsync(list, id);
+            var availableAppointments2 = await _service.GetAvailableRepeatAppointmentsAsync(list2, id2);
+
+            // validate
+            Assert.That(availableAppointments1, Is.Not.Empty);
+            Assert.That(availableAppointments2, Is.Empty);
+        }
+
+        [Test]
+        public async Task TestSelectRepeatAppointmentAsync()
+        {
+            // prepare
+            var id = testCompanyId!.Value;
+            var solicitationId = testUserSolicitationId2!.Value;
+            var list = new List<Appointment>();
+            var list2 = new List<Appointment>();
+            var availableAppointments1 = await _service.GetAvailableRepeatAppointmentsAsync(list, id);
+            var count1 = availableAppointments1.Count();
+
+            var appointmentFromSelect = availableAppointments1.First();
+
+            // run
+            await _service.SelectRepeatAppointmentAsync((int)appointmentFromSelect.RepeatAppointmentId!, appointmentFromSelect.Time, solicitationId);
+
+            var availableAppointments2 = await _service.GetAvailableRepeatAppointmentsAsync(list2, id);
+            // validate
+            Assert.That(availableAppointments2, Is.Not.Empty);
+            Assert.That(availableAppointments2.Count(), Is.EqualTo(count1 - 1));
         }
 
     }

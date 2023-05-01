@@ -397,5 +397,31 @@ namespace VAC_T.UnitTest.Services
             Assert.That(appointments, Is.Not.Null);
             Assert.That(appointments.Any(a => a.JobOfferId == id), Is.False);
         }
+
+        [Test]
+        public async Task TestChangeJobOfferStatusAsync()
+        {
+            // prepare
+            var id = testJobOffer1Id!.Value;
+            var jobOffer = await _context.JobOffer.FindAsync(id);
+            var statusFirst = jobOffer.Closed;
+            var id2 = testJobOffer2Id!.Value;
+            var jobOffer2 = await _context.JobOffer.FindAsync(id2);
+            jobOffer2.Closed = DateTime.Now;
+            _context.JobOffer.Update(jobOffer2);
+            await _context.SaveChangesAsync();
+
+
+            // run
+            await _service.ChangeJobOfferStatusAsync(id);
+            await _service.ChangeJobOfferStatusAsync(id2);
+
+            var jobOfferAfter = await _context.JobOffer.FindAsync(jobOffer.Id);
+            var jobOffer2After = await _context.JobOffer.FindAsync(jobOffer2.Id);
+            // validate
+            Assert.That(jobOfferAfter.Closed, Is.Not.EqualTo(statusFirst));
+            Assert.That(jobOfferAfter.Closed, Is.Not.EqualTo(null));
+            Assert.That(jobOffer2After.Closed, Is.EqualTo(null));
+        }
     }
 }
