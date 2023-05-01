@@ -141,5 +141,23 @@ namespace VAC_T.ApiControllers
                 return Problem("Database not connected");
             }
         }
+
+        [HttpPut("status/{id}")]
+        public async Task<ActionResult> PutStatusAsync(int id)
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
+            try
+            {
+                await _service.ChangeJobOfferStatusAsync(id);
+                return Ok();
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Database not connected");
+            }
+        }
     }
 }

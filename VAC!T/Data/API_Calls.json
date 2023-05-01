@@ -268,6 +268,37 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Update JobOffer Status",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 31,\r\n    \"name\": \"Test Api Update\",\r\n    \"description\": \"TESTEN1233456458\",\r\n    \"logoURL\": \"assets/img/job_offer/csharp.png\",\r\n    \"level\": \"Test\",\r\n    \"residence\": \"Sittard\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/JobOffers/status/17",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"JobOffers",
+								"status",
+								"17"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -487,6 +518,27 @@
 					"response": []
 				},
 				{
+					"name": "Get by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Appointments/17",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Appointments",
+								"17"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get all RepeatAppointments",
 					"request": {
 						"method": "GET",
@@ -524,27 +576,6 @@
 								"Appointments",
 								"Repeat",
 								"11"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get by id Copy",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "https://localhost:7220/api/Appointments/17",
-							"protocol": "https",
-							"host": [
-								"localhost"
-							],
-							"port": "7220",
-							"path": [
-								"api",
-								"Appointments",
-								"17"
 							]
 						}
 					},
@@ -907,6 +938,74 @@
 			]
 		},
 		{
+			"name": "DashBoard",
+			"item": [
+				{
+					"name": "DashBoard Candidate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/DashBoard/Candidate",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"DashBoard",
+								"Candidate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DashBoard Company",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/DashBoard/Company",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"DashBoard",
+								"Company"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DashBoard Admin",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/DashBoard/Admin",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"DashBoard",
+								"Admin"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Login admin",
 			"request": {
 				"method": "POST",
@@ -1002,7 +1101,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRW1wbG95ZXJEU01AbWFpbC5ubCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiZDEyZWI1ZGMtZDA3MC00Y2JlLTg0YjEtYTA0N2YxNmQ4NmE1IiwianRpIjoiN2NhZjc2NzEtYjY1ZC00NDBlLWIwNTgtYWRlYTMzODUzZDNhIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUk9MRV9FTVBMT1lFUiIsImV4cCI6MTY4MTM4NTgwNywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIwIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIxIn0.fDdeUXGkgW4V59CVW9GNve09NLAhz-w2aCfVHGnRdVA",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW5AbWFpbC5ubCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiNzRkMzllY2MtMGY1Yi00YzZlLWFhZDUtZjJlZWY5NDc5NGVlIiwianRpIjoiNThlYTE5OTctN2NiMC00ZjI1LTgyMzYtNWQ5NzJlZjdlZTM3IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUk9MRV9BRE1JTiIsImV4cCI6MTY4Mjk0NzYzNSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIwIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIxIn0.4lej9YZB0qjZkjDr_bwIkopzhmUYKXP-ZgEW-ezGOkw",
 				"type": "string"
 			}
 		]

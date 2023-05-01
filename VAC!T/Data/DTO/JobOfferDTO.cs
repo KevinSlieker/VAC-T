@@ -15,6 +15,7 @@ namespace VAC_T.Data.DTO
         public string Level { get; set; }
         public string? Residence { get; set; }
         public DateTime Created { get; set; } = DateTime.Now;
+        public DateTime? Closed { get; set; }
         public ICollection<SolicitationDTOSmall>? Solicitations { get; set; }
 
     }
