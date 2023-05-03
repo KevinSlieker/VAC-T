@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VAC_T.Data;
 
@@ -11,9 +12,11 @@ using VAC_T.Data;
 namespace VACT.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230502104424_QuestionModelExplanationTypeChange")]
+    partial class QuestionModelExplanationTypeChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -354,11 +357,8 @@ namespace VACT.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("MultipleOptions")
+                    b.Property<bool>("MultipleOptions")
                         .HasColumnType("bit");
-
-                    b.Property<int>("OptionsAmount")
-                        .HasColumnType("int");
 
                     b.Property<string>("QuestionText")
                         .IsRequired()

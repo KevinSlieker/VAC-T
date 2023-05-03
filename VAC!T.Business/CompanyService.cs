@@ -130,7 +130,7 @@ namespace VAC_T.Business
             {
                 throw new InternalServerException("Database not found");
             }
-            var company = await _context.Company.Include(c => c.User).Include(c => c.Appointments).FirstOrDefaultAsync(c => c.Id == id);
+            var company = await _context.Company.Include(c => c.User).Include(c => c.Appointments).Include(c => c.Questions).FirstOrDefaultAsync(c => c.Id == id);
             if (company == null)
             {
                 return;
@@ -143,6 +143,10 @@ namespace VAC_T.Business
             if (company.Appointments != null)
             {
                 _context.Appointment.RemoveRange(company.Appointments);
+            }
+            if (company.Questions != null)
+            {
+                _context.Question.RemoveRange(company.Questions);
             }
             _context.Company.Remove(company);
             await _context.SaveChangesAsync();

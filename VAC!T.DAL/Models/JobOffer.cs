@@ -34,5 +34,7 @@ namespace VAC_T.Models
         public DateTime Created { get; set; } = DateTime.Now;
         public DateTime? Closed { get; set; } = null;
         public ICollection<Solicitation> Solicitations { get; set; } = new List<Solicitation>();
+        public ICollection<Question> Questions { get; set; } = new List<Question>();
+        public ICollection<Answer> Answers { get; set; } = new List<Answer>();
     }
 }

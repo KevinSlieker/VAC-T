@@ -12,6 +12,9 @@ namespace VAC_T.Data
         DbSet<RepeatAppointment> RepeatAppointment { get; set; }
         DbSet<UserDetailsModel> UserDetailsModel { get; set; }
         DbSet<VAC_TUser> Users { get; set; }
+        DbSet<Question> Question { get; set; }
+        DbSet<QuestionOption> QuestionOption { get; set; }
+        DbSet<Answer> Answer { get; set; }
 
         /// <summary>
         /// Call to async save changes method in DbContext
