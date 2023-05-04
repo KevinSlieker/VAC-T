@@ -9,11 +9,11 @@ namespace VAC_T.Models
     public class Answer
     {
         public int Id { get; set; }
-        public Question Question { get; set; } = new Question();
+        public Question Question { get; set; }
         public int QuestionId { get; set; }
-        public JobOffer JobOffer { get; set; } = new JobOffer();
+        public JobOffer JobOffer { get; set; }
         public int JobOfferId { get; set; }
-        public VAC_TUser User { get; set; } = new VAC_TUser();
+        public VAC_TUser User { get; set; }
         public string UserId { get; set; }
         public string AnswerText { get; set; } = string.Empty;
         public string? Explanation { get; set; }

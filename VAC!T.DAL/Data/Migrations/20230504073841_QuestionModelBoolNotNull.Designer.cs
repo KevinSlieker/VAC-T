@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VAC_T.Data;
 
@@ -11,9 +12,11 @@ using VAC_T.Data;
 namespace VACT.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230504073841_QuestionModelBoolNotNull")]
+    partial class QuestionModelBoolNotNull
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("QuestionsId");
 
-                    b.ToTable("JobOfferQuestion", (string)null);
+                    b.ToTable("JobOfferQuestion");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -207,7 +210,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Answer", (string)null);
+                    b.ToTable("Answer");
                 });
 
             modelBuilder.Entity("VAC_T.Models.Appointment", b =>
@@ -247,7 +250,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("RepeatAppointmentId");
 
-                    b.ToTable("Appointment", (string)null);
+                    b.ToTable("Appointment");
                 });
 
             modelBuilder.Entity("VAC_T.Models.Company", b =>
@@ -293,7 +296,7 @@ namespace VACT.Data.Migrations
                         .IsUnique()
                         .HasFilter("[UserId] IS NOT NULL");
 
-                    b.ToTable("Company", (string)null);
+                    b.ToTable("Company");
                 });
 
             modelBuilder.Entity("VAC_T.Models.JobOffer", b =>
@@ -336,7 +339,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("JobOffer", (string)null);
+                    b.ToTable("JobOffer");
                 });
 
             modelBuilder.Entity("VAC_T.Models.Question", b =>
@@ -372,7 +375,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Question", (string)null);
+                    b.ToTable("Question");
                 });
 
             modelBuilder.Entity("VAC_T.Models.QuestionOption", b =>
@@ -397,7 +400,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("QuestionOption", (string)null);
+                    b.ToTable("QuestionOption");
                 });
 
             modelBuilder.Entity("VAC_T.Models.RepeatAppointment", b =>
@@ -436,7 +439,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("RepeatAppointment", (string)null);
+                    b.ToTable("RepeatAppointment");
                 });
 
             modelBuilder.Entity("VAC_T.Models.Solicitation", b =>
@@ -479,7 +482,7 @@ namespace VACT.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Solicitation", (string)null);
+                    b.ToTable("Solicitation");
                 });
 
             modelBuilder.Entity("VAC_T.Models.VAC_TUser", b =>

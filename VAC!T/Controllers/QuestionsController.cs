@@ -107,23 +107,18 @@ namespace VAC_T.Controllers
                     question = await _service.CreateQuestionAsync(question);
                     if (question.Type == "Meerkeuze")
                     {
-                        ViewData["QuestionText"] = question.QuestionText;
-                        var options = new List<QuestionOption>();
-                        for (int i = 0; i < question.OptionsAmount; i++)
-                        {
-                            options.Add(new QuestionOption() { QuestionId = question.Id });
-                        }
-                        return View("CreateOptions", options);
+                        //ViewData["QuestionText"] = question.QuestionText;
+                        //var options = new List<QuestionOption>();
+                        //for (int i = 0; i < question.OptionsAmount; i++)
+                        //{
+                        //    options.Add(new QuestionOption() { QuestionId = question.Id });
+                        //}
+                        //return View("CreateOptions", options);
+                        return RedirectToAction(nameof(CreateOptions), new {question.Id});
                     }
                     if (question.Type == "Standpunt")
                     {
-                        ViewData["QuestionText"] = question.QuestionText;
-                        var options = new List<QuestionOption>();
-                        for (int i = 0; i < 2; i++)
-                        {
-                            options.Add(new QuestionOption() { QuestionId = question.Id });
-                        }
-                        return View("CreateOptions", options);
+                        return RedirectToAction(nameof(CreateOptions), new { question.Id });
                     }
                     return RedirectToAction(nameof(Details), new { question.Id });
                 }
@@ -218,7 +213,7 @@ namespace VAC_T.Controllers
                     return NotFound("The question does not exist or the question does not belong to your company.");
                 }
                 ViewData["QuestionText"] = question.QuestionText;
-                var options = new List<QuestionOption>();
+                List<QuestionOption> options = new List<QuestionOption>();
                 var amount = 2;
                 if (question.Type == "Meerkeuze")
                 {
@@ -228,7 +223,7 @@ namespace VAC_T.Controllers
                 {
                     options.Add(new QuestionOption() { QuestionId = question.Id });
                 }
-                return View(options);
+                return View(options.ToArray());
             }
             catch (InternalServerException)
             {
@@ -238,19 +233,22 @@ namespace VAC_T.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateOptions([Bind("Id,QuestionId,OptionShort,OptionLong")] IEnumerable<QuestionOption> questionOptions)
+        public async Task<IActionResult> CreateOptions([Bind("Id,QuestionId,OptionShort,OptionLong")] QuestionOption[] questionOptions)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unautzed");
             }
-            ModelState.Remove("Question");
+            for (int i=0; i<questionOptions.Count(); i++)
+            {
+                ModelState.Remove($"[{i}].Question");
+            }
             if (ModelState.IsValid)
             {
                 try
                 {
-                    questionOptions = await _service.CreateQuestionOptionsAsync(questionOptions);
-                    return RedirectToAction(nameof(Details), new { questionOptions.First().Id });
+                    var questionOptionsCreated = await _service.CreateQuestionOptionsAsync(questionOptions.ToList());
+                    return RedirectToAction(nameof(Details), new { Id = questionOptionsCreated.First().QuestionId });
                 }
                 catch (InternalServerException)
                 {
@@ -357,13 +355,13 @@ namespace VAC_T.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditOptions(int questionId, [Bind("Id,QuestionId,OptionShort,OptionLong")] IEnumerable<QuestionOption> questionOptions)
+        public async Task<IActionResult> EditOption(int id, [Bind("Id,QuestionId,OptionShort,OptionLong")] QuestionOption questionOption)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
                 return Unauthorized("Unauthorized");
             }
-            if (questionId != questionOptions.First().Id)
+            if (id != questionOption.Id)
             {
                 return NotFound();
             }
@@ -372,14 +370,15 @@ namespace VAC_T.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    if (!await _service.DoQuestionOptionsExistsAsync(questionOptions))
+                    if (!await _service.DoesQuestionOptionExistsAsync(id))
                     {
                         return NotFound();
                     }
-                    await _service.UpdateQuestionOptionsAsync(questionOptions);
-                    return RedirectToAction(nameof(Details), new { questionId });
+                    await _service.UpdateQuestionOptionAsync(questionOption);
+                    var questionId = questionOption.QuestionId;
+                    return RedirectToAction(nameof(Details), new { id = questionId });
                 }
-                return View(questionOptions);
+                return View(questionOption);
             }
             catch (InternalServerException)
             {
@@ -451,9 +450,9 @@ namespace VAC_T.Controllers
         }
 
         // POST: Questions/Delete/5
-        [HttpPost, ActionName("DeleteOptoin")]
+        [HttpPost, ActionName("DeleteOption")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteOptionConfirmed(int id)
+        public async Task<IActionResult> DeleteOptionConfirmed(int id, int questionId)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
@@ -462,7 +461,7 @@ namespace VAC_T.Controllers
             try
             {
                 await _service.DeleteQuestionOptionAsync(id);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id = questionId });
             }
             catch (InternalServerException)
             {

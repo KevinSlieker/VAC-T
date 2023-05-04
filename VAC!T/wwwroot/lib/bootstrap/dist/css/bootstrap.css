@@ -70,6 +70,10 @@
   }
 }
 
+.text-red {
+    color: red;
+}
+
 .text-orange {
     color: #F15A24;
 }

@@ -8,6 +8,9 @@
         @if (User.IsInRole("ROLE_ADMIN"))
         {
             <li class="nav-item">
+                <a class="nav-link text-white" asp-area="" asp-controller="Questions" asp-action="Index">Interview vragen</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link text-white" asp-area="" asp-controller="UserDetails" asp-action="Index">Users</a>
             </li>
             <li class="nav-item">
@@ -22,6 +25,9 @@
         }
         @if (User.IsInRole("ROLE_EMPLOYER"))
         {
+            <li class="nav-item">
+                <a class="nav-link text-white" asp-area="" asp-controller="Questions" asp-action="Index">Interview vragen</a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link text-white" asp-area="" asp-controller="Companies" asp-action="DetailsForEmployer">Bedrijf</a>
             </li>

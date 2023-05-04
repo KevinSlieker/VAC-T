@@ -142,13 +142,13 @@ namespace VAC_T.Business
             return question;
         }
 
-        public async Task<IEnumerable<QuestionOption>> CreateQuestionOptionsAsync(IEnumerable<QuestionOption> questionOptions)
+        public async Task<List<QuestionOption>> CreateQuestionOptionsAsync(List<QuestionOption> questionOptions)
         {
             if (_context.Question == null)
             {
                 throw new InternalServerException("Database not found");
             }
-            var question = await _context.Question.FirstAsync(q => q.Id == questionOptions.First().Id);
+            var question = await _context.Question.FirstAsync(q => q.Id == questionOptions.First().QuestionId);
             foreach (var option in questionOptions)
             {
                 option.Question = question;
@@ -185,6 +185,14 @@ namespace VAC_T.Business
             return result;
         }
 
+        public async Task<bool> DoesQuestionOptionExistsAsync(int id)
+        {
+            if (_context.QuestionOption == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            return await _context.QuestionOption.AnyAsync(q => q.Id == id);
+        }
         public async Task UpdateQuestionAsync(Question question)
         {
             if (_context.Question == null)
@@ -204,7 +212,7 @@ namespace VAC_T.Business
                     }
                     if (oldType == "Meerkeuze")
                     {
-                        question.MultipleOptions = null;
+                        question.MultipleOptions = false;
                         question.ExplanationType = string.Empty;
                     }
                 }
@@ -213,22 +221,13 @@ namespace VAC_T.Business
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateQuestionOptionsAsync(IEnumerable<QuestionOption> questionOptions) // , ClaimsPrincipal User
+        public async Task UpdateQuestionOptionAsync(QuestionOption questionOption) // , ClaimsPrincipal User
         {
             if (_context.QuestionOption == null)
             {
                 throw new InternalServerException("Database not found");
             }
-            //if (User.IsInRole("ROLE_EMPLOYER"))
-            //{
-            //    var user = await _userManager.GetUserAsync(User);
-            //    var company = await _context.Company.FirstAsync(c => c.User == user);
-            //    if (questionOptions.Any(q => q.Question.CompanyId != company!.Id))
-            //    {
-            //        return;
-            //    };
-            //}
-            _context.QuestionOption.UpdateRange(questionOptions);
+            _context.QuestionOption.Update(questionOption);
             await _context.SaveChangesAsync();
         }
 
@@ -266,7 +265,7 @@ namespace VAC_T.Business
             {
                 throw new InternalServerException("Database not found");
             }
-            var option = await _context.QuestionOption.FirstOrDefaultAsync(q => q.Id == id);
+            var option = await _context.QuestionOption.Include(q => q.Question).FirstOrDefaultAsync(q => q.Id == id);
             if (option == null)
             {
                 return;

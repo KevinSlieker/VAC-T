@@ -70,6 +70,7 @@ builder.Services.AddScoped<SolicitationService>();
 builder.Services.AddScoped<AppointmentService>();
 builder.Services.AddScoped<FileUploadService>();
 builder.Services.AddScoped<DashBoardService>();
+builder.Services.AddScoped<QuestionService>();
 
 var app = builder.Build();
 

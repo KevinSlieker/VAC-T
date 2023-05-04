@@ -1,40 +1,40 @@
-﻿@model IEnumerable<VAC_T.Models.QuestionOption>;
+﻿@model VAC_T.Models.QuestionOption[];
 @{
-	ViewData["Title"] = "Create Question Options";
+	ViewData["Title"] = "Vraag opties maken";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h1>Create Question Options</h1>
+<h1>Vraag opties maken</h1>
 
-<h4>Question Options</h4>
+<h4>Vraag Opties</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="CreateOptions">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <p>Vraag: @ViewData["QuestionText"]</p>
-            @foreach (var option in Model)
+            @for(var i=0; i<Model.Count(); i++)
             {
                 <div class="border">
-                    <input type="hidden" asp-for="@option.QuestionId" />
+                    <input type="hidden" asp-for="@Model[i].QuestionId" />
                     <div class="form-group">
-                        <label asp-for="@option.OptionShort" class="control-label"></label>
-                        <input asp-for="@option.OptionShort" class="form-control" />
-                        <span asp-validation-for="@option.OptionShort" class="text-danger"></span>
+                        <label asp-for="@Model[i].OptionShort" class="control-label"></label>
+                        <input asp-for="@Model[i].OptionShort" class="form-control" />
+                        <span asp-validation-for="@Model[i].OptionShort" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label asp-for="@option.OptionLong" class="control-label"></label>
-                        <input asp-for="@option.OptionLong" class="form-control" />
-                        <span asp-validation-for="@option.OptionLong" class="text-danger"></span>
+                        <label asp-for="@Model[i].OptionLong" class="control-label"></label>
+                        <input asp-for="@Model[i].OptionLong" class="form-control" />
+                        <span asp-validation-for="@Model[i].OptionLong" class="text-danger"></span>
                     </div>
                 </div>
             }
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Opties maken" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Terug naar index</a>
 </div>
