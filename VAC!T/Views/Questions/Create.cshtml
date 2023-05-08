@@ -20,6 +20,10 @@
                     <select asp-for="CompanyId" class ="form-control" asp-items="ViewBag.CompanyId">
                         <option value="@null" selected> Kies een bedrijf (Ja/Nee vraag uitgezonderd)</option>
                     </select>
+                    @if (ViewData["ErrorMessage"] != null)
+                    {
+                        <span class="text-danger field-validation-error" data-valmsg-for="CompanyId" data-valmsg-replace="true">@ViewData["ErrorMessage"]</span>
+                    }
                 </div>
             } else
             {

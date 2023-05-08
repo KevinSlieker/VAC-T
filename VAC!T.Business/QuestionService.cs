@@ -24,7 +24,7 @@ namespace VAC_T.Business
             {
                 throw new InternalServerException("Database not found");
             }
-            var questions = from q in _context.Question.Include(q => q.Options) select q;
+            var questions = from q in _context.Question.Include(q => q.Options).Include(q => q.Company) select q;
             if (User.IsInRole("ROLE_EMPLOYER"))
             {
                 var user = await _userManager.GetUserAsync(User);
@@ -40,7 +40,7 @@ namespace VAC_T.Business
             {
                 throw new InternalServerException("Database not found");
             }
-            var question = from q in _context.Question.Include(q => q.Options) select q;
+            var question = from q in _context.Question.Include(q => q.Options).Include(q => q.Company) select q;
             if (User.IsInRole("ROLE_EMPLOYER"))
             {
                 var user = await _userManager.GetUserAsync(User);
@@ -115,6 +115,11 @@ namespace VAC_T.Business
                     new QuestionOption() { QuestionId = question.Id, Question = question, OptionLong = "Nee" }
                 };
                 _context.QuestionOption.AddRange(options);
+            }
+            if (question.Type != "Meerkeuze")
+            {
+                question.MultipleOptions = false;
+                question.ExplanationType = string.Empty;
             }
             _context.Question.Add(question);
             await _context.SaveChangesAsync();
@@ -210,12 +215,12 @@ namespace VAC_T.Business
                         var oldOptions = await _context.QuestionOption.Where(q => q.QuestionId == question.Id).ToListAsync();
                         _context.QuestionOption.RemoveRange(oldOptions);
                     }
-                    if (oldType == "Meerkeuze")
-                    {
-                        question.MultipleOptions = false;
-                        question.ExplanationType = string.Empty;
-                    }
                 }
+            }
+            if (question.Type != "Meerkeuze")
+            {
+                question.MultipleOptions = false;
+                question.ExplanationType = string.Empty;
             }
             _context.Question.Update(question);
             await _context.SaveChangesAsync();

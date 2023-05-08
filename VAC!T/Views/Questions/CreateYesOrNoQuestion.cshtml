@@ -1,0 +1,52 @@
+﻿@model VAC_T.Models.Question
+
+@{
+    ViewData["Title"] = "Vraag maken";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Ja/Nee Vraag maken</h1>
+
+<h4>Vraag</h4>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateYesOrNoQuestion">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Type" />
+            @if (User.IsInRole("ROLE_ADMIN"))
+            {
+                <div class="form-group">
+                    <label asp-for="CompanyId" class="control-label"></label>
+                    <select asp-for="CompanyId" class ="form-control" asp-items="ViewBag.CompanyId">
+                        <option selected disabled> Kies een bedrijf (Ja/Nee vraag uitgezonderd)</option>
+                    </select>
+                    @if (ViewData["ErrorMessage"] != null)
+                    {
+                        <span class="text-danger field-validation-error" data-valmsg-for="CompanyId" data-valmsg-replace="true">@ViewData["ErrorMessage"]</span>
+                    }
+                </div>
+            } else
+            {
+                <input type="hidden" asp-for="CompanyId"/>
+            }
+            <div class="form-group">
+                <label asp-for="QuestionText" class="control-label"></label>
+                <select asp-for="QuestionText" class="form-control" asp-items="ViewBag.TextOptions">
+                    <option selected disabled>Selecteer een vraag</option>
+                </select>
+                <span asp-validation-for="QuestionText" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <br />
+                <input type="submit" value="Vraag maken" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Terug naar index</a>
+</div>
+

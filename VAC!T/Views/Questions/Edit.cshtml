@@ -14,15 +14,12 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            @if (User.IsInRole("ROLE_ADMIN"))
+            @if (User.IsInRole("ROLE_ADMIN") && !(Model.Type == "Ja/Nee" && Model.CompanyId == null))
             {
-                @if (Model.Type != "Ja/Nee")
-                {
                     <div class="form-group">
                         <label asp-for="CompanyId" class="control-label"></label>
                         <select asp-for="CompanyId" class="form-control" asp-items="ViewBag.CompanyId"></select>
                     </div>
-                }
             }
             else
             {
@@ -33,13 +30,28 @@
             <div class="form-group">
                 <label asp-for="Type" class="control-label"></label>
                 <select asp-for="Type" class="form-control" asp-items="ViewBag.Type"></select>
-            </div>
+                </div>
+            } else
+            {
+                <input type="hidden" asp-for="Type" />
             }
-            <div class="form-group">
-                <label asp-for="QuestionText" class="control-label"></label>
-                <input asp-for="QuestionText" class="form-control" />
-                <span asp-validation-for="QuestionText" class="text-danger"></span>
-            </div>
+            @if (Model.Type == "Ja/Nee" && Model.CompanyId != null)
+            {
+                <div class="form-group">
+                    <label asp-for="QuestionText" class="control-label"></label>
+                    <select asp-for="QuestionText" class="form-control" asp-items="ViewBag.TextOptions">
+                        <option disabled>Selecteer een vraag</option>
+                    </select>
+                    <span asp-validation-for="QuestionText" class="text-danger"></span>
+                </div>
+            } else 
+            {
+                <div class="form-group">
+                    <label asp-for="QuestionText" class="control-label"></label>
+                    <input asp-for="QuestionText" class="form-control" />
+                    <span asp-validation-for="QuestionText" class="text-danger"></span>
+                </div>
+            }
             @if (Model.Type != "Ja/Nee")
             {
                 <br />

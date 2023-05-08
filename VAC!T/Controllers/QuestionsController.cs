@@ -102,25 +102,32 @@ namespace VAC_T.Controllers
             ModelState.Remove("Company");
             try
             {
-                if (ModelState.IsValid)
+                if ((question.CompanyId != null && question.Type != "Ja/Nee") || question.Type == "Ja/Nee")
                 {
-                    question = await _service.CreateQuestionAsync(question);
-                    if (question.Type == "Meerkeuze")
+                    ViewData["ErrorMessage"] = null;
+                    if (ModelState.IsValid)
                     {
-                        //ViewData["QuestionText"] = question.QuestionText;
-                        //var options = new List<QuestionOption>();
-                        //for (int i = 0; i < question.OptionsAmount; i++)
-                        //{
-                        //    options.Add(new QuestionOption() { QuestionId = question.Id });
-                        //}
-                        //return View("CreateOptions", options);
-                        return RedirectToAction(nameof(CreateOptions), new {question.Id});
+                        question = await _service.CreateQuestionAsync(question);
+                        if (question.Type == "Meerkeuze")
+                        {
+                            //ViewData["QuestionText"] = question.QuestionText;
+                            //var options = new List<QuestionOption>();
+                            //for (int i = 0; i < question.OptionsAmount; i++)
+                            //{
+                            //    options.Add(new QuestionOption() { QuestionId = question.Id });
+                            //}
+                            //return View("CreateOptions", options);
+                            return RedirectToAction(nameof(CreateOptions), new { question.Id });
+                        }
+                        if (question.Type == "Standpunt")
+                        {
+                            return RedirectToAction(nameof(CreateOptions), new { question.Id });
+                        }
+                        return RedirectToAction(nameof(Details), new { question.Id });
                     }
-                    if (question.Type == "Standpunt")
-                    {
-                        return RedirectToAction(nameof(CreateOptions), new { question.Id });
-                    }
-                    return RedirectToAction(nameof(Details), new { question.Id });
+                } else
+                {
+                    ViewData["ErrorMessage"] = "Je moet een bedrijf selecteren.";
                 }
                 ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt" });
                 if (User.IsInRole("ROLE_ADMIN"))
@@ -150,7 +157,7 @@ namespace VAC_T.Controllers
                 {
                     return NotFound("No questionText options found.");
                 }
-                ViewData["textOptions"] = textOptions;
+                ViewData["textOptions"] = new SelectList(textOptions);
                 var question = new Question();
                 question.Type = "Ja/Nee";
                 if (User.IsInRole("ROLE_EMPLOYER"))
@@ -180,13 +187,20 @@ namespace VAC_T.Controllers
             ModelState.Remove("Company");
             try
             {
-                if (ModelState.IsValid)
+                if (question.CompanyId != null)
                 {
-                    question = await _service.CreateYesOrNoQuestionAsync(question);
-                    return RedirectToAction(nameof(Details), new { question.Id });
+                    ViewData["ErrorMessage"] = null;
+                    if (ModelState.IsValid)
+                    {
+                        question = await _service.CreateYesOrNoQuestionAsync(question);
+                        return RedirectToAction(nameof(Details), new { question.Id });
+                    }
+                } else
+                {
+                        ViewData["ErrorMessage"] = "Je moet een bedrijf selecteren.";
                 }
                 var textOptions = await _service.GetYesOrNoTextOptionsAsync();
-                ViewData["textOptions"] = textOptions;
+                ViewData["textOptions"] = new SelectList(textOptions);
                 if (User.IsInRole("ROLE_ADMIN"))
                 {
                     ViewData["CompanyId"] = new SelectList(await _service.GetCompaniesAsync(), "Id", "Name");
@@ -239,7 +253,7 @@ namespace VAC_T.Controllers
             {
                 return Unauthorized("Unautzed");
             }
-            for (int i=0; i<questionOptions.Count(); i++)
+            for (int i = 0; i < questionOptions.Count(); i++)
             {
                 ModelState.Remove($"[{i}].Question");
             }
@@ -272,6 +286,7 @@ namespace VAC_T.Controllers
                 {
                     return NotFound("The question does not exist or the question does not belong to your company.");
                 }
+                ViewData["textOptions"] = new SelectList(await _service.GetYesOrNoTextOptionsAsync());
                 ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt" });
                 if (User.IsInRole("ROLE_ADMIN"))
                 {

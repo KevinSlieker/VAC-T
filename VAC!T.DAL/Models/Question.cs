@@ -18,7 +18,7 @@ namespace VAC_T.Models
         [DisplayName("Soort vraag")]
         public string Type { get; set; } = string.Empty; // Open, Multiple choice and standpoint between 2.
         [DisplayName("Vraag")]
-        public string QuestionText { get; set; } = string.Empty;
+        public string QuestionText { get; set; }
         [DisplayName("Meerdere mogelijkheden")]
         public bool MultipleOptions { get; set; }
         [DisplayName("Opties")]

@@ -98,6 +98,9 @@ namespace VAC_T.Controllers
                 {
                     ViewData["Message"] = "Je kan alleen een pdf uploaden";
                     return View("EditCV", new CVModel() { Id = id, CV = user.CV });
+                } else
+                {
+                    ViewData["Message"] = null;
                 }
             }
             catch (InternalServerException)
