@@ -33,8 +33,8 @@ namespace VAC_T.Models
         [Display(Name = "Datum")]
         public DateTime Created { get; set; } = DateTime.Now;
         public DateTime? Closed { get; set; } = null;
-        public ICollection<Solicitation> Solicitations { get; set; } = new List<Solicitation>();
-        public ICollection<Question> Questions { get; set; } = new List<Question>();
-        public ICollection<Answer> Answers { get; set; } = new List<Answer>();
+        public ICollection<Solicitation> Solicitations { get; set; }
+        public ICollection<Question> Questions { get; set; }
+        public ICollection<Answer> Answers { get; set; }
     }
 }

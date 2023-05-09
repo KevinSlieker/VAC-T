@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -33,11 +34,11 @@ namespace VAC_T.Business
             }
 
             var jobOffers = from s in _context.JobOffer.Include(j => j.Company).Where(j => j.Closed == null) select s;
-                if (User.IsInRole("ROLE_EMPLOYER"))
-                {
-                    var user = await _userManager.GetUserAsync(User);
-                    jobOffers = jobOffers.Where(C => C.Company.User == user);
-                }
+            if (User.IsInRole("ROLE_EMPLOYER"))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                jobOffers = jobOffers.Where(C => C.Company.User == user);
+            }
             return await jobOffers.ToListAsync();
         }
 
@@ -48,7 +49,7 @@ namespace VAC_T.Business
                 throw new InternalServerException("Database not found");
             }
             var user = await _userManager.GetUserAsync(User);
-            var jobOffer = _context.JobOffer.Include(j => j.Company.JobOffers).Include(j => j.Solicitations.Where(x => x.User == user))
+            var jobOffer = _context.JobOffer.Include(j => j.Company.JobOffers).Include(j => j.Solicitations.Where(x => x.User == user)).Include(j => j.Questions)
                 .FirstOrDefaultAsync(m => m.Id == id);
             return await jobOffer;
         }
@@ -142,6 +143,55 @@ namespace VAC_T.Business
             }
             _context.JobOffer.Update(jobOffer);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<JobOffer?> GetJobOfferWQuestionsAsync(int id)
+        {
+            if (_context.JobOffer == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            return await _context.JobOffer.Include(j => j.Questions).FirstOrDefaultAsync(j => j.Id == id);
+        }
+
+        public async Task<IEnumerable<Question>> GetQuestionsForCompanyAsync(int id) // company id
+        {
+            if (_context.Question == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            return await _context.Question.Include(q => q.Options).Include(q => q.Company).Where(q => q.CompanyId == id).ToListAsync();
+        }
+
+        public async Task SelectJobOfferQuestionsAsync(int id, int[]? selectedQuestionIds) // jobOffer id
+        {
+            if (_context.JobOffer == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            var jobOffer = await GetJobOfferWQuestionsAsync(id);
+            if (jobOffer == null)
+            {
+                return;
+            }
+            if (selectedQuestionIds.IsNullOrEmpty())
+            {
+                jobOffer.Questions = null;
+                _context.JobOffer.Update(jobOffer);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                var selectedList = new List<Question>();
+                foreach (int questionId in selectedQuestionIds!)
+                {
+                    var question = await _context.Question.FirstOrDefaultAsync(q => q.Id == questionId);
+                    selectedList.Add(question);
+                }
+                jobOffer.Questions = selectedList;
+                _context.JobOffer.Update(jobOffer);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

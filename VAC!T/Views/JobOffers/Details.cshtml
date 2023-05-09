@@ -7,7 +7,16 @@
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-10">
+            <a class="navbar-brand text-orange" asp-area="" asp-action="SelectQuestionsForJobOffer" asp-route-id="@Model.Id">
+                <h4>Interview vragen selecteren</h4>
+            </a>
+        </div>
+    </div>
+</div>
 <div class="container-fluid">
     <div class="row">
         <div class="col-2 text-center">

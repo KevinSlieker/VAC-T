@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using VAC_T.Business;
 using VAC_T.DAL.Exceptions;
 using VAC_T.Models;
@@ -205,5 +205,73 @@ namespace VAC_T.Controllers
                 return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
             }
         }
+
+        public async Task<IActionResult> SelectQuestionsForJobOffer(int id) //jobOffer Id
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Unauthorized");
+            }
+            try
+            {
+                var jobOffer = await _service.GetJobOfferWQuestionsAsync(id);
+                if (jobOffer == null)
+                {
+                    return NotFound();
+                }
+                var questions = await _service.GetQuestionsForCompanyAsync(jobOffer.CompanyId);
+                if (questions == null)
+                {
+                    return NotFound("No questions available to select from");
+                }
+                var selectList = new SelectList(questions, "Id", "QuestionText", jobOffer.Questions);
+                ViewData["Questions"] = selectList;
+                var viewModel = new SelectQuestionForJobOfferModel() { Id = id, SelectedQuestionIds = jobOffer.Questions.Select(j => j.Id).ToArray(), CompanyId = jobOffer.CompanyId};
+                return View(viewModel);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SelectQuestionsForJobOffer(int id, SelectQuestionForJobOfferModel selectedQuestions) //jobOffer Id
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Unauthorized");
+            }
+            if (id != selectedQuestions.Id)
+            {
+                return NotFound();
+            }
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (!await _service.DoesJobOfferExistsAsync(id))
+                    {
+                        return NotFound();
+                    }
+                    var jobOffer = await _service.GetJobOfferWQuestionsAsync(id);
+                    await _service.SelectJobOfferQuestionsAsync(id, selectedQuestions.SelectedQuestionIds);
+                    return RedirectToAction("Details", new { id });
+                }
+                var questions = await _service.GetQuestionsForCompanyAsync(selectedQuestions.CompanyId);
+                if (questions == null)
+                {
+                    return NotFound("No questions available to select from");
+                }
+                ViewData["Questions"] = new SelectList(questions, "Id", "QuestionText");
+                return View(selectedQuestions);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.JobOffer' is null.");
+            }
+        }
+
     }
 }

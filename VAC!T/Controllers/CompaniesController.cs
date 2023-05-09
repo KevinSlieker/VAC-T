@@ -155,7 +155,7 @@ namespace VAC_T.Controllers
                         return NotFound();
                     }
                     await _service.UpdateCompanyAsync(company);
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Details), new {id = company.Id});
                 }
                 catch (InternalServerException)
                 {

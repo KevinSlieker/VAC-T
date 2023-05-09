@@ -332,6 +332,7 @@ namespace VAC_T.Controllers
                     await _service.UpdateQuestionAsync(question);
                     return RedirectToAction(nameof(Details), new { id });
                 }
+                ViewData["textOptions"] = new SelectList(await _service.GetYesOrNoTextOptionsAsync());
                 ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt" });
                 if (User.IsInRole("ROLE_ADMIN"))
                 {

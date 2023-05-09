@@ -1,0 +1,58 @@
+﻿@model VAC_T.Models.SelectQuestionForJobOfferModel
+
+@{
+    ViewData["Title"] = "Interview vragen selecteren";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h1>Interview Vragen selecteren</h1>
+
+<h4>Vragen</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SelectQuestionsForJobOffer">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CompanyId" />
+            <div class="text-red">
+                <h5>Houd CRTL ingedrukt om dingen te selecteren</h5>
+            </div>
+            <div class="form-group">
+                <label asp-for="SelectedQuestionIds" class="control-label"></label>
+                <select asp-for="SelectedQuestionIds" class="form-select dropdown" multiple="multiple" asp-items="ViewBag.Questions">
+@*                    <option disabled>Kies een of meer vragen</option>*@
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Opslaan" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayName("Oorsprongelijk geselecteerde vragen")
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Question item in ViewBag.Questions.SelectedValue)
+                {
+                    var test = item;
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(Item => item.QuestionText)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Details" asp-route-id="@Model.Id">Terug</a>
+</div>
