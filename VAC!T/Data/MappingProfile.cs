@@ -45,6 +45,10 @@ namespace VAC_T.Data
             CreateMap<RepeatAppointment, RepeatAppointmentDTO>();
             CreateMap<RepeatAppointment, RepeatAppointmentDTOForCreate>();
             CreateMap<RepeatAppointmentDTOForCreate, RepeatAppointment>();
+            CreateMap<Answer, AnswerViewModel>()
+                .ForMember(dest => dest.MultipleChoiceAnswers, opt => opt.MapFrom(src => (src.Question.Type == "Meerkeuze" && src.Question.MultipleOptions == true) ? src.AnswerText.Split('_', '_') : new string[0]));
+            CreateMap<AnswerViewModel, Answer>()
+                .ForMember(dest => dest.AnswerText, opt => opt.MapFrom(src => (src.Question.Type == "Meerkeuze" && src.Question.MultipleOptions == true) ? string.Join('_', src.MultipleChoiceAnswers) : src.AnswerText));
         }
     }
 }

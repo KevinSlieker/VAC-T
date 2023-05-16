@@ -1,0 +1,117 @@
+﻿@model VAC_T.Models.AnswerViewModel[]
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>Answer</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @for (var i = 0; i < Model.Count(); i++)
+            {
+                <input type="hidden" asp-for="@Model[i].QuestionId">
+                <input type="hidden" asp-for="@Model[i].JobOfferId">
+                <input type="hidden" asp-for="@Model[i].UserId">
+                <p>Vraag: @Model[i].Question.QuestionText</p>
+                if (@Model[i].Question.Type == "Meerkeuze")
+                {
+                    <div class="row padding-left-percentage-5">
+                        @if (@Model[i].Question.MultipleOptions == false)
+                        {
+                            <div class="form-group">
+                                @foreach (var option in @Model[i].Question.Options)
+                                {
+                                    <input type="radio" asp-for="@Model[i].AnswerText" value="@option.Id" /> @option.OptionLong
+                                    <br />
+                                }
+                                @if (@Model[i].Question.ExplanationType == "Laatste optie" && Model[i].Question.Type == "Meerkeuze")
+                                {
+                                    <input type="radio" asp-for="@Model[i].AnswerText" value="Anders" /> @("Anders...")
+                                    <div class="d-inline-flex">
+                                        <input asp-for="@Model[i].Explanation" class="form-control" /><br />
+                                        <span asp-validation-for="@Model[i].Explanation" class="text-danger"></span>
+                                    </div>
+                                }
+                                <span asp-validation-for="@Model[i].AnswerText" class="text-danger"></span>
+                            </div>
+                        } else
+                        {
+                            <div class="form-group">
+                                <select multiple asp-for="@Model[i].MultipleChoiceAnswers" asp-items="@(new SelectList(Model[i].Question.Options, "Id", "OptionLong"))">
+                                    @if (Model[i].Question.ExplanationType == "Laatste optie" && Model[i].Question.Type == "Meerkeuze")
+                                    {
+                                    <option value="Anders">Anders...</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="@Model[i].MultipleChoiceAnswers" class="text-danger"></span>
+                                @if (@Model[i].Question.ExplanationType == "Laatste optie" && Model[i].Question.Type == "Meerkeuze")
+                                {
+                                    <div class="form-group">
+                                        <label asp-for="@Model[i].Explanation" class="control-label">Anders:</label>
+                                        <input asp-for="@Model[i].Explanation" class="form-control" />
+                                        <span asp-validation-for="@Model[i].Explanation" class="text-danger"></span>
+                                    </div>
+                                }
+                                <br />
+                            </div>
+                        }
+                        @if (@Model[i].Question.ExplanationType == "Altijd zichtbaar" && Model[i].Question.Type == "Meerkeuze")
+                            {
+                            <div class="form-group">
+                                <label asp-for="@Model[i].Explanation" class="control-label"></label>
+                                <input asp-for="@Model[i].Explanation" class="form-control" />
+                                <span asp-validation-for="@Model[i].Explanation" class="text-danger"></span>
+                            </div>
+                            }
+                        </div>
+                }
+                @if (@Model[i].Question.Type == "Ja/Nee")
+                {
+                    <div class="form-group">
+                        @foreach (var option in @Model[i].Question.Options)
+                        {
+                            <input type="radio" asp-for="@Model[i].AnswerText" value="@option.OptionLong" /> @option.OptionLong
+                            <br />
+                        }
+                        <span asp-validation-for="@Model[i].AnswerText" class="text-danger"></span>
+                        <br />
+                    </div>
+                }
+                @if (@Model[i].Question.Type == "Standpunt")
+                {
+                    <div class="form-group">
+                        <div class="d-inline-flex">
+                    @Model[i].Question.Options.First().OptionLong
+                    <input type="range" asp-for="@Model[i].AnswerText" class="form-control" />
+                    @Model[i].Question.Options.Last().OptionLong
+                    <span asp-validation-for="@Model[i].AnswerText" class="text-danger"></span>
+                    </div>
+                    </div>
+                    <br />
+                }
+                @if (@Model[i].Question.Type == "Open")
+                {
+                    <div class="form-group">
+                    <input asp-for="@Model[i].AnswerText" class="form-control" />
+                    <span asp-validation-for="@Model[i].AnswerText" class="text-danger"></span>
+                    </div>
+                    <br />
+                }
+            }
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

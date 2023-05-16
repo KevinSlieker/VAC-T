@@ -54,6 +54,9 @@
             <p>@Model.Description</p>
         </div>
     </div>
+    <a class="navbar-brand text-orange" asp-area="" asp-controller="Answers" asp-action="AnswerQuestions" asp-route-Id="@Model.Id">
+        <h4>Vraag beantwoorden</h4>
+    </a>
     @if (SignInManager.IsSignedIn(User))
     {
         if (User.IsInRole("ROLE_CANDIDATE"))

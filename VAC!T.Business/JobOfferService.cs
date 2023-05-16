@@ -49,7 +49,7 @@ namespace VAC_T.Business
                 throw new InternalServerException("Database not found");
             }
             var user = await _userManager.GetUserAsync(User);
-            var jobOffer = _context.JobOffer.Include(j => j.Company.JobOffers).Include(j => j.Solicitations.Where(x => x.User == user)).Include(j => j.Questions)
+            var jobOffer = _context.JobOffer.Include(j => j.Company.JobOffers).Include(j => j.Solicitations.Where(x => x.User == user)).Include(j => j.Questions).Include(j => j.Answers.Where(x => x.User == user))
                 .FirstOrDefaultAsync(m => m.Id == id);
             return await jobOffer;
         }

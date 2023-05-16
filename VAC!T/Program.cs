@@ -71,6 +71,7 @@ builder.Services.AddScoped<AppointmentService>();
 builder.Services.AddScoped<FileUploadService>();
 builder.Services.AddScoped<DashBoardService>();
 builder.Services.AddScoped<QuestionService>();
+builder.Services.AddScoped<AnswerService>();
 
 var app = builder.Build();
 

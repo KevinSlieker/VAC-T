@@ -22,12 +22,12 @@ namespace VAC_T.Models
         [DisplayName("Meerdere mogelijkheden")]
         public bool MultipleOptions { get; set; }
         [DisplayName("Opties")]
-        public ICollection<QuestionOption> Options { get; set; } = new List<QuestionOption>();
+        public ICollection<QuestionOption>? Options { get; set; }
         [DisplayName("Uitleg")]
         public string ExplanationType { get; set; } = string.Empty;
         [DisplayName("Aantal meerkeuze opties toevoegen")]
         public int OptionsAmount { get; set; } = 2;
-        public ICollection<JobOffer>? JobOffers { get; set; } = new List<JobOffer>();
+        public ICollection<JobOffer>? JobOffers { get; set; }
         public ICollection<Answer>? Answers { get; set; }
     }
 }
