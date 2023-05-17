@@ -19,13 +19,24 @@ namespace VAC_T.Business
             _userManager = userManager;
         }
 
-        public async Task<IEnumerable<Answer>?> GetAnswersAsync()
+        public async Task<IEnumerable<Answer>?> GetAnswersAsync(ClaimsPrincipal User)
         {
             if (_context.Answer == null)
             {
                 throw new InternalServerException("Database not found");
             }
-            return await _context.Answer.Include(a => a.JobOffer).Include(a => a.Question).Include(a => a.User).ToListAsync();
+            var user = await _userManager.GetUserAsync(User);
+            var answers = from s in _context.Answer.Include(a => a.JobOffer).Include(a => a.Question).Include(a => a.User) select s;
+            if (User.IsInRole("ROLE_CANDIDATE"))
+            {
+                answers = answers.Where(a => a.User == user);
+            }
+            if (User.IsInRole("ROLE_EMPLOYER"))
+            {
+                var company = await _context.Company.Where(a => a.User == user).FirstAsync();
+                answers = answers.Where(a => a.JobOffer.CompanyId == company.Id);
+            }
+            return (await answers.ToListAsync()).DistinctBy(a => new { a.JobOffer, a.User });
             //var answers = await _context.Answer.Include(a => a.JobOffer).Include(a => a.Question).Include(a => a.User).ToListAsync();
             //return answers.DistinctBy(a => new { a.JobOffer, a.User });
             //await _context.JobOffer.SelectMany(j => j.Answers).DistinctBy(a => a.User).ToListAsync();
@@ -55,6 +66,24 @@ namespace VAC_T.Business
                 .FirstOrDefaultAsync(m => m.Id == id);
         }
 
+        public async Task<IEnumerable<JobOffer>> GetJobOffersAsync()
+        {
+            if (_context.JobOffer == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            return await _context.JobOffer.Where(j => j.Closed == null).Where(j => j.Questions.Count() >= 1).ToListAsync();
+        }
+
+        public async Task<VAC_TUser> GetUserAsync(ClaimsPrincipal User)
+        {
+            if (_context.Users == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            return (await _userManager.GetUserAsync(User))!;
+        }
+
         public async Task<IEnumerable<Answer>?> GetAnswersForJobOfferAsync(int id, ClaimsPrincipal User)
         {
             if (_context.Answer == null)
@@ -71,7 +100,7 @@ namespace VAC_T.Business
             {
                 throw new InternalServerException("Database not found");
             }
-            return await _context.Answer.Include(a => a.JobOffer).Include(a => a.Question).Where(a => a.JobOfferId == id).Where(a => a.UserId == userId).ToListAsync();
+            return await _context.Answer.Include(a => a.JobOffer).Include(a => a.Question.Options).Where(a => a.JobOfferId == id).Where(a => a.UserId == userId).ToListAsync();
         }
 
         public async Task<bool> DoAnswersExistAsync(int id, ClaimsPrincipal User) // jobOffer id
@@ -110,9 +139,9 @@ namespace VAC_T.Business
             }
             var answers = new List<Answer>();
             var jobOffer = await _context.JobOffer.Include(j => j.Questions).FirstOrDefaultAsync(j => j.Id == id);
-            if (jobOffer == null)
+            if (jobOffer == null || jobOffer.Questions.Count() == 0)
             {
-                return answers;
+                return null;
             }
             var user = await _userManager.GetUserAsync(User);
             foreach (var question in jobOffer.Questions)
@@ -176,7 +205,7 @@ namespace VAC_T.Business
             {
                 throw new InternalServerException("Database not found");
             }
-            var answers = await GetAnswersForJobOfferAsync(id, userId);
+            var answers = await _context.Answer.Where(a => a.JobOfferId == id).Where(a => a.UserId == userId).ToListAsync();
             _context.Answer.RemoveRange(answers);
             await _context.SaveChangesAsync();
         }

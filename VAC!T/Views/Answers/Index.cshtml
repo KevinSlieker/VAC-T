@@ -6,53 +6,67 @@
 }
 
 <h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (User.IsInRole("ROLE_ADMIN"))
+{
+    <div>
+        <form class="row align-items-center" asp-action="Create" method="get">
+            <div class="form-group">
+                <label class="control-label">Vacature</label>
+                <select name="id" class="form-select" asp-items="ViewBag.JobOffers"></select>
+                <input type="submit" value="Antwoorden maken" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
-            <th>
+@*            <th>
                 @Html.DisplayNameFor(model => model.Question)
-            </th>
+            </th>*@
             <th>
                 @Html.DisplayNameFor(model => model.JobOffer)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.User)
             </th>
-            <th>
+@*            <th>
                 @Html.DisplayNameFor(model => model.AnswerText)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Explanation)
-            </th>
+            </th>*@
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
+@*            <td>
                 @Html.DisplayFor(modelItem => item.Question.ExplanationType)
+            </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.JobOffer.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.JobOffer.Description)
+                @Html.DisplayFor(modelItem => item.User.Name)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Id)
-            </td>
-            <td>
+@*            <td>
                 @Html.DisplayFor(modelItem => item.AnswerText)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Explanation)
-            </td>
+            </td>*@
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="DetailsPerJobOffer" asp-route-id="@item.JobOfferId" asp-route-userid="@item.UserId">Details</a>
+                    @if (User.IsInRole("ROLE_CANDIDATE") || User.IsInRole("ROLE_ADMIN"))
+                    {
+                        @(" | ")
+                        <a asp-action="DeleteUserAnswersForJobOffer" asp-route-id="@item.JobOfferId" asp-route-userId="@item.UserId">Delete</a>
+                    }
             </td>
         </tr>
 }

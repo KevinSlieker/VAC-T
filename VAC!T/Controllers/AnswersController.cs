@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using VAC_T.Business;
 using VAC_T.DAL.Exceptions;
 using VAC_T.Models;
@@ -10,22 +12,28 @@ namespace VAC_T.Controllers
     {
         private readonly AnswerService _service;
         private readonly IMapper _mapper;
-        public AnswersController(AnswerService service, IMapper mapper)
+        private readonly SignInManager<VAC_TUser> _signInManager;
+        public AnswersController(AnswerService service, IMapper mapper, SignInManager<VAC_TUser> signInManager)
         {
             _service = service;
             _mapper = mapper;
+            _signInManager = signInManager;
         }
 
         // GET: Answers
         public async Task<IActionResult> Index()
         {
-            if (!User.IsInRole("ROLE_ADMIN"))
+            if (!_signInManager.IsSignedIn(User))
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, Need to be logged in");
             }
             try
             {
-                var answers = await _service.GetAnswersAsync();
+                if (User.IsInRole("ROLE_ADMIN"))
+                {
+                    ViewData["JobOffers"] = new SelectList(await _service.GetJobOffersAsync(), "Id", "Name");
+                }
+                var answers = await _service.GetAnswersAsync(User);
                 return View(answers);
             }
             catch (InternalServerException)
@@ -34,15 +42,15 @@ namespace VAC_T.Controllers
             }
         }
 
-        public async Task<IActionResult> DetailsPerJobOffer(int id) // jobOffer id
+        public async Task<IActionResult> DetailsPerJobOffer(int id, string userId) // jobOffer id
         {
-            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_CANDIDATE")))
+            if (!_signInManager.IsSignedIn(User))
             {
                 return Unauthorized("Unauthorized");
             }
             try
             {
-                var answers = await _service.GetAnswersForJobOfferAsync(id, User);
+                var answers = await _service.GetAnswersForJobOfferAsync(id, userId);
                 var viewModel = _mapper.Map<List<AnswerViewModel>>(answers);
                 foreach (var answer in viewModel)
                 {
@@ -77,11 +85,16 @@ namespace VAC_T.Controllers
 
         public async Task<IActionResult> AnswerQuestions(int id) // jobOffer id
         {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_CANDIDATE")))
+            {
+                return Unauthorized("Unauthorized");
+            }
             try
             {
                 if (await _service.DoAnswersExistAsync(id, User))
                 {
-                    return RedirectToAction("DetailsPerJobOffer", new { id });
+                    var user = await _service.GetUserAsync(User);
+                    return RedirectToAction("DetailsPerJobOffer", new { id, userId = user.Id });
                     //var answers = await _service.GetUserAnswersForJobOfferAsync(id, User);
                     //return View("Edit", answers);
                 }
@@ -160,20 +173,20 @@ namespace VAC_T.Controllers
                 }
                 if (ModelState.IsValid)
                 {
-                    for (int i = 0; i < answersViewModel.Count(); i++)
-                    {
-                        if (answersViewModel[i].Question.Type == "Meerkeuze" && answersViewModel[i].Question.MultipleOptions == true)
-                        {
-                            for (int s = 0; s < answersViewModel[i].MultipleChoiceAnswers.Count(); s++)
-                            {
-                                answersViewModel[i].AnswerText += answersViewModel[i].MultipleChoiceAnswers[s] + "_";
-                            }
-                            answersViewModel[i].AnswerText = answersViewModel[i].AnswerText.Trim('_');
-                        }
-                    }
+                    //for (int i = 0; i < answersViewModel.Count(); i++)
+                    //{
+                    //    if (answersViewModel[i].Question.Type == "Meerkeuze" && answersViewModel[i].Question.MultipleOptions == true)
+                    //    {
+                    //        for (int s = 0; s < answersViewModel[i].MultipleChoiceAnswers.Count(); s++)
+                    //        {
+                    //            answersViewModel[i].AnswerText += answersViewModel[i].MultipleChoiceAnswers[s] + "_";
+                    //        }
+                    //        answersViewModel[i].AnswerText = answersViewModel[i].AnswerText.Trim('_');
+                    //    }
+                    //}
                     var answers = _mapper.Map<List<Answer>>(answersViewModel);
-                    var greatedAnswers = await _service.CreateAnswersAsync(answers);
-                    return RedirectToAction(nameof(DetailsPerJobOffer), new { id = greatedAnswers.First().JobOfferId });
+                    var createdAnswers = await _service.CreateAnswersAsync(answers);
+                    return RedirectToAction(nameof(DetailsPerJobOffer), new { id = createdAnswers.First().JobOfferId, userId = createdAnswers.First().UserId });
                 }
                 return View(answersViewModel);
             }
@@ -253,7 +266,7 @@ namespace VAC_T.Controllers
                     }
                     _mapper.Map(answerViewModel, answer);
                     await _service.UpdateAnswerAsync(answer);
-                    return RedirectToAction(nameof(DetailsPerJobOffer), new { id = answer.JobOfferId });
+                    return RedirectToAction(nameof(DetailsPerJobOffer), new { id = answer.JobOfferId, userId = answer.UserId});
                 }
                 return View(answerViewModel);
             }
@@ -320,7 +333,12 @@ namespace VAC_T.Controllers
                 {
                     NotFound();
                 }
-                return View(answers);
+                var viewModel = _mapper.Map<List<AnswerViewModel>>(answers);
+                foreach (var answer in viewModel)
+                {
+                    answer.DisplayAnswerText = _service.PrepareAnswerForDisplay(answer.AnswerText, answer.Question);
+                }
+                return View("Delete",viewModel);
             }
             catch (InternalServerException)
             {
@@ -340,7 +358,7 @@ namespace VAC_T.Controllers
             try
             {
                 await _service.DeleteUserAnswersForJobOfferAsync(id, userId);
-                return RedirectToAction(nameof(DetailsPerJobOffer), new { id });
+                return RedirectToAction(nameof(Index));
             }
             catch (InternalServerException)
             {

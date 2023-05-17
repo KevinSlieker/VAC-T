@@ -55,9 +55,24 @@
                     @Html.DisplayFor(modelItem => item.Explanation)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    @if (User.IsInRole("ROLE_CANDIDATE") || User.IsInRole("ROLE_ADMIN"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    }
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<div>
+    <a class="navbar-brand" asp-area="" asp-controller="JobOffers" asp-action="Details" asp-route-id="@Model.First().JobOfferId">
+        <input type="button" value="Terug naar vacature" class="btn btn-primary" /></a>
+    <a class="navbar-brand" asp-area="" asp-controller="Answers" asp-action="Index">
+        <input type="button" value="Terug naar index" class="btn btn-primary" /></a>
+        @if (User.IsInRole("ROLE_CANDIDATE") || User.IsInRole("ROLE_ADMIN"))
+            {
+                <a class="navbar-brand" asp-area="" asp-controller="Answers" asp-action="DeleteUserAnswersForJobOffer" asp-route-id="@Model.First().JobOfferId" asp-route-userId="@Model.First().UserId">
+                    <input type="button" value="Delete" class="btn btn-primary" /></a>
+            }
+</div>

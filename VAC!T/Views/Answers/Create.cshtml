@@ -112,6 +112,19 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <br />
+    <a class="navbar-brand" asp-area="" asp-controller="JobOffers" asp-action="Details" asp-route-id="@Model.First().JobOfferId">
+        <input type="button" value="Terug naar vacature" class="btn btn-primary" />
+    </a>
+</div>
+<div>
+    @if (User.IsInRole("ROLE_ADMIN"))
+    {
+        <br />
+        <a class="navbar-brand" asp-area="" asp-controller="Answers" asp-action="Index">
+            <input type="button" value="Terug naar index" class="btn btn-primary" />
+        </a>
+    }
+    @*<a asp-action="Index">Back to List</a>*@
 </div>
 
