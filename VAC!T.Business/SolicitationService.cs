@@ -169,5 +169,15 @@ namespace VAC_T.Business
             }
             return await _context.Solicitation.AnyAsync(c => c.Id == id);
         }
+
+        public async Task<bool> AreQuestionsAnsweredAsync(int id, ClaimsPrincipal User) // jobOfferId
+        {
+            if (_context.JobOffer == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            var user = await _userManager.GetUserAsync(User);
+            return await _context.JobOffer.AnyAsync(j => j.Questions.Count() == j.Answers.Where(a => a.UserId == user.Id).Count());
+        }
     }
 }

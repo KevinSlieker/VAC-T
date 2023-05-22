@@ -7,16 +7,19 @@
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-2"></div>
-        <div class="col-10">
-            <a class="navbar-brand text-orange" asp-area="" asp-action="SelectQuestionsForJobOffer" asp-route-id="@Model.Id">
-                <h4>Interview vragen selecteren</h4>
-            </a>
+@if (User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER"))
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-10">
+                <a class="navbar-brand text-orange" asp-area="" asp-action="SelectQuestionsForJobOffer" asp-route-id="@Model.Id">
+                    <h4>Interview vragen selecteren</h4>
+                </a>
+            </div>
         </div>
     </div>
-</div>
+}
 <div class="container-fluid">
     <div class="row">
         <div class="col-2 text-center">
@@ -54,9 +57,6 @@
             <p>@Model.Description</p>
         </div>
     </div>
-    <a class="navbar-brand text-orange" asp-area="" asp-controller="Answers" asp-action="AnswerQuestions" asp-route-Id="@Model.Id">
-        <h4>Vraag beantwoorden</h4>
-    </a>
     @if (SignInManager.IsSignedIn(User))
     {
         if (User.IsInRole("ROLE_CANDIDATE"))
@@ -68,11 +68,14 @@
                 <div class="solicitate-now d-flex col-8">
                         @if (Model.Solicitations.Count == 0)
                         {
-                            <a class="navbar-brand text-orange" asp-area="" asp-controller="Solicitations" asp-action="Create" asp-route-jobOfferId="@Model.Id">
-                                <h4>SOLLICITEER DIRECT</h4>
-                        </a>
+                            <a class="navbar-brand text-orange" asp-area="" asp-controller="Answers" asp-action="AnswerQuestions" asp-route-Id="@Model.Id">
+                                <h4>SOLLICITEER</h4>
+                            </a>
                     } else
                     {
+                        <a class="navbar-brand text-orange" asp-area="" asp-controller="Answers" asp-action="AnswerQuestions" asp-route-Id="@Model.Id">
+                            <h4>NAAR INTERVIEWVRAGEN</h4>
+                        </a>
                         if (Model.Solicitations.First().AppointmentId == null)
                         {
                             <a class="navbar-brand text-orange" asp-area="" asp-controller="Solicitations" asp-action="Delete" asp-route-jobOfferId="@Model.Id">

@@ -7,6 +7,15 @@
 
 <h1>Details antwoorden interviewvragen</h1>
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="text-danger">
+        <h3>
+            @TempData["ErrorMessage"]
+        </h3>
+    </div>
+}
+
 <div>
     <hr />
     <dl class="row">
@@ -71,8 +80,13 @@
     <a class="navbar-brand" asp-area="" asp-controller="Answers" asp-action="Index">
         <input type="button" value="Terug naar index" class="btn btn-primary" /></a>
         @if (User.IsInRole("ROLE_CANDIDATE") || User.IsInRole("ROLE_ADMIN"))
+        {
+            <a class="navbar-brand" asp-area="" asp-controller="Answers" asp-action="DeleteUserAnswersForJobOffer" asp-route-id="@Model.First().JobOfferId" asp-route-userId="@Model.First().UserId">
+                <input type="button" value="Delete" class="btn btn-primary" /></a>
+            @if (ViewData["Solicitated"] == null)
             {
-                <a class="navbar-brand" asp-area="" asp-controller="Answers" asp-action="DeleteUserAnswersForJobOffer" asp-route-id="@Model.First().JobOfferId" asp-route-userId="@Model.First().UserId">
-                    <input type="button" value="Delete" class="btn btn-primary" /></a>
+                <a class="navbar-brand text-orange" asp-area="" asp-controller="Solicitations" asp-action="Create" asp-route-jobOfferId="@Model.First().JobOfferId">
+                    <input type="button" value="Solliciteer Nu" class="btn btn-primary" /></a>
             }
+        }
 </div>

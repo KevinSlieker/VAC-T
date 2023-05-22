@@ -56,6 +56,16 @@ namespace VAC_T.Controllers
                 {
                     answer.DisplayAnswerText = _service.PrepareAnswerForDisplay(answer.AnswerText, answer.Question);
                 }
+                if (User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_CANDIDATE"))
+                {
+                    if (await _service.CheckUserSolicitatedAsync(id, userId))
+                    {
+                        ViewData["Solicitated"] = true;
+                    } else
+                    {
+                        ViewData["Solicitated"] = null;
+                    }
+                }
                 return View(viewModel);
             }
             catch (InternalServerException)
@@ -328,6 +338,11 @@ namespace VAC_T.Controllers
             }
             try
             {
+                if (await _service.CheckUserSolicitatedAsync(id, userId))
+                {
+                    TempData["ErrorMessage"] = "You can't delete your answers while you solicited, you need to cancel your solicitation first";
+                    return RedirectToAction(nameof(DetailsPerJobOffer), new { id, userId });
+                }
                 var answers = await _service.GetAnswersForJobOfferAsync(id, userId);
                 if (answers != null)
                 {

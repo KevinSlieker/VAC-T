@@ -210,6 +210,15 @@ namespace VAC_T.Business
             await _context.SaveChangesAsync();
         }
 
+        public async Task<bool> CheckUserSolicitatedAsync(int id, string userId) // jobOfferId
+        {
+            if (_context.JobOffer == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            return await _context.Solicitation.AnyAsync(s => s.UserId == userId && s.JobOffer.Id == id);
+        }
+
         public string PrepareAnswerForDisplay(string answerString, Question question)
         {
             if (_context.Question == null)

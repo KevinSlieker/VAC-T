@@ -87,6 +87,9 @@
                                 </th>
                             }
                             <th>
+                                InterviewAntwoorden
+                            </th>
+                            <th>
                                 @Html.DisplayNameFor(model => model.Selected)
                             </th>
                             <th>
@@ -130,6 +133,11 @@
                                             </a>
                                         </td>
                                 }
+                                <td>
+                                    <a class="text-decoration-none text-orange" asp-area="" asp-controller="Answers" asp-action="DetailsPerJobOffer" asp-route-Id="@item.JobOffer.Id" asp-route-userId="@item.UserId">
+                                        Antwoorden
+                                    </a>
+                                </td>
                                 @if (User.IsInRole("ROLE_CANDIDATE"))
                                 {
                                     <td>

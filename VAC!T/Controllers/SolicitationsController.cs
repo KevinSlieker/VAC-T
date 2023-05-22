@@ -54,6 +54,10 @@ namespace VAC_T.Controllers
                 {
                     return NotFound($"JobOffer with Id: {jobOfferId} does not exist.");
                 }
+                if (! await _service.AreQuestionsAnsweredAsync(jobOfferId, User))
+                {
+                    return NotFound("You have not answered the interviewQuestions for this jobOffer.");
+                }
                 var solicitation = await _service.CreateSolicitationAsync(jobOfferId, User);
                 if (solicitation == null)
                 {
