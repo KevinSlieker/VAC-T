@@ -20,6 +20,7 @@ namespace VAC_T.Data
             CreateMap<CompanyDTOForUpdate, Company>();
             CreateMap<JobOffer, JobOfferDTO>();
             CreateMap<JobOffer, JobOfferDTOSmall>();
+            CreateMap<JobOffer, JobOfferDTOWQuestions>();
             CreateMap<JobOfferDTO, JobOffer>();
             CreateMap<JobOfferDTOForUpdateAndCreate, JobOffer>();
             CreateMap<JobOfferDTOForCreateTemp, JobOffer>();
@@ -49,6 +50,13 @@ namespace VAC_T.Data
                 .ForMember(dest => dest.MultipleChoiceAnswers, opt => opt.MapFrom(src => (src.Question.Type == "Meerkeuze" && src.Question.MultipleOptions == true) ? src.AnswerText.Split('_', '_') : new string[0]));
             CreateMap<AnswerViewModel, Answer>()
                 .ForMember(dest => dest.AnswerText, opt => opt.MapFrom(src => (src.Question.Type == "Meerkeuze" && src.Question.MultipleOptions == true) ? string.Join('_', src.MultipleChoiceAnswers) : src.AnswerText));
+            CreateMap<Question, QuestionDTOId>();
+            CreateMap<Question, QuestionDTOSmall>();
+            CreateMap<Question, QuestionDTOMedium>();
+            CreateMap<Question, QuestionDTOComplete>();
+            CreateMap<QuestionDTOForCreate, Question>();
+            CreateMap<QuestionDTOForCreateYesOrNo, Question>();
+            CreateMap<QuestionOption, QuestionOptionDTOSmall>();
         }
     }
 }

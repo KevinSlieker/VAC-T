@@ -30,7 +30,6 @@ namespace VAC_T.Data
         public DbSet<Solicitation> Solicitation { get; set; } = default!;
         public DbSet<Appointment> Appointment { get; set; } = default!;
         public DbSet<RepeatAppointment> RepeatAppointment { get; set; } = default!;
-        public DbSet<UserDetailsModel> UserDetailsModel { get; set; } = default!;
         public DbSet<Question> Question { get; set; } = default!;
         public DbSet<QuestionOption> QuestionOption { get; set; } = default!;
         public DbSet<Answer> Answer { get; set; } = default!;

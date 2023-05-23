@@ -1,4 +1,7 @@
-﻿using System.Security.Claims;
+﻿using System.Globalization;
+using System.Security.Claims;
+using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -100,7 +103,7 @@ namespace VAC_T.Business
             {
                 throw new InternalServerException("Database not found");
             }
-            return await _context.Answer.Include(a => a.JobOffer).Include(a => a.Question.Options).Where(a => a.JobOfferId == id).Where(a => a.UserId == userId).ToListAsync();
+            return await _context.Answer.Include(a => a.JobOffer).Include(a => a.Question.Options).Include(a => a.User).Where(a => a.JobOfferId == id).Where(a => a.UserId == userId).ToListAsync();
         }
 
         public async Task<bool> DoAnswersExistAsync(int id, ClaimsPrincipal User) // jobOffer id
@@ -269,6 +272,92 @@ namespace VAC_T.Business
                     }
                 default:
                     return answerString;
+            }
+        }
+
+        public string PrepareAnswerForCSV(string answerString, Question question)
+        {
+            if (_context.Question == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            switch (question.Type)
+            {
+                //case "Open":
+                //    return answerString;
+                case "Standpunt":
+                    var returnAnswer = "0 " + (question.Options.First().OptionShort == null ? question.Options.First().OptionLong : question.Options.First().OptionShort) +
+                        " - " + (question.Options.Last().OptionShort == null ? question.Options.Last().OptionLong : question.Options.Last().OptionShort) + " 100" + ": " + answerString;
+                    return returnAnswer;
+                //case "Ja/Nee":
+                //    return answerString;
+                case "Meerkeuze":
+                    if (question.MultipleOptions == false)
+                    {
+                        if (answerString == "Anders")
+                        {
+                            return answerString;
+                        }
+                        else
+                        {
+                            var id = int.Parse(answerString);
+                            return question.Options!.First(o => o.Id == int.Parse(answerString)).OptionShort == null ?
+                                question.Options!.First(o => o.Id == int.Parse(answerString)).OptionLong :
+                                question.Options!.First(o => o.Id == int.Parse(answerString)).OptionShort!;
+                        }
+                    }
+                    else
+                    {
+                        var toReturn = "";
+                        var answerIds = answerString.Split('_').ToList();
+                        var anders = "";
+                        if (answerIds.Contains("Anders"))
+                        {
+                            answerIds.Remove("Anders");
+                            anders = "Anders";
+                        }
+                        foreach (var id in answerIds)
+                        {
+                            toReturn += (question.Options!.First(o => o.Id == int.Parse(id)).OptionShort == null ?
+                                question.Options!.First(o => o.Id == int.Parse(id)).OptionLong :
+                                question.Options!.First(o => o.Id == int.Parse(id)).OptionShort) + ",";
+                        }
+                        if (!anders.IsNullOrEmpty())
+                        {
+                            toReturn += anders;
+                        }
+                        return toReturn.Trim(',').Trim();
+                    }
+                default:
+                    return answerString;
+            }
+        }
+
+        public async Task<MemoryStream> CreateCSVFileAsync(IEnumerable<Answer> answers)
+        {
+            var rptLines = new List<CSVLine>();
+            rptLines = answers!.ToList().ConvertAll(a => new CSVLine()
+            {
+                Question = a.Question.QuestionText,
+                Answer = PrepareAnswerForCSV(a.AnswerText, a.Question),
+                Explanation = a.Explanation
+            });
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                Delimiter = ";",
+            };
+            var ms = new MemoryStream();
+            using (var sw = new StreamWriter(ms))
+            {
+                using (var csv = new CsvWriter(sw, config))
+                {
+                    csv.WriteField(answers.First().JobOffer.Name);
+                    csv.WriteField(DateTime.Today.ToString());
+                    csv.WriteField(answers.First().User.Name);
+                    await csv.NextRecordAsync();
+                    await csv.WriteRecordsAsync(rptLines);
+                }
+                return ms;
             }
         }
     }

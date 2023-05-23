@@ -56,7 +56,7 @@ namespace VAC_T.Controllers
                 }
                 if (! await _service.AreQuestionsAnsweredAsync(jobOfferId, User))
                 {
-                    return NotFound("You have not answered the interviewQuestions for this jobOffer.");
+                    return Problem("You have not answered the interviewQuestions for this jobOffer.");
                 }
                 var solicitation = await _service.CreateSolicitationAsync(jobOfferId, User);
                 if (solicitation == null)

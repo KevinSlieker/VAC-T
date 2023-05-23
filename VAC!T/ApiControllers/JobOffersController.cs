@@ -159,5 +159,55 @@ namespace VAC_T.ApiControllers
                 return Problem("Database not connected");
             }
         }
+
+        [HttpGet("questions/{id}")]
+        public async Task<ActionResult> GetJobOfferWQuestionsAsync(int id)
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
+            try
+            {
+                var jobOffer = await _service.GetJobOfferWQuestionsAsync(id);
+                var result = _mapper.Map<JobOfferDTOWQuestions>(jobOffer);
+                return Ok(result);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Database not connected");
+            }
+        }
+
+        [HttpPut("questions/{id}")]
+        public async Task<IActionResult> SelectQuestionsForJobOfferAsync(int id, [FromBody] JobOfferDTOSelectQuestions selectedQuestions)
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
+            if (id != selectedQuestions.Id)
+            {
+                ModelState.AddModelError("Id", "Does not match Id in URL");
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                if (!await _service.DoesJobOfferExistsAsync(id))
+                {
+                    return NotFound($"No jobOffer with id: {id} in the database");
+                }
+                await _service.SelectJobOfferQuestionsAsync(id, selectedQuestions.Questions.Select(q => q.Id).ToArray());
+
+                var jobOfferEntity = await _service.GetJobOfferWQuestionsAsync(id);
+                var result = _mapper.Map<JobOfferDTOWQuestions>(jobOfferEntity);
+                return Ok(result);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Database not connected");
+            }
+        }
+
     }
 }

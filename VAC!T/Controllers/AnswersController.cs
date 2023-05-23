@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using VAC_T.Business;
 using VAC_T.DAL.Exceptions;
 using VAC_T.Models;
+using CsvHelper;
+using System.Text;
+using System.Globalization;
+using CsvHelper.Configuration;
 
 namespace VAC_T.Controllers
 {
@@ -374,6 +378,53 @@ namespace VAC_T.Controllers
             {
                 await _service.DeleteUserAnswersForJobOfferAsync(id, userId);
                 return RedirectToAction(nameof(Index));
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Answer' is null.");
+            }
+        }
+
+        public async Task<IActionResult> DownloadAnswersAndQuestions(int id, string userId) // jobOfferId
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Unauthorized");
+            }
+            try
+            {
+                var answers = await _service.GetAnswersForJobOfferAsync(id, userId);
+                //var rptLines = new List<CSVLine>();
+                //rptLines = answers!.ToList().ConvertAll(a => new CSVLine()
+                //{ 
+                //    Question = a.Question.QuestionText,
+                //    Answer = _service.PrepareAnswerForCSV(a.AnswerText, a.Question),
+                //    Explanation = a.Explanation
+                //});
+                var fileName = answers.First().JobOfferId.ToString() + "_" + answers.First().User.Name + ".csv";
+                var ms = await _service.CreateCSVFileAsync(answers);
+                var file = File(ms.ToArray(), "text/csv", fileName);
+                ms.Close();
+                return file;
+                //var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                //{
+                //    Delimiter = ";",
+                //};
+                //using (var ms = new MemoryStream())
+                //{
+                //    using (var sw = new StreamWriter(ms))
+                //    {
+                //        using (var csv = new CsvWriter(sw, config))
+                //        {
+                //            csv.WriteField(answers.First().JobOffer.Name);
+                //            csv.WriteField(DateTime.Today.ToString());
+                //            csv.WriteField(answers.First().User.Name);
+                //            csv.NextRecord();
+                //            csv.WriteRecords(rptLines);
+                //        }
+                //        return File(ms.ToArray(), "text/csv", fileName);
+                //    }
+                //}
             }
             catch (InternalServerException)
             {

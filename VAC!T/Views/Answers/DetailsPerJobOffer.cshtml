@@ -89,4 +89,9 @@
                     <input type="button" value="Solliciteer Nu" class="btn btn-primary" /></a>
             }
         }
+        @if (User.IsInRole("ROLE_EMPLOYER") || User.IsInRole("ROLE_ADMIN"))
+        {
+        <a class="navbar-brand text-orange" asp-area="" asp-controller="Answers" asp-action="DownloadAnswersAndQuestions" asp-route-Id="@Model.First().JobOfferId" asp-route-userId="@Model.First().UserId">
+                <input type="button" value="Download" class="btn btn-primary" /></a>
+        }
 </div>

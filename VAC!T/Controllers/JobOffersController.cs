@@ -255,7 +255,7 @@ namespace VAC_T.Controllers
                     {
                         return NotFound();
                     }
-                    var jobOffer = await _service.GetJobOfferWQuestionsAsync(id);
+                    //var jobOffer = await _service.GetJobOfferWQuestionsAsync(id);
                     await _service.SelectJobOfferQuestionsAsync(id, selectedQuestions.SelectedQuestionIds);
                     return RedirectToAction("Details", new { id });
                 }
