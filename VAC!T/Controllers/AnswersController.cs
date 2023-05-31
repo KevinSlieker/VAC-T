@@ -9,6 +9,7 @@ using CsvHelper;
 using System.Text;
 using System.Globalization;
 using CsvHelper.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace VAC_T.Controllers
 {
@@ -54,7 +55,11 @@ namespace VAC_T.Controllers
             }
             try
             {
-                var answers = await _service.GetAnswersForJobOfferAsync(id, userId);
+                var answers = await _service.GetAnswersForJobOfferAsync(id, userId, User);
+                if (answers.IsNullOrEmpty())
+                {
+                    return Unauthorized("Unauthorized, you are not allowed to view the details of this jobOffer or user");
+                }
                 var viewModel = _mapper.Map<List<AnswerViewModel>>(answers);
                 foreach (var answer in viewModel)
                 {
@@ -79,23 +84,23 @@ namespace VAC_T.Controllers
         }
 
         // GET: Answers/Details/5
-        public async Task<IActionResult> Details(int id)
-        {
-            try
-            {
-                var answer = await _service.GetAnswerAsync(id);
-                if (answer == null)
-                {
-                    return NotFound();
-                }
+        //public async Task<IActionResult> Details(int id)
+        //{
+        //    try
+        //    {
+        //        var answer = await _service.GetAnswerAsync(id);
+        //        if (answer == null)
+        //        {
+        //            return NotFound();
+        //        }
 
-                return View(answer);
-            }
-            catch (InternalServerException)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Answer' is null.");
-            }
-        }
+        //        return View(answer);
+        //    }
+        //    catch (InternalServerException)
+        //    {
+        //        return Problem("Entity set 'ApplicationDbContext.Answer' is null.");
+        //    }
+        //}
 
         public async Task<IActionResult> AnswerQuestions(int id) // jobOffer id
         {
@@ -138,6 +143,10 @@ namespace VAC_T.Controllers
             }
             try
             {
+                if (await _service.DoAnswersExistAsync(id, User))
+                {
+                    return BadRequest("You already answered the questions");
+                }
                 var answers = await _service.PrepareUserAnswersForCreateAsync(id, User);
                 if (answers == null)
                 {
@@ -219,7 +228,7 @@ namespace VAC_T.Controllers
             }
             try
             {
-                var answer = await _service.GetAnswerAsync(id);
+                var answer = await _service.GetAnswerAsync(id, User);
                 if (answer == null)
                 {
                     return NotFound();
@@ -273,7 +282,7 @@ namespace VAC_T.Controllers
                 }
                 if (ModelState.IsValid)
                 {
-                    var answer = await _service.GetAnswerAsync(id);
+                    var answer = await _service.GetAnswerAsync(id, User);
                     if (answer == null)
                     {
                         return NotFound();
@@ -347,10 +356,10 @@ namespace VAC_T.Controllers
                     TempData["ErrorMessage"] = "You can't delete your answers while you solicited, you need to cancel your solicitation first";
                     return RedirectToAction(nameof(DetailsPerJobOffer), new { id, userId });
                 }
-                var answers = await _service.GetAnswersForJobOfferAsync(id, userId);
-                if (answers != null)
+                var answers = await _service.GetAnswersForJobOfferAsync(id, userId, User);
+                if (answers.IsNullOrEmpty())
                 {
-                    NotFound();
+                    return Unauthorized("Unauthorized, you are not allowed to view the details of this jobOffer or user");
                 }
                 var viewModel = _mapper.Map<List<AnswerViewModel>>(answers);
                 foreach (var answer in viewModel)
@@ -393,7 +402,11 @@ namespace VAC_T.Controllers
             }
             try
             {
-                var answers = await _service.GetAnswersForJobOfferAsync(id, userId);
+                var answers = await _service.GetAnswersForJobOfferAsync(id, userId, User);
+                if (answers.IsNullOrEmpty())
+                {
+                    return Unauthorized("Unauthorized, you are not allowed to view the details of this jobOffer or user");
+                }
                 //var rptLines = new List<CSVLine>();
                 //rptLines = answers!.ToList().ConvertAll(a => new CSVLine()
                 //{ 

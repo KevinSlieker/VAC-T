@@ -3,6 +3,6 @@
     public class JobOfferDTOSelectQuestions
     {
         public int Id { get; set; }
-        public ICollection<QuestionDTOId>? Questions { get; set; }
+        public int[]? QuestionIds { get; set; }
     }
 }

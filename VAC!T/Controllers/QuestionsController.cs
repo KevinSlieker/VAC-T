@@ -69,16 +69,17 @@ namespace VAC_T.Controllers
             {
                 var question = new Question();
                 ViewData["ExplanationType"] = new SelectList(new List<string>() { "Nooit zichtbaar", "Altijd zichtbaar", "Laatste optie" });
+                ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt", "Ja/Nee" });
                 if (User.IsInRole("ROLE_ADMIN"))
                 {
                     ViewData["CompanyId"] = new SelectList(await _service.GetCompaniesAsync(), "Id", "Name");
-                    ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt", "Ja/Nee" });
+                    //ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt", "Ja/Nee" });
                     return View();
                 }
                 else
                 {
                     question.CompanyId = (await _service.GetCompanyAsync(User)).Id;
-                    ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt" });
+                    //ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt" });
                     return View(question);
                 }
             }
@@ -129,11 +130,11 @@ namespace VAC_T.Controllers
                 {
                     ViewData["ErrorMessage"] = "Je moet een bedrijf selecteren.";
                 }
-                ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt" });
+                ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt", "Ja/Nee" });
                 if (User.IsInRole("ROLE_ADMIN"))
                 {
                     ViewData["CompanyId"] = new SelectList(await _service.GetCompaniesAsync(), "Id", "Name");
-                    ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt", "Ja/Nee" });
+                    //ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt", "Ja/Nee" });
                 }
                 ViewData["ExplanationType"] = new SelectList(new List<string>() { "Nooit zichtbaar", "Altijd zichtbaar", "Laatste optie" });
                 return View(question);
@@ -144,74 +145,75 @@ namespace VAC_T.Controllers
             }
         }
 
-        public async Task<IActionResult> CreateYesOrNoQuestion()
-        {
-            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
-            {
-                return Unauthorized("Unauthorized");
-            }
-            try
-            {
-                var textOptions = await _service.GetYesOrNoTextOptionsAsync();
-                if (textOptions.IsNullOrEmpty())
-                {
-                    return NotFound("No questionText options found.");
-                }
-                ViewData["textOptions"] = new SelectList(textOptions);
-                var question = new Question();
-                question.Type = "Ja/Nee";
-                if (User.IsInRole("ROLE_EMPLOYER"))
-                {
-                    question.CompanyId = (await _service.GetCompanyAsync(User)).Id;
-                }
-                else
-                {
-                    ViewData["CompanyId"] = new SelectList(await _service.GetCompaniesAsync(), "Id", "Name");
-                }
-                return View(question);
-            }
-            catch (InternalServerException)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Question' is null.");
-            }
-        }
+        //public async Task<IActionResult> CreateYesOrNoQuestion()
+        //{
+        //    if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+        //    {
+        //        var test = User.Claims.FirstOrDefault(c => c.Type == "CompanyId").Value;
+        //        return Unauthorized("Unauthorized");
+        //    }
+        //    try
+        //    {
+        //        var textOptions = await _service.GetYesOrNoTextOptionsAsync();
+        //        if (textOptions.IsNullOrEmpty())
+        //        {
+        //            return NotFound("No questionText options found.");
+        //        }
+        //        ViewData["textOptions"] = new SelectList(textOptions);
+        //        var question = new Question();
+        //        question.Type = "Ja/Nee";
+        //        if (User.IsInRole("ROLE_EMPLOYER"))
+        //        {
+        //            question.CompanyId = (await _service.GetCompanyAsync(User)).Id;
+        //        }
+        //        else
+        //        {
+        //            ViewData["CompanyId"] = new SelectList(await _service.GetCompaniesAsync(), "Id", "Name");
+        //        }
+        //        return View(question);
+        //    }
+        //    catch (InternalServerException)
+        //    {
+        //        return Problem("Entity set 'ApplicationDbContext.Question' is null.");
+        //    }
+        //}
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateYesOrNoQuestion([Bind("Id,CompanyId,Type,QuestionText,MultipleOptions,ExplanationType,OptionsAmount")] Question question)
-        {
-            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
-            {
-                return Unauthorized("Unauthorized");
-            }
-            ModelState.Remove("Company");
-            try
-            {
-                if (question.CompanyId != null)
-                {
-                    ViewData["ErrorMessage"] = null;
-                    if (ModelState.IsValid)
-                    {
-                        question = await _service.CreateYesOrNoQuestionAsync(question);
-                        return RedirectToAction(nameof(Details), new { question.Id });
-                    }
-                } else
-                {
-                        ViewData["ErrorMessage"] = "Je moet een bedrijf selecteren.";
-                }
-                var textOptions = await _service.GetYesOrNoTextOptionsAsync();
-                ViewData["textOptions"] = new SelectList(textOptions);
-                if (User.IsInRole("ROLE_ADMIN"))
-                {
-                    ViewData["CompanyId"] = new SelectList(await _service.GetCompaniesAsync(), "Id", "Name");
-                }
-                return View(question);
-            }
-            catch (InternalServerException)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Question' is null.");
-            }
-        }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> CreateYesOrNoQuestion([Bind("Id,CompanyId,Type,QuestionText,MultipleOptions,ExplanationType,OptionsAmount")] Question question)
+        //{
+        //    if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+        //    {
+        //        return Unauthorized("Unauthorized");
+        //    }
+        //    ModelState.Remove("Company");
+        //    try
+        //    {
+        //        if (question.CompanyId != null)
+        //        {
+        //            ViewData["ErrorMessage"] = null;
+        //            if (ModelState.IsValid)
+        //            {
+        //                question = await _service.CreateYesOrNoQuestionAsync(question);
+        //                return RedirectToAction(nameof(Details), new { question.Id });
+        //            }
+        //        } else
+        //        {
+        //                ViewData["ErrorMessage"] = "Je moet een bedrijf selecteren.";
+        //        }
+        //        var textOptions = await _service.GetYesOrNoTextOptionsAsync();
+        //        ViewData["textOptions"] = new SelectList(textOptions);
+        //        if (User.IsInRole("ROLE_ADMIN"))
+        //        {
+        //            ViewData["CompanyId"] = new SelectList(await _service.GetCompaniesAsync(), "Id", "Name");
+        //        }
+        //        return View(question);
+        //    }
+        //    catch (InternalServerException)
+        //    {
+        //        return Problem("Entity set 'ApplicationDbContext.Question' is null.");
+        //    }
+        //}
 
         public async Task<IActionResult> CreateOptions(int id) // question id
         {
@@ -287,11 +289,11 @@ namespace VAC_T.Controllers
                     return NotFound("The question does not exist or the question does not belong to your company.");
                 }
                 ViewData["textOptions"] = new SelectList(await _service.GetYesOrNoTextOptionsAsync());
-                ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt" });
+                ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt", "Ja/Nee" });
                 if (User.IsInRole("ROLE_ADMIN"))
                 {
                     ViewData["CompanyId"] = new SelectList(await _service.GetCompaniesAsync(), "Id", "Name");
-                    ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt", "Ja/Nee" });
+                    //ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt", "Ja/Nee" });
                 }
                 ViewData["ExplanationType"] = new SelectList(new List<string>() { "Nooit zichtbaar", "Altijd zichtbaar", "Laatste optie" });
                 return View(question);
@@ -325,7 +327,7 @@ namespace VAC_T.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    if (!await _service.DoesQuestionExistsAsync(id))
+                    if (!await _service.DoesQuestionExistAsync(id))
                     {
                         return NotFound();
                     }
@@ -333,11 +335,11 @@ namespace VAC_T.Controllers
                     return RedirectToAction(nameof(Details), new { id });
                 }
                 ViewData["textOptions"] = new SelectList(await _service.GetYesOrNoTextOptionsAsync());
-                ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt" });
+                ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt", "Ja/Nee" });
                 if (User.IsInRole("ROLE_ADMIN"))
                 {
                     ViewData["CompanyId"] = new SelectList(await _service.GetCompaniesAsync(), "Id", "Name");
-                    ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt", "Ja/Nee" });
+                    //ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt", "Ja/Nee" });
                 }
                 ViewData["ExplanationType"] = new SelectList(new List<string>() { "Nooit zichtbaar", "Altijd zichtbaar", "Laatste optie" });
                 return View(question);
@@ -386,7 +388,7 @@ namespace VAC_T.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    if (!await _service.DoesQuestionOptionExistsAsync(id))
+                    if (!await _service.DoesQuestionOptionExistAsync(id))
                     {
                         return NotFound();
                     }

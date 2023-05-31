@@ -27,6 +27,15 @@ namespace VAC_T.ApiControllers
         }
 
         // Get: api/UserDetails
+        /// <summary>
+        /// Gets all users
+        /// </summary>
+        /// <param name="searchEmail">(optional)filter on the email of the users</param>
+        /// <param name="searchName">(optional)filter on the name of the users</param>
+        /// <returns>A list of users</returns>
+        /// <remarks>
+        /// Only an admin is allowed to do this.
+        /// </remarks>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDetailsDTO>>> GetAllUsersAsync([FromQuery] string? searchEmail, [FromQuery] string? searchName)
         {
@@ -49,6 +58,11 @@ namespace VAC_T.ApiControllers
         }
 
         // Get: api/UserDetails/(Users id)
+        /// <summary>
+        /// Get a user by id
+        /// </summary>
+        /// <param name="id">The id of the user</param>
+        /// <returns>A user</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult> GetUserDetailsByIdAsync(string id)
         {
@@ -77,6 +91,14 @@ namespace VAC_T.ApiControllers
 
 
         // Delete: api/UserDetails/(Users id)
+        /// <summary>
+        /// Delete a user by id
+        /// </summary>
+        /// <param name="id">The id of the user</param>
+        /// <returns>Ok</returns>
+        /// <remarks>
+        /// Only an admin is allowed to do this.
+        /// </remarks>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteUserAsync(string id)
         {

@@ -70,6 +70,11 @@ namespace VAC_T.Data
                 .WithMany(ra => ra.Appointments)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            modelBuilder.Entity<Question>()
+                .HasOne(q => q.Company)
+                .WithMany(c => c.Questions)
+                .OnDelete(DeleteBehavior.NoAction);
+
             //modelBuilder.Entity<Appointment>()
             //    .HasOne(a => a.Solicitation)
             //    .WithOne(s => s.Appointment)

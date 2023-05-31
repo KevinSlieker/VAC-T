@@ -25,6 +25,13 @@ namespace VAC_T.ApiControllers
             _service = service;
         }
 
+        /// <summary>
+        /// Get the info to create an highchart for the logged in candidate.
+        /// </summary>
+        /// <returns>the info for the highchart</returns>
+        /// <remarks>
+        /// This data would be processed in the view.
+        /// </remarks>
         [HttpGet("Candidate")]
         public async Task<ActionResult<DashBoardCandidateDTO>> GetDashBoardCandidateData()
         {
@@ -54,6 +61,13 @@ namespace VAC_T.ApiControllers
             }
         }
 
+        /// <summary>
+        /// Get the info to create an highchart for the logged in employer.
+        /// </summary>
+        /// <returns>the info for the highchart</returns>
+        /// <remarks>
+        /// This data would be processed in the view.
+        /// </remarks>
         [HttpGet("Company")]
         public async Task<ActionResult<DashBoardCompanyDTO>> GetDashBoardCompanyData()
         {
@@ -119,6 +133,13 @@ namespace VAC_T.ApiControllers
             }
         }
 
+        /// <summary>
+        /// Get the info to create an highchart for the logged in admin.
+        /// </summary>
+        /// <returns>the info for the highchart</returns>
+        /// <remarks>
+        /// This data would be processed in the view.
+        /// </remarks>
         [HttpGet("Admin")]
         public async Task<ActionResult<DashBoardAdminDTO>> GetDashBoardAdminData()
         {

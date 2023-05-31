@@ -177,7 +177,7 @@ namespace VAC_T.Business
                 throw new InternalServerException("Database not found");
             }
             var user = await _userManager.GetUserAsync(User);
-            return await _context.JobOffer.AnyAsync(j => j.Questions.Count() == j.Answers.Where(a => a.UserId == user.Id).Count());
+            return await _context.JobOffer.Where(j => j.Id == id).AnyAsync(j => j.Questions.Count() == j.Answers.Where(a => a.UserId == user.Id).Count());
         }
     }
 }

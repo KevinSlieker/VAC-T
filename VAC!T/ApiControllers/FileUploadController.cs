@@ -26,6 +26,15 @@ namespace VAC_T.ApiControllers
         }
 
         // PUT: api/FileUpload/ProfilePicture/(user Id)
+        /// <summary>
+        /// Upload/Update a profilepicture.
+        /// </summary>
+        /// <param name="id">The id of the user</param>
+        /// <param name="FormFile">The profilepicture</param>
+        /// <returns>Ok</returns>
+        /// <remarks>
+        /// You select/upload the profilepicture in the body for the key: FormFile.
+        /// </remarks>
         [HttpPut("ProfilePicture/{id}")]
         public async Task<IActionResult> PutProfilePictureAsync(string id, IFormFile FormFile)
         {
@@ -55,6 +64,15 @@ namespace VAC_T.ApiControllers
         }
 
         // PUT: api/FileUpload/CV/(user Id)
+        /// <summary>
+        /// Upload/Update a CV for the user matching the userId
+        /// </summary>
+        /// <param name="id">The id of the user</param>
+        /// <param name="FormFile">The CV</param>
+        /// <returns>Ok</returns>
+        /// <remarks>
+        /// You select/upload the CV in the body for the key: FormFile. The CV needs to be a Pdf file.
+        /// </remarks>
         [HttpPut("CV/{id}")]
         public async Task<IActionResult> PutCVAsync(string id, IFormFile FormFile)
         {
@@ -88,6 +106,15 @@ namespace VAC_T.ApiControllers
         }
 
         // POST: api/FileUpload/JobOfferLogoURL
+        /// <summary>
+        /// Upload a jobOfferLogo for a programming language
+        /// </summary>
+        /// <param name="LanguageName">The programming language name</param>
+        /// <param name="FormFile">The picture</param>
+        /// <returns>Ok</returns>
+        /// <remarks>
+        /// You select/upload the picture in the body for the key: FormFile.
+        /// </remarks>
         [HttpPost("JobOfferLogoURL/{LanguageName}")]
         public async Task<IActionResult> PostJobOfferLogoURLAsync(string LanguageName, IFormFile FormFile)
         {
@@ -112,6 +139,15 @@ namespace VAC_T.ApiControllers
         }
 
         // PUT: api/FileUpload/CompanyLogo/5
+        /// <summary>
+        /// Upload/Update a company logo.
+        /// </summary>
+        /// <param name="id">The id of the company</param>
+        /// <param name="FormFile">The company logo</param>
+        /// <returns>Ok</returns>
+        /// <remarks>
+        /// You select/upload the company logo in the body for the key: FormFile.
+        /// </remarks>
         [HttpPut("CompanyLogo/{id}")]
         public async Task<IActionResult> PutCompanyLogoAsync(int id, IFormFile FormFile)
         {

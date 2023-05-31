@@ -23,6 +23,11 @@ namespace VAC_T.ApiControllers
         }
 
         // GET: api/Companies
+        /// <summary>
+        /// Get a list of companies (optional) that match a search string
+        /// </summary>
+        /// <param name="searchName">(optional) string to match the name of the companies to </param>
+        /// <returns>a list of entries or null </returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CompanyDTO>>> GetAllCompaniesAsync([FromQuery] string? searchName)
         {
@@ -39,6 +44,11 @@ namespace VAC_T.ApiControllers
         }
 
         // GET: api/Companies/5
+        /// <summary>
+        /// Get a company by id.
+        /// </summary>
+        /// <param name="id">The id of the company to find</param>
+        /// <returns>a company</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<CompanyDTO>> GetCompanyByIdAsync(int id)
         {
@@ -60,6 +70,29 @@ namespace VAC_T.ApiControllers
         }
 
         // POST: api/Companies
+        /// <summary>
+        /// Create a company and an user for that company
+        /// </summary>
+        /// <param name="company">the details of the company to create</param>
+        /// <returns>the created company</returns>
+        /// <remarks>
+        /// The LogoURL needs to be put as default. You can change this/upload your own logo later.
+        /// 
+        /// 
+        /// Sample request:
+        /// 
+        ///     POST /api/Companies
+        ///     {
+        ///         "name": "Test Api2",
+        ///         "description": "Test",
+        ///         "logoURL": "assets\\img\\company\\default.png",
+        ///         "websiteURL": "http://test.nl",
+        ///         "address": "TEST",
+        ///         "postcode": "1234TE",
+        ///         "residence": "Test"
+        ///     }
+        ///     
+        /// </remarks>
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> PostAsync([FromBody] CompanyDTO company)
@@ -85,7 +118,31 @@ namespace VAC_T.ApiControllers
         }
 
         // Put: api/Companies/5
-
+        /// <summary>
+        /// Update a company of the given id
+        /// </summary>
+        /// <param name="id">The id of the company to update</param>
+        /// <param name="company">the details of the company to update</param>
+        /// <returns>No content</returns>
+        /// <remarks>
+        /// The LogoURL needs to be put the same. You can change this/upload your own logo later.
+        /// 
+        /// 
+        /// Sample request:
+        /// 
+        ///     PUT /api/Companies/5
+        ///     {
+        ///         "id": 5,
+        ///         "name": "Test Api Update",
+        ///         "description": "Test Update",
+        ///         "logoURL": "assets\\img\\company\\default.png",
+        ///         "websiteURL": "http://test.nl",
+        ///         "address": "TEST",
+        ///         "postcode": "1234TE",
+        ///         "residence": "Test"
+        ///     }
+        ///     
+        /// </remarks>
         [HttpPut("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> PutAsync(int id, [FromBody] CompanyDTOForUpdate company)
@@ -120,6 +177,14 @@ namespace VAC_T.ApiControllers
 
 
         // Delete: api/Companies/5
+        /// <summary>
+        /// Delete a company and connected user by the given id.
+        /// </summary>
+        /// <param name="id">the id of the company to delete</param>
+        /// <returns>Ok</returns>
+        /// <remarks>
+        /// When deleting a company all other data connected to the company will also be deleted. This includes the employer of the company.
+        /// </remarks>
         [HttpDelete("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> DeleteCompanyAsync(int id)

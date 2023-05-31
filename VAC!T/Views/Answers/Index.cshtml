@@ -10,9 +10,11 @@
 {
     <div>
         <form class="row align-items-center" asp-action="Create" method="get">
-            <div class="form-group">
+            <div class="form-group col-4">
                 <label class="control-label">Vacature</label>
-                <select name="id" class="form-select" asp-items="ViewBag.JobOffers"></select>
+                <select name="id" class="form-select" asp-items="ViewBag.JobOffers">
+                    <option disabled selected>Kies een vacature</option>
+                </select>
                 <input type="submit" value="Antwoorden maken" class="btn btn-primary" />
             </div>
         </form>

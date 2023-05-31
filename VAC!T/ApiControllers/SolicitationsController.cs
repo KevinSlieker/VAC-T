@@ -23,6 +23,18 @@ namespace VAC_T.ApiControllers
         }
 
         // GET: api/Solicitations
+        /// <summary>
+        /// Gets all solicitations
+        /// </summary>
+        /// <param name="searchJobOffer">(optional)filter for jobOffer name</param>
+        /// <param name="searchCompany">(optional)filter for company name</param>
+        /// <param name="searchCandidate">(optional)filter for candidate name</param>
+        /// <param name="searchSelectedYes">(optional)filter for if the candidate is selected</param>
+        /// <param name="searchSelectedNo">(optional)filter for if the candidate is NOT selected</param>
+        /// <returns>A list of solicitations</returns>
+        /// <remarks>
+        /// Depending on the roles of the logged in user. A different selection of solicitations are returned.
+        /// </remarks>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SolicitationDTOComplete>>> GetAllSolicitationsAsync([FromQuery] string? searchJobOffer,
             [FromQuery] string? searchCompany, [FromQuery] string? searchCandidate, [FromQuery] bool? searchSelectedYes, [FromQuery] bool? searchSelectedNo)
@@ -41,6 +53,16 @@ namespace VAC_T.ApiControllers
         }
 
         // Post: api/Solicitations/4
+        /// <summary>
+        /// Create a solicitation / solicitate
+        /// </summary>
+        /// <param name="jobOfferId">The id of the jobOffer the solicitation is about</param>
+        /// <returns>The created solicitation</returns>
+        /// <remarks>
+        /// Only candidates are allowed to solicitate.
+        /// 
+        /// To solicitate the user needs to have answered the questions.
+        /// </remarks>
         [HttpPost("{jobOfferId}")]
         public async Task<ActionResult> PostSolicitateAsync(int jobOfferId)
         {
@@ -56,7 +78,7 @@ namespace VAC_T.ApiControllers
                 }
                 if (!await _service.AreQuestionsAnsweredAsync(jobOfferId, User))
                 {
-                    return Problem("You have not answered the interviewQuestions for this jobOffer.");
+                    return BadRequest("You have not answered all/any interviewQuestions for this jobOffer.");
                 }
                 var solicitation = await _service.CreateSolicitationAsync(jobOfferId, User);
                 if (solicitation == null)
@@ -73,6 +95,14 @@ namespace VAC_T.ApiControllers
         }
 
         // Delete: api/Solicitations/5
+        /// <summary>
+        /// Deletes a solicitation
+        /// </summary>
+        /// <param name="jobOfferId">The id of the jobOffer the solicitation belongs to</param>
+        /// <returns>A list of solicitations</returns>
+        /// <remarks>
+        /// Only candidates themself can delete their solicitation. Employers and admins can only decide to not select them.
+        /// </remarks>
         [HttpDelete("{jobOfferId}")]
         public async Task<ActionResult> DeleteSolicitateAsync(int jobOfferId)
         {
@@ -101,6 +131,14 @@ namespace VAC_T.ApiControllers
 
 
         // Put: api/Solicitations/4
+        /// <summary>
+        /// Updates the value for selected for a solicitation
+        /// </summary>
+        /// <param name="id">The id of the solicitation to be updated for select</param>
+        /// <returns>Ok</returns>
+        /// <remarks>
+        /// Changes the value of selected from false to true or true to false.
+        /// </remarks>
         [HttpPut("{id}")]
         public async Task<ActionResult> PutSolicitationSelectAsync(int id)
         {

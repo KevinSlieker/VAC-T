@@ -25,6 +25,13 @@ namespace VAC_T.ApiControllers
         }
 
         // GET: api/JobOffers
+        /// <summary>
+        /// Gets all jobOffers the logged in user is allowed to view.
+        /// </summary>
+        /// <returns>All jobOffers available</returns>
+        /// <remarks>
+        /// Employers can only see jobOffers that are connected to their company.
+        /// </remarks>
         [HttpGet]
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<JobOfferDTO>>> GetAllJobOffersAsync()
@@ -42,6 +49,14 @@ namespace VAC_T.ApiControllers
         }
 
         // GET: api/JobOffers/5
+        /// <summary>
+        /// Get a jobOffer by id.
+        /// </summary>
+        /// <param name="id">The id of the jobOffer to find</param>
+        /// <returns>The jobOffer</returns>
+        /// <remarks>
+        /// Candidates and admins will also get the solicitation and answers returned if they exist.
+        /// </remarks>
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<ActionResult<JobOfferDTO>> GetJobOfferByIdAsync(int id)
@@ -64,9 +79,28 @@ namespace VAC_T.ApiControllers
         }
 
         // POST: api/JobOffers
-
+        /// <summary>
+        /// Create a jobOffer
+        /// </summary>
+        /// <param name="jobOffer">The information of the jobOffer to be created</param>
+        /// <returns>The created jobOffer</returns>
+        /// <remarks>
+        /// The jobOffer will belong to the company the logged in user belongs to. Only Employers can create jobOffers.
+        /// 
+        /// 
+        /// Sample request:
+        /// 
+        ///     POST /api/JobOffer
+        ///     {
+        ///         "name": "Test Api",
+        ///         "description": "TESTEN1233456458",
+        ///         "logoURL": "assets/img/job_offer/csharp.png",
+        ///         "level": "Test",
+        ///         "residence": "Sittard"
+        ///     }
+        /// </remarks>
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] JobOfferDTOForCreateTemp jobOffer) // JobOfferDTOForUpdateAndCreate
+        public async Task<ActionResult> PostAsync([FromBody] JobOfferDTOForUpdateAndCreate jobOffer)
         {
             if (!User.IsInRole("ROLE_EMPLOYER"))
             {
@@ -87,6 +121,26 @@ namespace VAC_T.ApiControllers
 
 
         // Put: api/JobOffers/5
+        /// <summary>
+        /// Update a jobOffer
+        /// </summary>
+        /// <param name="id">Id of the jobOffer to be updated</param>
+        /// <param name="jobOffer">The information of the jobOffer to be updated</param>
+        /// <returns>No content</returns>
+        /// <remarks>
+        /// 
+        /// Sample request:
+        /// 
+        ///     PUT /api/JobOffer/5
+        ///     {
+        ///         "id": 5,
+        ///         "name": "Test Api",
+        ///         "description": "TESTEN1233456458",
+        ///         "logoURL": "assets/img/job_offer/csharp.png",
+        ///         "level": "Test",
+        ///         "residence": "Sittard"
+        ///     }
+        /// </remarks>
         [HttpPut("{id}")]
         public async Task<ActionResult> PutAsync(int id, [FromBody] JobOfferDTOForUpdateAndCreate jobOffer)
         {
@@ -119,6 +173,11 @@ namespace VAC_T.ApiControllers
         }
 
         // Delete: api/JobOffers/5
+        /// <summary>
+        /// Deletes a jobOffer by id
+        /// </summary>
+        /// <param name="id">The id of the jobOffer to be deleted</param>
+        /// <returns>Ok</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteJobOfferAsync(int id)
         {
@@ -142,7 +201,16 @@ namespace VAC_T.ApiControllers
             }
         }
 
-        [HttpPut("status/{id}")]
+        // PUT: api/JobOffers/status/
+        /// <summary>
+        /// Changes the status of a jobOffer
+        /// </summary>
+        /// <param name="id">The id of the jobOffer</param>
+        /// <returns>Ok</returns>
+        /// <remarks>
+        /// The value for closed will be become null if there is already a date there or it becomes the current date if closed was null.
+        /// </remarks>
+        [HttpPut("Status/{id}")]
         public async Task<ActionResult> PutStatusAsync(int id)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
@@ -160,7 +228,43 @@ namespace VAC_T.ApiControllers
             }
         }
 
-        [HttpGet("questions/{id}")]
+        // GET: api/JobOffers/Questions
+        /// <summary>
+        /// Get all JobOffers that have questions
+        /// </summary>
+        /// <returns>All JobOffers that have questions</returns>
+        /// <remarks>
+        /// The information over the jobOffers is small. The questions are not included. This is a list of jobOffers that have set their questions.
+        /// </remarks>
+        [HttpGet("Questions")]
+        public async Task<ActionResult> GetAllJobOfferWQuestionsAsync()
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
+            try
+            {
+                var jobOffer = await _service.GetAllJobOfferWQuestionsAsync(User);
+                var result = _mapper.Map<List<JobOfferDTOSmall>>(jobOffer);
+                return Ok(result);
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Database not connected");
+            }
+        }
+
+        // GET: api/JobOffers/Questions/5
+        /// <summary>
+        /// Get a JobOffer with the questions
+        /// </summary>
+        /// <param name="id">The id of the jobOffer</param>
+        /// <returns>Ok</returns>
+        /// <remarks>
+        /// The options for the questions are not included.
+        /// </remarks>
+        [HttpGet("Questions/{id}")]
         public async Task<ActionResult> GetJobOfferWQuestionsAsync(int id)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
@@ -179,8 +283,31 @@ namespace VAC_T.ApiControllers
             }
         }
 
-        [HttpPut("questions/{id}")]
-        public async Task<IActionResult> SelectQuestionsForJobOfferAsync(int id, [FromBody] JobOfferDTOSelectQuestions selectedQuestions)
+
+        // PUT: api/JobOffers/Questions/18
+        /// <summary>
+        /// Selects what questions are linked to the jobOffer.
+        /// </summary>
+        /// <param name="id">The id of the jobOffer</param>
+        /// <param name="selectedQuestions">The ids of the selected questions</param>
+        /// <returns>The jobOffer with questions</returns>
+        /// <remarks>
+        /// The options for the questions are not included.
+        /// 
+        /// 
+        /// QuestionIds: this is an array of the ids of the to be selected questions.
+        /// 
+        /// 
+        /// Sample request:
+        /// 
+        ///     PUT /api/Questions/18
+        ///     {
+        ///         "id": 18,
+        ///         "questionIds": [6,1]
+        ///     }
+        /// </remarks>
+        [HttpPut("Questions/{id}")]
+        public async Task<IActionResult> PutQuestionsForJobOfferAsync(int id, [FromBody] JobOfferDTOSelectQuestions selectedQuestions)
         {
             if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER")))
             {
@@ -197,7 +324,7 @@ namespace VAC_T.ApiControllers
                 {
                     return NotFound($"No jobOffer with id: {id} in the database");
                 }
-                await _service.SelectJobOfferQuestionsAsync(id, selectedQuestions.Questions.Select(q => q.Id).ToArray());
+                await _service.SelectJobOfferQuestionsAsync(id, selectedQuestions.QuestionIds);
 
                 var jobOfferEntity = await _service.GetJobOfferWQuestionsAsync(id);
                 var result = _mapper.Map<JobOfferDTOWQuestions>(jobOfferEntity);

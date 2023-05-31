@@ -18,7 +18,7 @@
                 <div class="form-group">
                     <label asp-for="CompanyId" class="control-label"></label>
                     <select asp-for="CompanyId" class ="form-control" asp-items="ViewBag.CompanyId">
-                        <option value="@null" selected> Kies een bedrijf (Ja/Nee vraag uitgezonderd)</option>
+                        <option disabled selected> Kies een bedrijf</option>
                     </select>
                     @if (ViewData["ErrorMessage"] != null)
                     {
@@ -66,12 +66,12 @@
             </div>
         </form>
     </div>
-    <div>
+@*    <div>
     <br />
         <a class="text-decoration-none" asp-action="CreateYesOrNoQuestion">
             <input type="button" value="Maak een Ja/Nee Vraag" class="btn btn-primary" />
         </a>
-    </div>
+    </div>*@
 </div>
 
 <div>

@@ -33,6 +33,14 @@ namespace VAC_T.ApiControllers
             _configuration = configuration;
         }
 
+        // POST: api/Authenticate/login
+        /// <summary>
+        /// Logs in an user.
+        /// </summary>
+        /// <returns>A token for the logged in user that is needed for the api.</returns>
+        /// <remarks>
+        /// Tokens can expire.
+        /// </remarks>
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> LoginAsync([FromBody] LoginModel.InputModel model)
@@ -48,6 +56,11 @@ namespace VAC_T.ApiControllers
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
+
+                //if (userRoles.Contains("ROLE_EMPLOYER"))
+                //{
+                //    authClaims.Add(new Claim("CompanyId", user.Company!.Id.ToString()));
+                //}
 
                 foreach (var userRole in userRoles)
                 {

@@ -17,6 +17,7 @@ namespace VAC_T.Data.DTO
         public DateTime Created { get; set; } = DateTime.Now;
         public DateTime? Closed { get; set; }
         public ICollection<SolicitationDTOSmall>? Solicitations { get; set; }
-
+        public ICollection<QuestionDTOSmall>? Questions { get; set; }
+        public ICollection<AnswerDTOSmall>? Answers { get; set; }
     }
 }

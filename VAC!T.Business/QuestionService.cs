@@ -107,8 +107,8 @@ namespace VAC_T.Business
             }
             if (question.Type == "Ja/Nee")
             {
-                question.CompanyId = null;
-                question.Company = null;
+                //question.CompanyId = null;
+                //question.Company = null;
                 var options = new List<QuestionOption>
                 {
                     new QuestionOption() { QuestionId = question.Id, Question = question, OptionLong = "Ja" },
@@ -126,26 +126,26 @@ namespace VAC_T.Business
             return question;
         }
 
-        public async Task<Question> CreateYesOrNoQuestionAsync(Question question)
-        {
-            if (_context.Question == null)
-            {
-                throw new InternalServerException("Database not found");
-            }
-            if (question.CompanyId != null)
-            {
-                question.Company = await _context.Company.FirstOrDefaultAsync(q => q.Id == question.CompanyId);
-            }
-            var options = new List<QuestionOption>
-                {
-                    new QuestionOption() { QuestionId = question.Id, Question = question, OptionLong = "Ja" },
-                    new QuestionOption() { QuestionId = question.Id, Question = question, OptionLong = "Nee" }
-                };
-            _context.QuestionOption.AddRange(options);
-            _context.Question.Add(question);
-            await _context.SaveChangesAsync();
-            return question;
-        }
+        //public async Task<Question> CreateYesOrNoQuestionAsync(Question question)
+        //{
+        //    if (_context.Question == null)
+        //    {
+        //        throw new InternalServerException("Database not found");
+        //    }
+        //    if (question.CompanyId != null)
+        //    {
+        //        question.Company = await _context.Company.FirstOrDefaultAsync(q => q.Id == question.CompanyId);
+        //    }
+        //    var options = new List<QuestionOption>
+        //        {
+        //            new QuestionOption() { QuestionId = question.Id, Question = question, OptionLong = "Ja" },
+        //            new QuestionOption() { QuestionId = question.Id, Question = question, OptionLong = "Nee" }
+        //        };
+        //    _context.QuestionOption.AddRange(options);
+        //    _context.Question.Add(question);
+        //    await _context.SaveChangesAsync();
+        //    return question;
+        //}
 
         public async Task<List<QuestionOption>> CreateQuestionOptionsAsync(List<QuestionOption> questionOptions)
         {
@@ -163,11 +163,25 @@ namespace VAC_T.Business
             return questionOptions;
         }
 
-        public async Task<bool> DoesQuestionExistsAsync(int id)
+        public async Task<bool> DoesQuestionExistAsync(int id)
         {
             if (_context.Question == null)
             {
                 throw new InternalServerException("Database not found");
+            }
+            return await _context.Question.AnyAsync(c => c.Id == id);
+        }
+
+        public async Task<bool> DoesQuestionExistAsync(int id, ClaimsPrincipal User)
+        {
+            if (_context.Question == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            if (User.IsInRole("ROLE_EMPLOYER"))
+            {
+                var company = await GetCompanyAsync(User);
+                return await _context.Question.Where(q => q.CompanyId == company.Id).AnyAsync(c => c.Id == id);
             }
             return await _context.Question.AnyAsync(c => c.Id == id);
         }
@@ -190,7 +204,7 @@ namespace VAC_T.Business
             return result;
         }
 
-        public async Task<bool> DoesQuestionOptionExistsAsync(int id)
+        public async Task<bool> DoesQuestionOptionExistAsync(int id)
         {
             if (_context.QuestionOption == null)
             {
@@ -198,6 +212,21 @@ namespace VAC_T.Business
             }
             return await _context.QuestionOption.AnyAsync(q => q.Id == id);
         }
+
+        public async Task<bool> DoesQuestionOptionExistAsync(int id, ClaimsPrincipal User)
+        {
+            if (_context.QuestionOption == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            if (User.IsInRole("ROLE_EMPLOYER"))
+            {
+                var company = await GetCompanyAsync(User);
+                return await _context.QuestionOption.Where(q => q.Question.CompanyId == company.Id).AnyAsync(c => c.Id == id);
+            }
+            return await _context.QuestionOption.AnyAsync(c => c.Id == id);
+        }
+
         public async Task UpdateQuestionAsync(Question question)
         {
             if (_context.Question == null)
@@ -210,7 +239,7 @@ namespace VAC_T.Business
             {
                 if (oldType != question.Type)
                 {
-                    if (oldType == "Meerkeuze" || oldType == "Standpunt")
+                    if (oldType == "Meerkeuze" || oldType == "Standpunt" || oldType == "Ja/Nee")
                     {
                         var oldOptions = await _context.QuestionOption.Where(q => q.QuestionId == question.Id).ToListAsync();
                         _context.QuestionOption.RemoveRange(oldOptions);
@@ -221,6 +250,15 @@ namespace VAC_T.Business
             {
                 question.MultipleOptions = false;
                 question.ExplanationType = string.Empty;
+            }
+            if (question.Type == "Ja/Nee")
+            {
+                var options = new List<QuestionOption>
+                {
+                    new QuestionOption() { QuestionId = question.Id, Question = question, OptionLong = "Ja" },
+                    new QuestionOption() { QuestionId = question.Id, Question = question, OptionLong = "Nee" }
+                };
+                _context.QuestionOption.AddRange(options);
             }
             _context.Question.Update(question);
             await _context.SaveChangesAsync();

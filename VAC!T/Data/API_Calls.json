@@ -196,7 +196,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Test Api\",\r\n    \"description\": \"TESTEN1233456458\",\r\n    \"logoURL\": \"assets/img/job_offer/csharp.png\",\r\n    \"companyId\": 7,\r\n    \"level\": \"Test\",\r\n    \"residence\": \"Sittard\"\r\n}",
+							"raw": "{\r\n    \"name\": \"Test Api now\",\r\n    \"description\": \"TESTEN1233456458\",\r\n    \"logoURL\": \"assets/img/job_offer/csharp.png\",\r\n    \"level\": \"Test\",\r\n    \"residence\": \"Sittard\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -254,7 +254,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7220/api/JobOffers/31",
+							"raw": "https://localhost:7220/api/JobOffers/83",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -263,7 +263,7 @@
 							"path": [
 								"api",
 								"JobOffers",
-								"31"
+								"83"
 							]
 						}
 					},
@@ -274,17 +274,8 @@
 					"request": {
 						"method": "PUT",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"id\": 31,\r\n    \"name\": \"Test Api Update\",\r\n    \"description\": \"TESTEN1233456458\",\r\n    \"logoURL\": \"assets/img/job_offer/csharp.png\",\r\n    \"level\": \"Test\",\r\n    \"residence\": \"Sittard\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "https://localhost:7220/api/JobOffers/status/17",
+							"raw": "https://localhost:7220/api/JobOffers/Status/17",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -293,8 +284,106 @@
 							"path": [
 								"api",
 								"JobOffers",
-								"status",
+								"Status",
 								"17"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all JobOffer that have Questions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/JobOffers/Questions",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"JobOffers",
+								"Questions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get JobOffer With Questions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/JobOffers/Questions/17",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"JobOffers",
+								"Questions",
+								"17"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Select questions",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 18,\r\n    \"questionIds\": [6,1]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/JobOffers/Questions/18",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"JobOffers",
+								"Questions",
+								"18"
 							]
 						}
 					},
@@ -647,7 +736,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n        \"id\": \"19\",\r\n        \"date\": \"2023-03-28T00:00:00\",\r\n        \"time\": \"2023-03-22T00:00:00\",\r\n        \"duration\": \"00:30:00\",\r\n        \"isOnline\": true,\r\n        \"jobOfferId\": null\r\n    }",
+							"raw": "{\r\n        \"id\": 17,\r\n        \"date\": \"2023-03-28T00:00:00\",\r\n        \"time\": \"2023-03-22T00:00:00\",\r\n        \"duration\": \"00:30:00\",\r\n        \"isOnline\": true,\r\n        \"jobOfferId\": null\r\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -655,7 +744,7 @@
 							}
 						},
 						"url": {
-							"raw": "https://localhost:7220/api/Appointments/19",
+							"raw": "https://localhost:7220/api/Appointments/17",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -664,7 +753,7 @@
 							"path": [
 								"api",
 								"Appointments",
-								"19"
+								"17"
 							]
 						}
 					},
@@ -677,7 +766,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n        \"id\": \"11\",\r\n        \"repeats\": 2,\r\n        \"repeatsday\": null,\r\n        \"ismonday\": true,\r\n        \"istuesday\": false,\r\n        \"iswednesday\": false,\r\n        \"isthursday\": false,\r\n        \"isfriday\": true,\r\n        \"isfirst\": false,\r\n        \"issecond\": false,\r\n        \"isthird\": false,\r\n        \"isfourth\": false,\r\n        \"islast\": false\r\n    }",
+							"raw": "{\r\n    \"id\": 11,\r\n    \"repeats\": 2,\r\n    \"repeatsday\": null,\r\n    \"ismonday\": true,\r\n    \"istuesday\": false,\r\n    \"iswednesday\": false,\r\n    \"isthursday\": false,\r\n    \"isfriday\": true,\r\n    \"isfirst\": false,\r\n    \"issecond\": false,\r\n    \"isthird\": false,\r\n    \"isfourth\": false,\r\n    \"islast\": false\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -709,7 +798,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n        \"id\": \"10\",\r\n        \"repeats\": 2,\r\n        \"time\": \"2023-03-22T21:00:00\",\r\n        \"duration\": \"00:30:00\",\r\n        \"isOnline\": true\r\n    }",
+							"raw": "{\r\n        \"id\": 10,\r\n        \"repeats\": 2,\r\n        \"time\": \"2023-03-22T21:00:00\",\r\n        \"duration\": \"00:30:00\",\r\n        \"isOnline\": true\r\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1006,6 +1095,368 @@
 			]
 		},
 		{
+			"name": "Questions",
+			"item": [
+				{
+					"name": "Get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Questions",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Questions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Questions/23",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Questions",
+								"23"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Question",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"Meerkeuze\",\r\n    \"questionText\": \"Wat is 1+1?\",\r\n    \"companyId\": 6,\r\n    \"multipleOptions\": false,\r\n    \"explanationType\": \"Laatste optie\",\r\n    \"optionsAmount\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/Questions",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Questions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Question",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 26,\r\n    \"type\": \"Meerkeuze\",\r\n    \"questionText\": \"Wat is 1+1+21?\",\r\n    \"companyId\": 7,\r\n    \"multipleOptions\": false,\r\n    \"explanationType\": \"Nooit zichtbaar\",\r\n    \"optionsAmount\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/Questions/26",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Questions",
+								"26"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Question Options",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n{\r\n       \"optionShort\": null,\r\n       \"optionLong\": \"Yes\"\r\n    },\r\n    {\r\n       \"optionShort\": \"No\",\r\n       \"optionLong\": \"The answer to the question is no.\"\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/Questions/28/Options",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Questions",
+								"28",
+								"Options"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Question Option",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 57,\r\n    \"optionShort\": \"No\",\r\n    \"optionLong\": \"The answer to the question is: NO.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/Questions/Options/57",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Questions",
+								"Options",
+								"57"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Question",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Questions/28",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Questions",
+								"28"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Question Option",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Questions/Options/52",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Questions",
+								"Options",
+								"52"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Answers",
+			"item": [
+				{
+					"name": "Get answers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Answers",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Answers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Answers for JobOffer for User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Answers/18/74d39ecc-0f5b-4c6e-aad5-f2eef94794ee",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Answers",
+								"18",
+								"74d39ecc-0f5b-4c6e-aad5-f2eef94794ee"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create answers",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"questionId\": 1,\r\n        \"multipleChoiceAnswers\": [\"3\", \"Anders\"],\r\n        \"answerText\": \"\",\r\n        \"explanation\": \"Testing of this works\"\r\n    },\r\n    {\r\n        \"questionId\": 6,\r\n        \"multipleChoiceAnswers\": [],\r\n        \"answerText\": \"Ja\",\r\n        \"explanation\": \"\"\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/Answers/18",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Answers",
+								"18"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update answer",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 70,\r\n    \"questionId\": 1,\r\n    \"multipleChoiceAnswers\": [\"2\", \"Anders\"],\r\n    \"answerText\": \"\",\r\n    \"explanation\": \"Testing of this works 2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7220/api/Answers/70",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Answers",
+								"70"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Answers for JobOffer for User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Answers/18/74d39ecc-0f5b-4c6e-aad5-f2eef94794ee",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Answers",
+								"18",
+								"74d39ecc-0f5b-4c6e-aad5-f2eef94794ee"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get CSV for JobOffer for User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7220/api/Answers/CSV/18/74d39ecc-0f5b-4c6e-aad5-f2eef94794ee",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7220",
+							"path": [
+								"api",
+								"Answers",
+								"CSV",
+								"18",
+								"74d39ecc-0f5b-4c6e-aad5-f2eef94794ee"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Login admin",
 			"request": {
 				"method": "POST",
@@ -1101,7 +1552,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW5AbWFpbC5ubCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiNzRkMzllY2MtMGY1Yi00YzZlLWFhZDUtZjJlZWY5NDc5NGVlIiwianRpIjoiNThlYTE5OTctN2NiMC00ZjI1LTgyMzYtNWQ5NzJlZjdlZTM3IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUk9MRV9BRE1JTiIsImV4cCI6MTY4Mjk0NzYzNSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIwIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIxIn0.4lej9YZB0qjZkjDr_bwIkopzhmUYKXP-ZgEW-ezGOkw",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRW1wbG95ZXJEU01AbWFpbC5ubCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiZDEyZWI1ZGMtZDA3MC00Y2JlLTg0YjEtYTA0N2YxNmQ4NmE1IiwianRpIjoiNDZkNmI2MDQtZmMxYy00M2FjLThhYTItODAzMDdmMTMzZWM0IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUk9MRV9FTVBMT1lFUiIsImV4cCI6MTY4NTUzNjk3MiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIwIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo3MjIxIn0.-zQjcMmEmLLBGun15LAmqjXS6abJCXNtI8Z9WlbpsQc",
 				"type": "string"
 			}
 		]

@@ -45,17 +45,23 @@ namespace VAC_T.Business
             //await _context.JobOffer.SelectMany(j => j.Answers).DistinctBy(a => a.User).ToListAsync();
         }
 
-        public async Task<Answer?> GetAnswerAsync(int id)
+        public async Task<Answer?> GetAnswerAsync(int id, ClaimsPrincipal User)
         {
             if (_context.Answer == null)
             {
                 throw new InternalServerException("Database not found");
             }
-            return await _context.Answer
+            var answer = from s in _context.Answer
                 .Include(a => a.JobOffer)
                 .Include(a => a.Question.Options)
                 .Include(a => a.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                         select s;
+            if (User.IsInRole("ROLE_CANDIDATE"))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                answer = answer.Where(a => a.User == user);
+            }
+            return await answer.FirstOrDefaultAsync(m => m.Id == id);
         }
 
         public async Task<Question?> GetQuestionAsync(int id)
@@ -87,23 +93,36 @@ namespace VAC_T.Business
             return (await _userManager.GetUserAsync(User))!;
         }
 
-        public async Task<IEnumerable<Answer>?> GetAnswersForJobOfferAsync(int id, ClaimsPrincipal User)
+        //public async Task<IEnumerable<Answer>?> GetAnswersForJobOfferAsync(int id, ClaimsPrincipal User)
+        //{
+        //    if (_context.Answer == null)
+        //    {
+        //        throw new InternalServerException("Database not found");
+        //    }
+        //    var user = await _userManager.GetUserAsync(User);
+        //    return await _context.Answer.Include(a => a.JobOffer).Include(a => a.Question.Options).Where(a => a.JobOfferId == id).Where(a => a.UserId == user.Id).ToListAsync();
+        //}
+
+        public async Task<IEnumerable<Answer>?> GetAnswersForJobOfferAsync(int id, string userId, ClaimsPrincipal User)
         {
             if (_context.Answer == null)
             {
                 throw new InternalServerException("Database not found");
             }
             var user = await _userManager.GetUserAsync(User);
-            return await _context.Answer.Include(a => a.JobOffer).Include(a => a.Question.Options).Where(a => a.JobOfferId == id).Where(a => a.UserId == user.Id).ToListAsync();
-        }
-
-        public async Task<IEnumerable<Answer>?> GetAnswersForJobOfferAsync(int id, string userId)
-        {
-            if (_context.Answer == null)
+            var answers = from s in _context.Answer.Include(a => a.JobOffer).Include(a => a.Question.Options).Include(a => a.User).Where(a => a.JobOfferId == id).Where(a => a.UserId == userId) select s;
+            if (User.IsInRole("ROLE_CANDIDATE"))
             {
-                throw new InternalServerException("Database not found");
+               if (user.Id != userId)
+                {
+                    return null;
+                }
             }
-            return await _context.Answer.Include(a => a.JobOffer).Include(a => a.Question.Options).Include(a => a.User).Where(a => a.JobOfferId == id).Where(a => a.UserId == userId).ToListAsync();
+            if (User.IsInRole("ROLE_EMPLOYER"))
+            {
+                answers = answers.Where(a => a.JobOffer.Company.User == user);
+            }
+            return await answers.ToListAsync();
         }
 
         public async Task<bool> DoAnswersExistAsync(int id, ClaimsPrincipal User) // jobOffer id
@@ -115,24 +134,40 @@ namespace VAC_T.Business
             var user = await _userManager.GetUserAsync(User);
             return await _context.Answer.Where(a => a.JobOfferId == id).Where(a => a.User == user).AnyAsync();
         }
-        public async Task<bool> DoesAnswerExistAsync(int id)
+
+        public async Task<bool> DoAnswersExistAsync(int id, string userId, ClaimsPrincipal User) // jobOffer id
         {
             if (_context.Answer == null)
             {
                 throw new InternalServerException("Database not found");
             }
-            return await _context.Answer.AnyAsync(a => a.Id == id);
+            var answers = from s in _context.Answer.Where(a => a.JobOfferId == id).Where(a => a.UserId == userId) select s;
+            if (User.IsInRole("ROLE_CANDIDATE"))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                answers = answers.Where(a => a.User == user);
+            }
+            return await answers.AnyAsync();
         }
 
-        public async Task<IEnumerable<Answer>?> GetUserAnswersForJobOfferAsync(int id, ClaimsPrincipal User) // jobOffer id
-        {
-            if (_context.Answer == null)
-            {
-                throw new InternalServerException("Database not found");
-            }
-            var user = await _userManager.GetUserAsync(User);
-            return await _context.Answer.Include(a => a.JobOffer).Include(a => a.Question).Where(a => a.JobOfferId == id).Where(a => a.User == user).ToListAsync();
-        }
+        //public async Task<bool> DoesAnswerExistAsync(int id)
+        //{
+        //    if (_context.Answer == null)
+        //    {
+        //        throw new InternalServerException("Database not found");
+        //    }
+        //    return await _context.Answer.AnyAsync(a => a.Id == id);
+        //}
+
+        //public async Task<IEnumerable<Answer>?> GetUserAnswersForJobOfferAsync(int id, ClaimsPrincipal User) // jobOffer id
+        //{
+        //    if (_context.Answer == null)
+        //    {
+        //        throw new InternalServerException("Database not found");
+        //    }
+        //    var user = await _userManager.GetUserAsync(User);
+        //    return await _context.Answer.Include(a => a.JobOffer).Include(a => a.Question).Where(a => a.JobOfferId == id).Where(a => a.User == user).ToListAsync();
+        //}
 
         public async Task<List<Answer>?> PrepareUserAnswersForCreateAsync(int id, ClaimsPrincipal User) // jobOffer id
         {
@@ -191,16 +226,16 @@ namespace VAC_T.Business
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAnswerAsync(int id)
-        {
-            if (_context.Answer == null)
-            {
-                throw new InternalServerException("Database not found");
-            }
-            var answer = await _context.Answer.FindAsync(id);
-            _context.Answer.Remove(answer);
-            await _context.SaveChangesAsync();
-        }
+        //public async Task DeleteAnswerAsync(int id)
+        //{
+        //    if (_context.Answer == null)
+        //    {
+        //        throw new InternalServerException("Database not found");
+        //    }
+        //    var answer = await _context.Answer.FindAsync(id);
+        //    _context.Answer.Remove(answer);
+        //    await _context.SaveChangesAsync();
+        //}
 
         public async Task DeleteUserAnswersForJobOfferAsync(int id, string userId) // jobOffer id
         {
@@ -352,7 +387,7 @@ namespace VAC_T.Business
                 using (var csv = new CsvWriter(sw, config))
                 {
                     csv.WriteField(answers.First().JobOffer.Name);
-                    csv.WriteField(DateTime.Today.ToString());
+                    csv.WriteField(DateTime.Today.ToShortDateString());
                     csv.WriteField(answers.First().User.Name);
                     await csv.NextRecordAsync();
                     await csv.WriteRecordsAsync(rptLines);

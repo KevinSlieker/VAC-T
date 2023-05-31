@@ -145,6 +145,20 @@ namespace VAC_T.Business
             await _context.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<JobOffer>?> GetAllJobOfferWQuestionsAsync(ClaimsPrincipal User)
+        {
+            if (_context.JobOffer == null)
+            {
+                throw new InternalServerException("Database not found");
+            }
+            if (User.IsInRole("ROLE_EMPLOYER"))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                return await _context.JobOffer.Include(j => j.Company).Where(j => j.Closed == null).Where(j => j.Questions.Count() >= 1).Where(j => j.Company.User.Id == user.Id).ToListAsync();
+            }
+            return await _context.JobOffer.Include(j => j.Company).Where(j => j.Closed == null).Where(j => j.Questions.Count() >= 1).ToListAsync();
+        }
+
         public async Task<JobOffer?> GetJobOfferWQuestionsAsync(int id)
         {
             if (_context.JobOffer == null)

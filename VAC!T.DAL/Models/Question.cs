@@ -13,10 +13,10 @@ namespace VAC_T.Models
     {
         public int Id { get; set; }
         [Display(Name = "Bedrijf")]
-        public Company? Company { get; set; }
-        public int? CompanyId { get; set; }
+        public Company Company { get; set; }
+        public int CompanyId { get; set; }
         [DisplayName("Soort vraag")]
-        public string Type { get; set; } = string.Empty; // Open, Multiple choice and standpoint between 2.
+        public string Type { get; set; } // Open, Multiple choice and standpoint between 2.
         [DisplayName("Vraag")]
         public string QuestionText { get; set; }
         [DisplayName("Meerdere mogelijkheden")]
@@ -24,7 +24,7 @@ namespace VAC_T.Models
         [DisplayName("Opties")]
         public ICollection<QuestionOption>? Options { get; set; }
         [DisplayName("Uitleg")]
-        public string ExplanationType { get; set; } = string.Empty;
+        public string ExplanationType { get; set; }
         [DisplayName("Aantal meerkeuze opties toevoegen")]
         public int OptionsAmount { get; set; } = 2;
         public ICollection<JobOffer>? JobOffers { get; set; }

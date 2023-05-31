@@ -2,6 +2,8 @@
 using VAC_T.Data.DTO;
 using VAC_T.Services;
 using static VAC_T.Models.RepeatAppointment;
+//using static VAC_T.DAL.Service;
+using VAC_T.Business;
 
 namespace VAC_T.Data
 {
@@ -55,8 +57,21 @@ namespace VAC_T.Data
             CreateMap<Question, QuestionDTOMedium>();
             CreateMap<Question, QuestionDTOComplete>();
             CreateMap<QuestionDTOForCreate, Question>();
-            CreateMap<QuestionDTOForCreateYesOrNo, Question>();
             CreateMap<QuestionOption, QuestionOptionDTOSmall>();
+            CreateMap<QuestionOptionDTOSmall, QuestionOption>();
+            CreateMap<QuestionDTOMedium, Question>();
+            CreateMap<Answer, AnswerDTOSmall>();
+            CreateMap<Answer, AnswerDTOMedium>();
+            CreateMap<Answer, AnswerDTOComplete>();
+            CreateMap<Answer, AnswerDTOExtended>()
+                                .ForMember(dest => dest.MultipleChoiceAnswers, opt => opt.MapFrom(src => (src.Question.Type == "Meerkeuze" && src.Question.MultipleOptions == true) ? src.AnswerText.Split('_', '_') : new string[0]));
+                                //.ForMember(dest => dest.DisplayAnswerText, opt => opt.MapFrom(src => AnswerService.PrepareAnswerForDisplay(src.AnswerText, src.Question));
+            CreateMap<AnswerViewModel, AnswerDTOExtended>();
+            CreateMap<AnswerDTOExtended, AnswerViewModel>();
+            CreateMap<AnswerDTOForCreate, AnswerViewModel>();
+            CreateMap<AnswerDTOForCreate, Answer>()
+                .ForMember(dest => dest.AnswerText, opt => opt.MapFrom((src, dest) => (dest.Question.Type == "Meerkeuze" && dest.Question.MultipleOptions == true) ? string.Join('_', src.MultipleChoiceAnswers) : src.AnswerText));
+
         }
     }
 }
