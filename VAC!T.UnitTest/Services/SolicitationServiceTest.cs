@@ -35,6 +35,7 @@ namespace VAC_T.UnitTest.Services
                 await context.AddTestUsersAsync();
                 await context.AddTestCompaniesAsync();
                 await context.AddTestSolictations();
+                await context.AddTestQuestionsAsync();
                 // save the id's for later use
                 testJobOffer1Id = context.TestCompanyJobOffer1Id;
                 testJobOffer2Id = context.TestCompanyJobOffer2Id;
@@ -453,6 +454,35 @@ namespace VAC_T.UnitTest.Services
             // validate
             Assert.That(result1, Is.True);
             Assert.That(result2, Is.False);
+        }
+
+        [Test]
+        public async Task TestAreQuestionsAnsweredAsync()
+        {
+            // prepare
+            var id = testJobOffer1Id!.Value;
+            var id2 = testJobOffer2Id!.Value;
+            var user = _context.Users.FirstOrDefault(u => u.Name == "testUser")!; // user that gives true as result
+            var userRoles = await _context.UserManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                };
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+            ClaimsIdentity identity = new ClaimsIdentity(authClaims);
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+
+            // run
+            var result1 = await _service.AreQuestionsAnsweredAsync(id, claimsPrincipal);
+            var result2 = await _service.AreQuestionsAnsweredAsync(id2, claimsPrincipal);
+
+            // validate
+            Assert.That(result1, Is.False);
+            Assert.That(result2, Is.True);
         }
 
     }

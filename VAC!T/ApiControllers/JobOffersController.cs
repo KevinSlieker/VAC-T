@@ -245,7 +245,7 @@ namespace VAC_T.ApiControllers
             }
             try
             {
-                var jobOffer = await _service.GetAllJobOfferWQuestionsAsync(User);
+                var jobOffer = await _service.GetAllJobOffersWQuestionsAsync(User);
                 var result = _mapper.Map<List<JobOfferDTOSmall>>(jobOffer);
                 return Ok(result);
             }

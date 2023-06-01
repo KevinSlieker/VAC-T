@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using VAC_T.Business;
 using VAC_T.Models;
 using VAC_T.UnitTest.TestObjects;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace VAC_T.UnitTest.Services
 {
@@ -20,6 +21,9 @@ namespace VAC_T.UnitTest.Services
         private int? testJobOffer1Id;
         private int? testJobOffer2Id;
         private int? testCompanyId;
+        private int? someOtherCompanyId;
+        private int? testQuestion1Id;
+        private int? testQuestion2Id;
 
         [SetUp]
         public async Task Setup()
@@ -34,10 +38,14 @@ namespace VAC_T.UnitTest.Services
                 await context.AddTestUsersAsync();
                 await context.AddTestCompaniesAsync();
                 await context.AddTestSolictations();
+                await context.AddTestQuestionsAsync();
                 // save the id's for later use
                 testJobOffer1Id = context.TestCompanyJobOffer1Id;
                 testJobOffer2Id = context.TestCompanyJobOffer2Id;
                 testCompanyId = context.TestCompanyId;
+                someOtherCompanyId = context.SomeOtherCompanyId;
+                testQuestion1Id = context.TestCompanyQuestion1Id;
+                testQuestion2Id = context.TestCompanyQuestion2Id;
             }
             _context = new TestDbContext(_inMemoryDb);
             _service = new JobOfferService(_context, _context.UserManager);
@@ -422,6 +430,147 @@ namespace VAC_T.UnitTest.Services
             Assert.That(jobOfferAfter.Closed, Is.Not.EqualTo(statusFirst));
             Assert.That(jobOfferAfter.Closed, Is.Not.EqualTo(null));
             Assert.That(jobOffer2After.Closed, Is.EqualTo(null));
+        }
+
+        [Test]
+        public async Task TestGetAllJobOffersWQuestionsAsync()
+        {
+            // prepare
+            var user = _context.Users.FirstOrDefault(u => u.Name == "testAdmin")!;
+            var userRoles = await _context.UserManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                };
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+            ClaimsIdentity identity = new ClaimsIdentity(authClaims);
+            var claimsPrincipalAdmin = new ClaimsPrincipal(identity);
+
+            var user2 = _context.Users.FirstOrDefault(u => u.Name == "testCompanyUser")!;
+            var userRoles2 = await _context.UserManager.GetRolesAsync(user2);
+            var authClaims2 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user2.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user2.Id.ToString())
+                };
+            foreach (var userRole2 in userRoles2)
+            {
+                authClaims2.Add(new Claim(ClaimTypes.Role, userRole2));
+            }
+            ClaimsIdentity identity2 = new ClaimsIdentity(authClaims2);
+            var claimsPrincipalCompanyUser = new ClaimsPrincipal(identity2);
+
+            var user3 = _context.Users.FirstOrDefault(u => u.Name == "someOtherCompanyUser")!;
+            var userRoles3 = await _context.UserManager.GetRolesAsync(user3);
+            var authClaims3 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user3.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user3.Id.ToString())
+                };
+            foreach (var userRole3 in userRoles3)
+            {
+                authClaims3.Add(new Claim(ClaimTypes.Role, userRole3));
+            }
+            ClaimsIdentity identity3 = new ClaimsIdentity(authClaims3);
+            var claimsPrincipalOtherCompanyUser = new ClaimsPrincipal(identity3);
+
+            // run
+            var result1 = await _service.GetAllJobOffersWQuestionsAsync(claimsPrincipalAdmin);
+            var result2 = await _service.GetAllJobOffersWQuestionsAsync(claimsPrincipalCompanyUser);
+            var result3 = await _service.GetAllJobOffersWQuestionsAsync(claimsPrincipalOtherCompanyUser);
+
+            // validate
+            Assert.That(result1, Is.Not.Null);
+            Assert.That(result2, Is.Not.Null);
+            Assert.That(result3, Is.Not.Null);
+
+            var jobOfferEntry = _context.Entry(result1.First());
+            // Test eager and lazy loaded fields
+            Assert.That(jobOfferEntry.Reference(j => j.Company).IsLoaded, Is.True);
+
+            Assert.That(result1.Count, Is.EqualTo(2));
+            Assert.That(result2.Count, Is.EqualTo(2));
+            Assert.That(result3, Is.Empty);
+        }
+
+        [Test]
+        public async Task TestGetJobOfferWQuestionsAsync()
+        {
+            // prepare
+            var id = testJobOffer1Id!.Value;
+            var id2 = testJobOffer2Id!.Value;
+
+            // run
+            var jobOffer1 = await _service.GetJobOfferWQuestionsAsync(id);
+            var jobOffer2 = await _service.GetJobOfferWQuestionsAsync(id2);
+
+            // validate
+            Assert.That(jobOffer1, Is.Not.Null);
+            Assert.That(jobOffer2, Is.Not.Null);
+
+            var jobOfferEntry = _context.Entry(jobOffer1!);
+            Assert.That(jobOffer1.Name, Is.EqualTo("Test Job Offer"));
+            // Test eager and lazy loaded fields
+            Assert.That(jobOfferEntry.Collection(j => j.Questions!).IsLoaded, Is.True);
+
+            Assert.That(jobOffer1.Questions, Is.Not.Null);
+            Assert.That(jobOffer1.Questions.Count, Is.EqualTo(2));
+            Assert.That(jobOffer2.Questions, Is.Not.Null);
+            Assert.That(jobOffer2.Questions.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public async Task TestGetQuestionsForCompanyAsync()
+        {
+            // prepare
+            var id = testCompanyId!.Value;
+            var id2 = someOtherCompanyId!.Value;
+
+            // run
+            var questions1 = await _service.GetQuestionsForCompanyAsync(id);
+            var questions2 = await _service.GetQuestionsForCompanyAsync(id2);
+
+            // validate
+            Assert.That(questions1, Is.Not.Null);
+            Assert.That(questions2, Is.Not.Null);
+
+            var question1Entry = _context.Entry(questions1.First(q => q.Type == "Meerkeuze"));
+            // Test eager and lazy loaded fields
+            Assert.That(question1Entry.Collection(q => q.Options!).IsLoaded, Is.True);
+            Assert.That(question1Entry.Reference(q => q.Company).IsLoaded, Is.True);
+
+            Assert.That(questions1.Count, Is.EqualTo(2));
+            Assert.That(questions2, Is.Empty);
+        }
+
+        [Test]
+        public async Task TestSelectJobOfferQuestionsAsync()
+        {
+            // prepare
+            var id = testJobOffer1Id!.Value;
+            var id2 = testJobOffer2Id!.Value;
+            var questionId1 = testQuestion1Id!.Value;
+            var questionId2 = testQuestion2Id!.Value;
+            var array1 = new int[] {questionId1, questionId2};
+            var array2 = new int[] { };
+            // run
+            await _service.SelectJobOfferQuestionsAsync(id, array2);
+            await _service.SelectJobOfferQuestionsAsync(id2, array1);
+
+            // validate
+            var jobOffer1 = await _context.JobOffer.Include(j => j.Questions).FirstOrDefaultAsync(q => q.Id == id);
+            var jobOffer2 = await _context.JobOffer.Include(j => j.Questions).FirstOrDefaultAsync(q => q.Id == id2);
+
+            Assert.That(jobOffer1, Is.Not.Null);
+            Assert.That(jobOffer2, Is.Not.Null);
+            Assert.That(jobOffer1.Questions, Is.Empty);
+            Assert.That(jobOffer2.Questions!.Count, Is.EqualTo(2));
+            Assert.That(jobOffer2.Questions.Any(q => q.Id == questionId1), Is.True);
+            Assert.That(jobOffer2.Questions.Any(q => q.Id == questionId2), Is.True);
         }
     }
 }

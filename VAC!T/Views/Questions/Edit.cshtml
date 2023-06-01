@@ -14,7 +14,7 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            @if (User.IsInRole("ROLE_ADMIN") && !(Model.Type == "Ja/Nee" && Model.CompanyId == null))
+            @if (User.IsInRole("ROLE_ADMIN"))
             {
                     <div class="form-group">
                         <label asp-for="CompanyId" class="control-label"></label>
@@ -25,17 +25,17 @@
             {
                 <input type="hidden" asp-for="CompanyId" />
             }
-            @if (Model.Type != "Ja/Nee")
+@*            @if (Model.Type != "Ja/Nee")
             {
-            <div class="form-group">
+*@            <div class="form-group">
                 <label asp-for="Type" class="control-label"></label>
                 <select asp-for="Type" class="form-control" asp-items="ViewBag.Type"></select>
                 </div>
-            } else
+@*            } else
             {
                 <input type="hidden" asp-for="Type" />
             }
-            @if (Model.Type == "Ja/Nee" && Model.CompanyId != null)
+*@@*            @if (Model.Type == "Ja/Nee" && Model.CompanyId != null)
             {
                 <div class="form-group">
                     <label asp-for="QuestionText" class="control-label"></label>
@@ -45,16 +45,16 @@
                     <span asp-validation-for="QuestionText" class="text-danger"></span>
                 </div>
             } else 
-            {
+            {*@
                 <div class="form-group">
                     <label asp-for="QuestionText" class="control-label"></label>
                     <input asp-for="QuestionText" class="form-control" />
                     <span asp-validation-for="QuestionText" class="text-danger"></span>
                 </div>
-            }
-            @if (Model.Type != "Ja/Nee")
+            @*}*@
+@*            @if (Model.Type != "Ja/Nee")
             {
-                <br />
+*@                <br />
                 <div class="text-red">
                     <p>De volgende opties zijn alleen voor meerkeuze vragen:</p>
                 </div>
@@ -76,8 +76,8 @@
                         }
                     </select>
                 </div>
-            }
-            <div class="form-group">
+@*            }
+*@            <div class="form-group">
                 <input type="submit" value="Opslaan" class="btn btn-primary" />
             </div>
         </form>

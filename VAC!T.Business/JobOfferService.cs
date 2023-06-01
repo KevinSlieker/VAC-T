@@ -145,7 +145,7 @@ namespace VAC_T.Business
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<JobOffer>?> GetAllJobOfferWQuestionsAsync(ClaimsPrincipal User)
+        public async Task<IEnumerable<JobOffer>?> GetAllJobOffersWQuestionsAsync(ClaimsPrincipal User)
         {
             if (_context.JobOffer == null)
             {

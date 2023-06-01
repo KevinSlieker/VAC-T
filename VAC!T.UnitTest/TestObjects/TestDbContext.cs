@@ -63,6 +63,16 @@ namespace VAC_T.UnitTest.TestObjects
         public int? TestCompanyRepeatAppointment1Id { get { return testCompanyRepeatAppointment1?.Id; } }
         private RepeatAppointment? testCompanyRepeatAppointment2;
         public int? TestCompanyRepeatAppointment2Id { get { return testCompanyRepeatAppointment2?.Id; } }
+        private Question? testCompanyQuestion1;
+        public int? TestCompanyQuestion1Id { get { return testCompanyQuestion1?.Id; } }
+        private Question? testCompanyQuestion2;
+        public int? TestCompanyQuestion2Id { get { return testCompanyQuestion2?.Id; } }
+        private QuestionOption? testCompanyQuestion2QuestionOption1;
+        public int? TestCompanyQuestion2QuestionOption1Id { get { return testCompanyQuestion2QuestionOption1?.Id; } }
+        private QuestionOption? testCompanyQuestion2QuestionOption2;
+        public int? TestCompanyQuestion2QuestionOption2Id { get { return testCompanyQuestion2QuestionOption2?.Id; } }
+        private Answer? testUserAnswer1ForJobOffer2;
+        public int? TestUserAnswer1ForJobOffer2Id { get { return testUserAnswer1ForJobOffer2?.Id; } }
 
         public TestDbContext(SqliteConnection database) :
             base(new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -291,6 +301,63 @@ namespace VAC_T.UnitTest.TestObjects
                 Appointment = null
             };
             await Solicitation.AddAsync(testUserSolicitationTestCompanyForJobOffer2);
+
+            await SaveChangesAsync();
+        }
+
+        public async Task AddTestQuestionsAsync()
+        {
+            testCompanyQuestion1 = new Question
+            {
+                Company = testCompany!,
+                Type = "Open",
+                QuestionText = "How is the test question?",
+                MultipleOptions = false,
+                Options = null,
+                ExplanationType = "",
+                OptionsAmount = 2,
+                JobOffers = new List<JobOffer>() { testCompanyJobOffer1!, testCompanyJobOffer2! }
+            };
+            await Question.AddAsync(testCompanyQuestion1);
+
+            testCompanyQuestion2 = new Question
+            {
+                Company = testCompany!,
+                Type = "Meerkeuze",
+                QuestionText = "Does it work?",
+                MultipleOptions = true,
+                Options = new List<QuestionOption>()
+                {
+                    (testCompanyQuestion2QuestionOption1 = new QuestionOption()
+                    {
+                        Question = testCompanyQuestion2!,
+                        OptionShort = "yes",
+                        OptionLong = "The question works"
+                    }),
+                    (testCompanyQuestion2QuestionOption2 = new QuestionOption()
+                    {
+                        Question = testCompanyQuestion2!,
+                        OptionShort = "no",
+                        OptionLong = "The question does not work 100%"
+                    })
+                },
+                ExplanationType = "Laatste Optie",
+                OptionsAmount = 2,
+                JobOffers = new List<JobOffer>() { testCompanyJobOffer1! }
+            };
+            await Question.AddAsync(testCompanyQuestion2);
+            await QuestionOption.AddAsync(testCompanyQuestion2QuestionOption1);
+            await QuestionOption.AddAsync(testCompanyQuestion2QuestionOption2);
+
+            testUserAnswer1ForJobOffer2 = new Answer()
+            {
+                Question = testCompanyQuestion1,
+                JobOffer = testCompanyJobOffer2!,
+                User = testUser!,
+                AnswerText = "The test question is fine",
+                Explanation = null
+            };
+            await Answer.AddAsync(testUserAnswer1ForJobOffer2);
 
             await SaveChangesAsync();
         }

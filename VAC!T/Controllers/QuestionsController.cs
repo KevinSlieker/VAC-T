@@ -288,7 +288,7 @@ namespace VAC_T.Controllers
                 {
                     return NotFound("The question does not exist or the question does not belong to your company.");
                 }
-                ViewData["textOptions"] = new SelectList(await _service.GetYesOrNoTextOptionsAsync());
+                //ViewData["textOptions"] = new SelectList(await _service.GetYesOrNoTextOptionsAsync());
                 ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt", "Ja/Nee" });
                 if (User.IsInRole("ROLE_ADMIN"))
                 {
@@ -327,14 +327,14 @@ namespace VAC_T.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    if (!await _service.DoesQuestionExistAsync(id))
+                    if (!await _service.DoesQuestionExistAsync(id, User))
                     {
                         return NotFound();
                     }
                     await _service.UpdateQuestionAsync(question);
                     return RedirectToAction(nameof(Details), new { id });
                 }
-                ViewData["textOptions"] = new SelectList(await _service.GetYesOrNoTextOptionsAsync());
+                //ViewData["textOptions"] = new SelectList(await _service.GetYesOrNoTextOptionsAsync());
                 ViewData["Type"] = new SelectList(new List<string>() { "Open", "Meerkeuze", "Standpunt", "Ja/Nee" });
                 if (User.IsInRole("ROLE_ADMIN"))
                 {
@@ -388,7 +388,7 @@ namespace VAC_T.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    if (!await _service.DoesQuestionOptionExistAsync(id))
+                    if (!await _service.DoesQuestionOptionExistAsync(id, User))
                     {
                         return NotFound();
                     }

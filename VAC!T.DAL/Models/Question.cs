@@ -24,7 +24,7 @@ namespace VAC_T.Models
         [DisplayName("Opties")]
         public ICollection<QuestionOption>? Options { get; set; }
         [DisplayName("Uitleg")]
-        public string ExplanationType { get; set; }
+        public string ExplanationType { get; set; } // "Nooit zichtbaar", "Altijd zichtbaar", "Laatste optie"
         [DisplayName("Aantal meerkeuze opties toevoegen")]
         public int OptionsAmount { get; set; } = 2;
         public ICollection<JobOffer>? JobOffers { get; set; }
