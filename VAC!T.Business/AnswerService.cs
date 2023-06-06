@@ -103,7 +103,7 @@ namespace VAC_T.Business
         //    return await _context.Answer.Include(a => a.JobOffer).Include(a => a.Question.Options).Where(a => a.JobOfferId == id).Where(a => a.UserId == user.Id).ToListAsync();
         //}
 
-        public async Task<IEnumerable<Answer>?> GetAnswersForJobOfferAsync(int id, string userId, ClaimsPrincipal User)
+        public async Task<IEnumerable<Answer>?> GetAnswersForJobOfferAsync(int id, string userId, ClaimsPrincipal User) // jobOfferId
         {
             if (_context.Answer == null)
             {

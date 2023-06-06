@@ -351,15 +351,15 @@ namespace VAC_T.Controllers
             }
             try
             {
-                if (await _service.CheckUserSolicitatedAsync(id, userId))
-                {
-                    TempData["ErrorMessage"] = "You can't delete your answers while you solicited, you need to cancel your solicitation first";
-                    return RedirectToAction(nameof(DetailsPerJobOffer), new { id, userId });
-                }
                 var answers = await _service.GetAnswersForJobOfferAsync(id, userId, User);
                 if (answers.IsNullOrEmpty())
                 {
                     return Unauthorized("Unauthorized, you are not allowed to view the details of this jobOffer or user");
+                }
+                if (await _service.CheckUserSolicitatedAsync(id, userId))
+                {
+                    TempData["ErrorMessage"] = "You can't delete your answers while you solicited, you need to cancel your solicitation first";
+                    return RedirectToAction(nameof(DetailsPerJobOffer), new { id, userId });
                 }
                 var viewModel = _mapper.Map<List<AnswerViewModel>>(answers);
                 foreach (var answer in viewModel)
