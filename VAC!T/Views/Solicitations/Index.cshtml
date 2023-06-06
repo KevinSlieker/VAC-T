@@ -134,9 +134,12 @@
                                         </td>
                                 }
                                 <td>
-                                    <a class="text-decoration-none text-orange" asp-area="" asp-controller="Answers" asp-action="DetailsPerJobOffer" asp-route-Id="@item.JobOffer.Id" asp-route-userId="@item.UserId">
-                                        Antwoorden
-                                    </a>
+                                    @if (item.JobOffer.Answers.Any(a => a.UserId == item.UserId))
+                                    {
+                                        <a class="text-decoration-none text-orange" asp-area="" asp-controller="Answers" asp-action="DetailsPerJobOffer" asp-route-Id="@item.JobOffer.Id" asp-route-userId="@item.UserId">
+                                            Antwoorden
+                                        </a>
+                                    }
                                 </td>
                                 @if (User.IsInRole("ROLE_CANDIDATE"))
                                 {

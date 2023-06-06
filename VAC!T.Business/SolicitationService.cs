@@ -27,7 +27,7 @@ namespace VAC_T.Business
                 throw new InternalServerException("Database not found");
             }
 
-            var solicitation = from s in _context.Solicitation.Include(a => a.Appointment) select s;
+            var solicitation = from s in _context.Solicitation.Include(a => a.Appointment).Include(s => s.JobOffer.Answers) select s;
             if (!string.IsNullOrEmpty(searchJobOffer))
             {
                 solicitation = solicitation.Where(s => s.JobOffer.Name.Contains(searchJobOffer));
@@ -65,7 +65,7 @@ namespace VAC_T.Business
             {
                 solicitation = solicitation.Where(x => x.JobOffer.Company.User == user).Include(x => x.JobOffer.Company).Include(x => x.User);
             }
-            return await solicitation.ToListAsync();
+            return await solicitation.OrderByDescending(s => s.Date).ToListAsync();
         }
         public async Task<Solicitation?> CreateSolicitationAsync(int jobOfferId, ClaimsPrincipal User)
         {
