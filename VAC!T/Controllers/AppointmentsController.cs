@@ -42,7 +42,7 @@ namespace VAC_T.Controllers
         {
             try
             {
-                var appointment = await _service.GetAppointmentAsync(id);
+                var appointment = await _service.GetAppointmentAsync(id, User);
                 if (appointment == null)
                 {
                     return NotFound();
@@ -118,7 +118,7 @@ namespace VAC_T.Controllers
             }
             try
             {
-                var appointment = await _service.GetAppointmentAsync(id);
+                var appointment = await _service.GetAppointmentAsync(id, User);
                 if (appointment == null)
                 {
                     return NotFound();
@@ -152,7 +152,7 @@ namespace VAC_T.Controllers
                 ModelState.Remove("Company");
                 if (ModelState.IsValid)
                 {
-                    if (!await _service.DoesAppointmentExistAsync(id))
+                    if (!await _service.DoesAppointmentExistAsync(id, User))
                     {
                         return NotFound();
                     }
@@ -177,7 +177,7 @@ namespace VAC_T.Controllers
             }
             try
             {
-                var appointment = await _service.GetAppointmentAsync(id);
+                var appointment = await _service.GetAppointmentAsync(id, User);
                 if (appointment == null)
                 {
                     return NotFound();
@@ -212,9 +212,13 @@ namespace VAC_T.Controllers
 
         public async Task<IActionResult> Select(int id) // solicitation id
         {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_CANDIDATE")))
+            {
+                return Unauthorized("Unauthorized");
+            }
             try
             {
-                if (!await _service.DoesSolicitationExistsAsync(id))
+                if (!await _service.DoesSolicitationExistAsync(id, User))
                 {
                     return NotFound();
                 }
@@ -247,9 +251,9 @@ namespace VAC_T.Controllers
                 if (viewModel.SelectedAppointmentId.Contains("_"))
                 {
                     var split = viewModel.SelectedAppointmentId.Split('_');
-                    var repeatAppointmentId = Int32.Parse(split.LastOrDefault());
-                    var date = DateTime.Parse(split.FirstOrDefault());
-                    if (!(await _service.DoesSolicitationExistsAsync(solicitationId)))
+                    var repeatAppointmentId = Int32.Parse(split.LastOrDefault()!);
+                    var date = DateTime.Parse(split.FirstOrDefault()!);
+                    if (!await _service.DoesSolicitationExistAsync(solicitationId, User))
                     {
                         return RedirectToAction(nameof(Select), solicitationId);
                     }
@@ -258,7 +262,7 @@ namespace VAC_T.Controllers
                 else
                 {
                     var appointmentId = Int32.Parse(viewModel.SelectedAppointmentId);
-                    if (!(await _service.DoesSolicitationExistsAsync(solicitationId) || await _service.DoesAppointmentExistAsync(appointmentId)))
+                    if (!(await _service.DoesSolicitationExistAsync(solicitationId, User) || await _service.DoesAppointmentExistAsync(appointmentId, User)))
                     {
                         return RedirectToAction(nameof(Select), solicitationId);
                     }
@@ -276,7 +280,7 @@ namespace VAC_T.Controllers
         {
             try
             {
-                var repeatAppointment = await _service.GetRepeatAppointmentAsync(id);
+                var repeatAppointment = await _service.GetRepeatAppointmentAsync(id, User);
                 if (repeatAppointment == null)
                 {
                     return NotFound();
@@ -349,7 +353,7 @@ namespace VAC_T.Controllers
             }
             try
             {
-                var repeatAppointment = await _service.GetRepeatAppointmentAsync(id);
+                var repeatAppointment = await _service.GetRepeatAppointmentAsync(id, User);
                 if (repeatAppointment == null)
                 {
                     return NotFound();
@@ -379,7 +383,7 @@ namespace VAC_T.Controllers
             {
                 try
                 {
-                    var repeatAppointment = await _service.GetRepeatAppointmentAsync(id);
+                    var repeatAppointment = await _service.GetRepeatAppointmentAsync(id, User);
                     if (repeatAppointment == null)
                     {
                         return NotFound();
@@ -405,7 +409,7 @@ namespace VAC_T.Controllers
             }
             try
             {
-                var repeatAppointment = await _service.GetRepeatAppointmentAsync(id);
+                var repeatAppointment = await _service.GetRepeatAppointmentAsync(id, User);
                 if (repeatAppointment == null)
                 {
                     return NotFound();
@@ -440,7 +444,7 @@ namespace VAC_T.Controllers
                 ModelState.Remove("RepeatsRelativeWeek");
                 if (ModelState.IsValid)
                 {
-                    if (!await _service.DoesRepeatAppointmentExistAsync(id))
+                    if (!await _service.DoesRepeatAppointmentExistAsync(id, User))
                     {
                         return NotFound();
                     }
@@ -464,7 +468,7 @@ namespace VAC_T.Controllers
             }
             try
             {
-                var repeatAppointment = await _service.GetRepeatAppointmentAsync(id);
+                var repeatAppointment = await _service.GetRepeatAppointmentAsync(id, User);
                 if (repeatAppointment == null)
                 {
                     return NotFound();

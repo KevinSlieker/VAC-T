@@ -64,7 +64,7 @@ namespace VAC_T.ApiControllers
         {
             try
             {
-                var appointment = await _service.GetAppointmentAsync(id);
+                var appointment = await _service.GetAppointmentAsync(id, User);
                 if (appointment == null)
                 {
                     return NotFound();
@@ -155,7 +155,7 @@ namespace VAC_T.ApiControllers
             }
             try
             {
-                var appointmentEntity = await _service.GetAppointmentAsync(id);
+                var appointmentEntity = await _service.GetAppointmentAsync(id, User);
                 if (appointmentEntity == null)
                 {
                     return NotFound($"No appointment with Id: {id} in the database");
@@ -186,13 +186,36 @@ namespace VAC_T.ApiControllers
             }
             try
             {
-                if (!await _service.DoesAppointmentExistAsync(id))
+                if (!await _service.DoesAppointmentExistAsync(id, User))
                 {
                     return NotFound($"No appointment with Id: {id} in the database");
                 }
 
                 await _service.DeleteAppointmentAsync(id);
                 return Ok();
+            }
+            catch (InternalServerException)
+            {
+                return Problem("Database not connected");
+            }
+        }
+
+        [HttpGet("Available/{id}")]
+        public async Task<ActionResult<IEnumerable<AppointmentDTOAvailable>>> GetAvailableAppointmentsAsync(int id)
+        {
+            if (!(User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_CANDIDATE")))
+            {
+                return Unauthorized("Unauthorized");
+            }
+            try
+            {
+                if (!await _service.DoesSolicitationExistAsync(id, User))
+                {
+                    return NotFound("Solicitation does not exist or you are not allowed to view data related to this solicitation");
+                };
+                var appointments = await _service.GetAvailableAppointmentsAsync(id);
+                var result = _mapper.Map<List<AppointmentDTOAvailable>>(appointments);
+                return Ok(result);
             }
             catch (InternalServerException)
             {
@@ -223,9 +246,9 @@ namespace VAC_T.ApiControllers
                 if (selectedAppointmentId.Contains("_"))
                 {
                     var split = selectedAppointmentId.Split('_');
-                    var repeatAppointmentId = Int32.Parse(split.LastOrDefault());
-                    var date = DateTime.Parse(split.FirstOrDefault());
-                    if (!(await _service.DoesSolicitationExistsAsync(solicitationId)))
+                    var repeatAppointmentId = Int32.Parse(split.LastOrDefault()!);
+                    var date = DateTime.Parse(split.FirstOrDefault()!);
+                    if (!await _service.DoesSolicitationExistAsync(solicitationId, User))
                     {
                         return NotFound("solicitationId does not exist.");
                     }
@@ -234,7 +257,7 @@ namespace VAC_T.ApiControllers
                 else
                 {
                     var appointmentId = Int32.Parse(selectedAppointmentId);
-                    if (!(await _service.DoesSolicitationExistsAsync(solicitationId) || await _service.DoesAppointmentExistAsync(appointmentId)))
+                    if (!(await _service.DoesSolicitationExistAsync(solicitationId, User) || await _service.DoesAppointmentExistAsync(appointmentId, User)))
                     {
                         return NotFound("AppointId or solicitationId does not exist.");
                     }
@@ -285,7 +308,7 @@ namespace VAC_T.ApiControllers
         {
             try
             {
-                var repeatAppointment = await _service.GetRepeatAppointmentAsync(id);
+                var repeatAppointment = await _service.GetRepeatAppointmentAsync(id, User);
                 if (repeatAppointment == null)
                 {
                     return NotFound();
@@ -383,7 +406,7 @@ namespace VAC_T.ApiControllers
             }
             try
             {
-                var repeatAppointmentEntity = await _service.GetRepeatAppointmentAsync(id);
+                var repeatAppointmentEntity = await _service.GetRepeatAppointmentAsync(id, User);
                 if (repeatAppointmentEntity == null)
                 {
                     return NotFound($"No repeatAppointment with Id: {id} in the database");
@@ -447,7 +470,7 @@ namespace VAC_T.ApiControllers
             }
             try
             {
-                var repeatAppointmentEntity = await _service.GetRepeatAppointmentAsync(id);
+                var repeatAppointmentEntity = await _service.GetRepeatAppointmentAsync(id, User);
                 if (repeatAppointmentEntity == null)
                 {
                     return NotFound($"No repeatAppointment with Id: {id} in the database");
@@ -478,7 +501,7 @@ namespace VAC_T.ApiControllers
             }
             try
             {
-                if (!await _service.DoesRepeatAppointmentExistAsync(id))
+                if (!await _service.DoesRepeatAppointmentExistAsync(id, User))
                 {
                     return NotFound($"No repeatAppointment with Id: {id} in the database");
                 }

@@ -1,5 +1,4 @@
-﻿@*@model VAC_T.Models.SolicitationAppointmentModel*@
-@model SelectAppointmentViewModel
+﻿@model SelectAppointmentViewModel
 @{
     ViewData["Title"] = "Select";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -28,16 +27,9 @@
                             }
 
                             <option value="@value">@Html.DisplayFor(modelItem => item.Date) @Html.DisplayFor(modelItem => item.Time)</option>
-                            @*<input type="hidden" name="repeatAppointment" value="@item"/>*@
                         }
                     </select>
                 </div>
-@*                <div class="form-group">
-                    <label asp-for="AppointmentId" class="control-label"></label>
-                    <select asp-for="AppointmentId" class="form-control" asp-items="ViewBag.JobOfferId">
-                        <option value="@null">Geen</option>
-                    </select>
-                </div>*@
             </div>
         </div>
         <div class="col-3 d-flex">

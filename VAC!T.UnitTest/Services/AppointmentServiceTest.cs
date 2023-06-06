@@ -117,14 +117,75 @@ namespace VAC_T.UnitTest.Services
             // prepare
             var id = testAppointmentJobOffer1Id!.Value;
             var idWrong = 1234567890;
+            var user = _context.Users.FirstOrDefault(u => u.Name == "testAdmin")!;
+            var userRoles = await _context.UserManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                };
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+            ClaimsIdentity identity = new ClaimsIdentity(authClaims);
+            var claimsPrincipalAdmin = new ClaimsPrincipal(identity);
+
+            var user2 = _context.Users.FirstOrDefault(u => u.Name == "testCompanyUser")!;
+            var userRoles2 = await _context.UserManager.GetRolesAsync(user2);
+            var authClaims2 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user2.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user2.Id.ToString())
+                };
+            foreach (var userRole2 in userRoles2)
+            {
+                authClaims2.Add(new Claim(ClaimTypes.Role, userRole2));
+            }
+            ClaimsIdentity identity2 = new ClaimsIdentity(authClaims2);
+            var claimsPrincipalCompanyUser = new ClaimsPrincipal(identity2);
+
+            var user3 = _context.Users.FirstOrDefault(u => u.Name == "someOtherCompanyUser")!;
+            var userRoles3 = await _context.UserManager.GetRolesAsync(user3);
+            var authClaims3 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user3.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user3.Id.ToString())
+                };
+            foreach (var userRole3 in userRoles3)
+            {
+                authClaims3.Add(new Claim(ClaimTypes.Role, userRole3));
+            }
+            ClaimsIdentity identity3 = new ClaimsIdentity(authClaims3);
+            var claimsPrincipalOtherCompanyUser = new ClaimsPrincipal(identity3);
+
+            var user4 = _context.Users.FirstOrDefault(u => u.Name == "testUser")!;
+            var userRoles4 = await _context.UserManager.GetRolesAsync(user4);
+            var authClaims4 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user4.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user4.Id.ToString())
+                };
+            foreach (var userRole4 in userRoles4)
+            {
+                authClaims4.Add(new Claim(ClaimTypes.Role, userRole4));
+            }
+            ClaimsIdentity identity4 = new ClaimsIdentity(authClaims4);
+            var claimsPrincipalCandidate = new ClaimsPrincipal(identity4);
 
             // run
-            var appointment1 = await _service.GetAppointmentAsync(id);
-            var appointment2 = await _service.GetAppointmentAsync(idWrong);
+            var appointment1 = await _service.GetAppointmentAsync(id, claimsPrincipalAdmin);
+            var appointment2 = await _service.GetAppointmentAsync(idWrong, claimsPrincipalAdmin);
+            var appointment3 = await _service.GetAppointmentAsync(id, claimsPrincipalCompanyUser);
+            var appointment4 = await _service.GetAppointmentAsync(id, claimsPrincipalOtherCompanyUser);
+            var appointment5 = await _service.GetAppointmentAsync(id, claimsPrincipalCandidate);
 
             // validate
             Assert.That(appointment1, Is.Not.Null);
             Assert.That(appointment2, Is.Null);
+            Assert.That(appointment3, Is.Not.Null);
+            Assert.That(appointment4, Is.Null);
+            Assert.That(appointment5, Is.Not.Null);
 
             var appointmentEntry = _context.Entry(appointment1!);
             var solicitationEntry = _context.Entry(appointment1!.Solicitation!);
@@ -138,6 +199,8 @@ namespace VAC_T.UnitTest.Services
             Assert.That(appointment1.Company.Name, Is.EqualTo("TestCompany"));
             Assert.That(appointment1.JobOffer!.Name, Is.EqualTo("Test Job Offer"));
             Assert.That(appointment1.Duration, Is.EqualTo(TimeSpan.FromMinutes(45)));
+            Assert.That(appointment3, Is.EqualTo(appointment1));
+            Assert.That(appointment5, Is.EqualTo(appointment1));
         }
 
         [Test]
@@ -277,14 +340,59 @@ namespace VAC_T.UnitTest.Services
             // prepare
             var id = testAppointmentJobOffer1Id!.Value;
             var idWrong = 1234567890;
+            var user = _context.Users.FirstOrDefault(u => u.Name == "testAdmin")!;
+            var userRoles = await _context.UserManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                };
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+            ClaimsIdentity identity = new ClaimsIdentity(authClaims);
+            var claimsPrincipalAdmin = new ClaimsPrincipal(identity);
+
+            var user2 = _context.Users.FirstOrDefault(u => u.Name == "testCompanyUser")!;
+            var userRoles2 = await _context.UserManager.GetRolesAsync(user2);
+            var authClaims2 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user2.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user2.Id.ToString())
+                };
+            foreach (var userRole2 in userRoles2)
+            {
+                authClaims2.Add(new Claim(ClaimTypes.Role, userRole2));
+            }
+            ClaimsIdentity identity2 = new ClaimsIdentity(authClaims2);
+            var claimsPrincipalCompanyUser = new ClaimsPrincipal(identity2);
+
+            var user3 = _context.Users.FirstOrDefault(u => u.Name == "someOtherCompanyUser")!;
+            var userRoles3 = await _context.UserManager.GetRolesAsync(user3);
+            var authClaims3 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user3.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user3.Id.ToString())
+                };
+            foreach (var userRole3 in userRoles3)
+            {
+                authClaims3.Add(new Claim(ClaimTypes.Role, userRole3));
+            }
+            ClaimsIdentity identity3 = new ClaimsIdentity(authClaims3);
+            var claimsPrincipalOtherCompanyUser = new ClaimsPrincipal(identity3);
 
             // run
-            var result1 = await _service.DoesAppointmentExistAsync(id);
-            var result2 = await _service.DoesAppointmentExistAsync(idWrong);
+            var result1 = await _service.DoesAppointmentExistAsync(id, claimsPrincipalAdmin);
+            var result2 = await _service.DoesAppointmentExistAsync(idWrong, claimsPrincipalAdmin);
+            var result3 = await _service.DoesAppointmentExistAsync(id, claimsPrincipalCompanyUser);
+            var result4 = await _service.DoesAppointmentExistAsync(id, claimsPrincipalOtherCompanyUser);
 
             // validate
             Assert.That(result1, Is.True);
             Assert.That(result2, Is.False);
+            Assert.That(result3, Is.True);
+            Assert.That(result4, Is.False);
         }
 
         [Test]
@@ -322,14 +430,59 @@ namespace VAC_T.UnitTest.Services
             // prepare
             var id = testUserSolicitationId1!.Value;
             var idWrong = 1234567890;
+            var user = _context.Users.FirstOrDefault(u => u.Name == "testAdmin")!;
+            var userRoles = await _context.UserManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                };
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+            ClaimsIdentity identity = new ClaimsIdentity(authClaims);
+            var claimsPrincipalAdmin = new ClaimsPrincipal(identity);
+
+            var user2 = _context.Users.FirstOrDefault(u => u.Name == "testUser")!;
+            var userRoles2 = await _context.UserManager.GetRolesAsync(user2);
+            var authClaims2 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user2.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user2.Id.ToString())
+                };
+            foreach (var userRole2 in userRoles2)
+            {
+                authClaims2.Add(new Claim(ClaimTypes.Role, userRole2));
+            }
+            ClaimsIdentity identity2 = new ClaimsIdentity(authClaims2);
+            var claimsPrincipalTestUser = new ClaimsPrincipal(identity2);
+
+            var user3 = _context.Users.FirstOrDefault(u => u.Name == "TestJustJoinedUser")!;
+            var userRoles3 = await _context.UserManager.GetRolesAsync(user3);
+            var authClaims3 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user3.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user3.Id.ToString())
+                };
+            foreach (var userRole3 in userRoles3)
+            {
+                authClaims3.Add(new Claim(ClaimTypes.Role, userRole3));
+            }
+            ClaimsIdentity identity3 = new ClaimsIdentity(authClaims3);
+            var claimsPrincipalJustJoinedUser = new ClaimsPrincipal(identity3);
 
             // run
-            var result1 = await _service.DoesSolicitationExistsAsync(id);
-            var result2 = await _service.DoesSolicitationExistsAsync(idWrong);
+            var result1 = await _service.DoesSolicitationExistAsync(id, claimsPrincipalAdmin);
+            var result2 = await _service.DoesSolicitationExistAsync(idWrong, claimsPrincipalAdmin);
+            var result3 = await _service.DoesSolicitationExistAsync(id, claimsPrincipalTestUser);
+            var result4 = await _service.DoesSolicitationExistAsync(id, claimsPrincipalJustJoinedUser);
 
             // validate
             Assert.That(result1, Is.True);
             Assert.That(result2, Is.False);
+            Assert.That(result3, Is.True);
+            Assert.That(result4, Is.False);
         }
 
         [Test]
@@ -387,16 +540,62 @@ namespace VAC_T.UnitTest.Services
             // prepare
             int id = testCompanyRepeatAppointment1Id!.Value;
             int idWrong = 1234567890;
+            var user = _context.Users.FirstOrDefault(u => u.Name == "testAdmin")!;
+            var userRoles = await _context.UserManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                };
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+            ClaimsIdentity identity = new ClaimsIdentity(authClaims);
+            var claimsPrincipalAdmin = new ClaimsPrincipal(identity);
+
+            var user2 = _context.Users.FirstOrDefault(u => u.Name == "testCompanyUser")!;
+            var userRoles2 = await _context.UserManager.GetRolesAsync(user2);
+            var authClaims2 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user2.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user2.Id.ToString())
+                };
+            foreach (var userRole2 in userRoles2)
+            {
+                authClaims2.Add(new Claim(ClaimTypes.Role, userRole2));
+            }
+            ClaimsIdentity identity2 = new ClaimsIdentity(authClaims2);
+            var claimsPrincipalCompanyUser = new ClaimsPrincipal(identity2);
+
+            var user3 = _context.Users.FirstOrDefault(u => u.Name == "someOtherCompanyUser")!;
+            var userRoles3 = await _context.UserManager.GetRolesAsync(user3);
+            var authClaims3 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user3.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user3.Id.ToString())
+                };
+            foreach (var userRole3 in userRoles3)
+            {
+                authClaims3.Add(new Claim(ClaimTypes.Role, userRole3));
+            }
+            ClaimsIdentity identity3 = new ClaimsIdentity(authClaims3);
+            var claimsPrincipalOtherCompanyUser = new ClaimsPrincipal(identity3);
 
             // run
-            var repeatAppointment1 = await _service.GetRepeatAppointmentAsync(id);
-            var repeatAppointment2 = await _service.GetRepeatAppointmentAsync(idWrong);
+            var repeatAppointment1 = await _service.GetRepeatAppointmentAsync(id, claimsPrincipalAdmin);
+            var repeatAppointment2 = await _service.GetRepeatAppointmentAsync(idWrong, claimsPrincipalAdmin);
+            var repeatAppointment3 = await _service.GetRepeatAppointmentAsync(id, claimsPrincipalCompanyUser);
+            var repeatAppointment4 = await _service.GetRepeatAppointmentAsync(id, claimsPrincipalOtherCompanyUser);
 
             // validate
             Assert.That(repeatAppointment1, Is.Not.Null);
             Assert.That(repeatAppointment2, Is.Null);
+            Assert.That(repeatAppointment3, Is.Not.Null);
+            Assert.That(repeatAppointment4, Is.Null);
 
             Assert.That(repeatAppointment1.Repeats, Is.EqualTo(RepeatAppointment.RepeatsType.Daily));
+            Assert.That(repeatAppointment3, Is.EqualTo(repeatAppointment1));
         }
 
         [Test]
@@ -526,14 +725,59 @@ namespace VAC_T.UnitTest.Services
             // prepare
             var id = testCompanyRepeatAppointment1Id!.Value;
             var idWrong = 1234567890;
+            var user = _context.Users.FirstOrDefault(u => u.Name == "testAdmin")!;
+            var userRoles = await _context.UserManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                };
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+            ClaimsIdentity identity = new ClaimsIdentity(authClaims);
+            var claimsPrincipalAdmin = new ClaimsPrincipal(identity);
+
+            var user2 = _context.Users.FirstOrDefault(u => u.Name == "testCompanyUser")!;
+            var userRoles2 = await _context.UserManager.GetRolesAsync(user2);
+            var authClaims2 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user2.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user2.Id.ToString())
+                };
+            foreach (var userRole2 in userRoles2)
+            {
+                authClaims2.Add(new Claim(ClaimTypes.Role, userRole2));
+            }
+            ClaimsIdentity identity2 = new ClaimsIdentity(authClaims2);
+            var claimsPrincipalCompanyUser = new ClaimsPrincipal(identity2);
+
+            var user3 = _context.Users.FirstOrDefault(u => u.Name == "someOtherCompanyUser")!;
+            var userRoles3 = await _context.UserManager.GetRolesAsync(user3);
+            var authClaims3 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user3.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user3.Id.ToString())
+                };
+            foreach (var userRole3 in userRoles3)
+            {
+                authClaims3.Add(new Claim(ClaimTypes.Role, userRole3));
+            }
+            ClaimsIdentity identity3 = new ClaimsIdentity(authClaims3);
+            var claimsPrincipalOtherCompanyUser = new ClaimsPrincipal(identity3);
 
             // run
-            var result1 = await _service.DoesRepeatAppointmentExistAsync(id);
-            var result2 = await _service.DoesRepeatAppointmentExistAsync(idWrong);
+            var result1 = await _service.DoesRepeatAppointmentExistAsync(id, claimsPrincipalAdmin);
+            var result2 = await _service.DoesRepeatAppointmentExistAsync(idWrong, claimsPrincipalAdmin);
+            var result3 = await _service.DoesRepeatAppointmentExistAsync(id, claimsPrincipalCompanyUser);
+            var result4 = await _service.DoesRepeatAppointmentExistAsync(id, claimsPrincipalOtherCompanyUser);
 
             // validate
             Assert.That(result1, Is.True);
             Assert.That(result2, Is.False);
+            Assert.That(result3, Is.True);
+            Assert.That(result4, Is.False);
         }
 
         [Test]

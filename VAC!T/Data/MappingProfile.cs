@@ -13,6 +13,8 @@ namespace VAC_T.Data
         {
             CreateMap<Appointment, AppointmentDTO>();
             CreateMap<Appointment, AppointmentDTOForCreate>();
+            CreateMap<Appointment, AppointmentDTOAvailable>()
+                .ForMember(dest => dest.InputForSelect, opt => opt.MapFrom(src => src.RepeatAppointmentId == null ? src.Id.ToString() : src.Time.ToString() + "_" + src.RepeatAppointmentId.ToString()));
             CreateMap<AppointmentDTO, Appointment>();
             CreateMap<AppointmentDTOForCreate, Appointment>();
             CreateMap<Company, CompanyDTO>();

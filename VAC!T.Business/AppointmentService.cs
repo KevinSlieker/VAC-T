@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Web.Http.Results;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VAC_T.DAL.Exceptions;
@@ -35,18 +36,28 @@ namespace VAC_T.Business
             return await appointments.OrderBy(a => a.Company.Name).ThenByDescending(a => a.Date).ThenByDescending(a => a.Time).ToListAsync();
         }
 
-        public async Task<Appointment?> GetAppointmentAsync(int id)
+        public async Task<Appointment?> GetAppointmentAsync(int id, ClaimsPrincipal User)
         {
             if (_context.Appointment == null)
             {
                 throw new InternalServerException("Database not found");
             }
-            var appointment = await _context.Appointment
+            var appointment = from a in _context.Appointment
                 .Include(a => a.Solicitation.User)
                 .Include(a => a.Company)
                 .Include(a => a.JobOffer)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            return appointment;
+                select a;
+            var user = await _userManager.GetUserAsync(User);
+            if (User.IsInRole("ROLE_EMPLOYER"))
+            {
+                var company = await _context.Company.Where(c => c.User == user).FirstAsync();
+                appointment = appointment.Where(a => a.Company == company);
+            }
+            if (User.IsInRole("ROLE_CANDIDATE"))
+            {
+                appointment = appointment.Where(a => a.Solicitation!.User == user);
+            }
+            return await appointment.FirstOrDefaultAsync(m => m.Id == id);
         }
 
         public async Task<Appointment> CreateAppointmentAsync(Appointment appointment, ClaimsPrincipal User)
@@ -108,13 +119,20 @@ namespace VAC_T.Business
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> DoesAppointmentExistAsync(int id)
+        public async Task<bool> DoesAppointmentExistAsync(int id, ClaimsPrincipal User)
         {
             if (_context.Appointment == null)
             {
                 throw new InternalServerException("Database not found");
             }
-            return await _context.Appointment.AnyAsync(a => a.Id == id);
+            var result = from r in _context.Appointment select r;
+            var user = await _userManager.GetUserAsync(User);
+            if (User.IsInRole("ROLE_EMPLOYER"))
+            {
+                var company = await _context.Company.Where(c => c.User == user).FirstAsync();
+                result = result.Where(a => a.JobOffer!.Company == company);
+            }
+            return await result.AnyAsync(a => a.Id == id);
         }
 
         public async Task DeleteAppointmentAsync(int id)
@@ -156,14 +174,27 @@ namespace VAC_T.Business
             return appointments;
         }
 
-        public async Task<bool> DoesSolicitationExistsAsync(int id)
+        public async Task<bool> DoesSolicitationExistAsync(int id, ClaimsPrincipal User)
         {
             if (_context.Solicitation == null)
             {
                 throw new InternalServerException("Database not found");
             }
-            return await _context.Solicitation.AnyAsync(c => c.Id == id);
+            var result = from r in _context.Solicitation.Where(s => s.Selected == true) select r;
+            var user = await _userManager.GetUserAsync(User);
+            if (User.IsInRole("ROLE_EMPLOYER"))
+            {
+                var company = await _context.Company.Where(c => c.User == user).FirstAsync();
+                result = result.Where(a => a.JobOffer.Company == company);
+            }
+            if (User.IsInRole("ROLE_CANDIDATE"))
+            {
+                result = result.Where(a => a.User == user);
+            }
+            return await result.AnyAsync(c => c.Id == id);
         }
+
+
 
         public async Task SelectAppointmentAsync(int appointmentId, int solicitationId)
         {
@@ -178,7 +209,6 @@ namespace VAC_T.Business
                 return;
             }
             appointment.Solicitation = solicitation;
-            //appointment.JobOffer = solicitation.JobOffer;
             solicitation.Appointment = appointment;
             solicitation.DateAppointmentSelected = DateTime.Now;
             _context.Appointment.Update(appointment);
@@ -201,16 +231,22 @@ namespace VAC_T.Business
             await _context.SaveChangesAsync();
         }
 
-        public async Task<RepeatAppointment?> GetRepeatAppointmentAsync(int id)
+        public async Task<RepeatAppointment?> GetRepeatAppointmentAsync(int id, ClaimsPrincipal User)
         {
             if (_context.RepeatAppointment == null)
             {
                 throw new InternalServerException("Database not found");
             }
-            var repeatAppointment = await _context.RepeatAppointment
+            var repeatAppointment = from r in _context.RepeatAppointment
                 .Include(a => a.Company)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            return repeatAppointment;
+                select r;
+            var user = await _userManager.GetUserAsync(User);
+            if (User.IsInRole("ROLE_EMPLOYER"))
+            {
+                var company = await _context.Company.Where(c => c.User == user).FirstAsync();
+                repeatAppointment = repeatAppointment.Where(a => a.Company == company);
+            }
+            return await repeatAppointment.FirstOrDefaultAsync(m => m.Id == id);
         }
         public async Task<IEnumerable<RepeatAppointment>> GetRepeatAppointmentsAsync(ClaimsPrincipal User)
         {
@@ -265,13 +301,20 @@ namespace VAC_T.Business
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> DoesRepeatAppointmentExistAsync(int id)
+        public async Task<bool> DoesRepeatAppointmentExistAsync(int id, ClaimsPrincipal User)
         {
             if (_context.RepeatAppointment == null)
             {
                 throw new InternalServerException("Database not found");
             }
-            return await _context.RepeatAppointment.AnyAsync(a => a.Id == id);
+            var result = from r in _context.RepeatAppointment select r;
+            var user = await _userManager.GetUserAsync(User);
+            if (User.IsInRole("ROLE_EMPLOYER"))
+            {
+                var company = await _context.Company.Where(c => c.User == user).FirstAsync();
+                result = result.Where(a => a.Company == company);
+            }
+            return await result.AnyAsync(a => a.Id == id);
         }
 
         public async Task DeleteRepeatAppointmentAsync(int id)
@@ -509,7 +552,6 @@ namespace VAC_T.Business
                 RepeatAppointment = repeatAppointment,
                 RepeatAppointmentId= repeatAppointment.Id,
                 Solicitation = solicitation,
-                //appointment.JobOffer = solicitation.JobOffer;
 
             };
             solicitation.Appointment = appointment;
