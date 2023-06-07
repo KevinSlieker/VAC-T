@@ -31,6 +31,10 @@ namespace VAC_T.ApiControllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CompanyDTO>>> GetAllCompaniesAsync([FromQuery] string? searchName)
         {
+            if (!User.IsInRole("ROLE_ADMIN"))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
             try
             {
                 IEnumerable<Company> companies = await _service.GetCompaniesAsync(searchName);

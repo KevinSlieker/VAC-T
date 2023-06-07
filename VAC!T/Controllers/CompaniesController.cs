@@ -17,6 +17,10 @@ namespace VAC_T.Controllers
         // GET: Companies
         public async Task<IActionResult> Index(string? searchName)
         {
+            if (!User.IsInRole("ROLE_ADMIN"))
+            {
+                return Unauthorized("Not the correct roles.");
+            }
             ViewData["searchName"] = searchName;
 
             try {

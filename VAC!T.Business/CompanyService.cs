@@ -54,7 +54,12 @@ namespace VAC_T.Business
             if (User.IsInRole("ROLE_ADMIN") || User.IsInRole("ROLE_EMPLOYER"))
             {
                 company = company.Include(c => c.JobOffers);
-            } else
+            } if (User.IsInRole("ROLE_EMPLOYER"))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                company = company.Where(c => c.User == user);
+            }
+            else
             {
                 company = company.Include(c => c.JobOffers.Where(j => j.Closed == null));
             }
