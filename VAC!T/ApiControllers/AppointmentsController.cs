@@ -200,6 +200,12 @@ namespace VAC_T.ApiControllers
             }
         }
 
+        // GET: api/Appointments/Available/41
+        /// <summary>
+        /// Returns all available appoint for solicitation id.
+        /// </summary>
+        /// <param name="id">Solicitation id.</param>
+        /// <returns>Ok with list of available appointments</returns>
         [HttpGet("Available/{id}")]
         public async Task<ActionResult<IEnumerable<AppointmentDTOAvailable>>> GetAvailableAppointmentsAsync(int id)
         {
@@ -233,6 +239,9 @@ namespace VAC_T.ApiControllers
         /// <remarks>
         /// For selectedAppointmentId: If it is an repear appointment you put the DateTime infront of the id and connect it with: "_". So it will be like
         /// 14-4-2023 14:00:00_6. For nomal appointments you can just use the id.
+        /// 
+        /// 
+        /// The solicition needs to be selected for this function give give a result.
         /// </remarks>
         [HttpPut("{selectedAppointmentId}/{solicitationId}")]
         public async Task<ActionResult> PutSelectAppointmentAsync(string selectedAppointmentId, int solicitationId) // example: 14-4-2023 14:00:00_6 or 27 for selectedAppointmentId
