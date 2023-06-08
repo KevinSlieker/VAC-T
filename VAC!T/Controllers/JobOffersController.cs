@@ -39,7 +39,6 @@ namespace VAC_T.Controllers
                 {
                     return NotFound();
                 }
-
                 return View(jobOffer);
             }
             catch (InternalServerException)

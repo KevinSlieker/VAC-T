@@ -49,9 +49,13 @@ namespace VAC_T.Business
                 throw new InternalServerException("Database not found");
             }
             var user = await _userManager.GetUserAsync(User);
-            var jobOffer = _context.JobOffer.Include(j => j.Company.JobOffers).Include(j => j.Solicitations.Where(x => x.User == user)).Include(j => j.Questions).Include(j => j.Answers.Where(x => x.User == user))
-                .FirstOrDefaultAsync(m => m.Id == id);
-            return await jobOffer;
+            var jobOffer = from j in _context.JobOffer.Include(j => j.Company.JobOffers).Include(j => j.Solicitations.Where(x => x.User == user)).Include(j => j.Questions).Include(j => j.Answers.Where(x => x.User == user))
+                select j;
+            if (User.IsInRole("ROLE_EMPLOYER"))
+            {
+                jobOffer = jobOffer.Where(j => j.Company.User == user);
+            }
+            return await jobOffer.FirstOrDefaultAsync(m => m.Id == id);
         }
 
         public async Task<JobOffer> CreateJobOfferAsync(JobOffer jobOffer, ClaimsPrincipal User)

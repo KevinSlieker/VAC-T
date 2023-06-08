@@ -186,11 +186,43 @@ namespace VAC_T.UnitTest.Services
             ClaimsIdentity identity = new ClaimsIdentity(authClaims);
             var claimsPrincipal = new ClaimsPrincipal(identity);
 
+            var user2 = _context.Users.FirstOrDefault(u => u.Name == "testCompanyUser")!;
+            var userRoles2 = await _context.UserManager.GetRolesAsync(user2);
+            var authClaims2 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user2.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user2.Id.ToString())
+                };
+            foreach (var userRole2 in userRoles2)
+            {
+                authClaims2.Add(new Claim(ClaimTypes.Role, userRole2));
+            }
+            ClaimsIdentity identity2 = new ClaimsIdentity(authClaims2);
+            var claimsPrincipalCompanyUser = new ClaimsPrincipal(identity2);
+
+            var user3 = _context.Users.FirstOrDefault(u => u.Name == "someOtherCompanyUser")!;
+            var userRoles3 = await _context.UserManager.GetRolesAsync(user3);
+            var authClaims3 = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user3.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user3.Id.ToString())
+                };
+            foreach (var userRole3 in userRoles3)
+            {
+                authClaims3.Add(new Claim(ClaimTypes.Role, userRole3));
+            }
+            ClaimsIdentity identity3 = new ClaimsIdentity(authClaims3);
+            var claimsPrincipalOtherCompanyUser = new ClaimsPrincipal(identity3);
+
             // run
             var jobOffer = await _service.GetJobOfferAsync(id, claimsPrincipal);
+            var jobOffer2 = await _service.GetJobOfferAsync(id, claimsPrincipalCompanyUser);
+            var jobOffer3 = await _service.GetJobOfferAsync(id, claimsPrincipalOtherCompanyUser);
 
             // validate
             Assert.That(jobOffer, Is.Not.Null);
+            Assert.That(jobOffer2, Is.Not.Null);
+            Assert.That(jobOffer3, Is.Null);
             var jobOfferEntry = _context.Entry(jobOffer!);
             Assert.That(jobOffer.Company, Is.Not.Null);
             var companyEntry = _context.Entry(jobOffer!.Company);
